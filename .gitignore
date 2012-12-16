@@ -1,0 +1,5 @@
+.libs/
+.svnignore
+.deps
+*.lo
+*.la

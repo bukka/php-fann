@@ -1,0 +1,281 @@
+/*
+  +----------------------------------------------------------------------+
+  | PHP Version 5                                                        |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 1997-2012 The PHP Group                                |
+  +----------------------------------------------------------------------+
+  | This source file is subject to version 3.01 of the PHP license,      |
+  | that is bundled with this package in the file LICENSE, and is        |
+  | available through the world-wide-web at the following url:           |
+  | http://www.php.net/license/3_01.txt                                  |
+  | If you did not receive a copy of the PHP license and are unable to   |
+  | obtain it through the world-wide-web, please send a note to          |
+  | license@php.net so we can mail you a copy immediately.               |
+  +----------------------------------------------------------------------+
+  | Author:                                                              |
+  +----------------------------------------------------------------------+
+*/
+
+/* $Id$ */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include "php.h"
+#include "php_ini.h"
+#include "ext/standard/info.h"
+#include "php_fann.h"
+#include "floatfann.h"
+
+/* If you declare any globals in php_fann.h uncomment this:
+ZEND_DECLARE_MODULE_GLOBALS(fann)
+*/
+
+/* True global resources - no need for thread safety here */
+static int le_fannbuf;
+#define le_fannbuf_name "FANN Buffer"
+
+/* {{{ arginfo */
+ZEND_BEGIN_ARG_INFO(arginfo_fann_create_from_file, 0)
+ZEND_ARG_INFO(0, configuration_file)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_run, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, info)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_destroy, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+/* }}} */
+
+/* {{{ fann_functions[] */
+const zend_function_entry fann_functions[] = {
+	PHP_FE(confirm_fann_compiled,   NULL)
+	PHP_FE(fann_create_from_file,   arginfo_fann_create_from_file)
+	PHP_FE(fann_run,                arginfo_fann_run)
+	PHP_FE(fann_destroy,            arginfo_fann_destroy)
+	PHP_FE_END
+};
+/* }}} */
+
+/* {{{ fann_module_entry */
+zend_module_entry fann_module_entry = {
+#if ZEND_MODULE_API_NO >= 20010901
+	STANDARD_MODULE_HEADER,
+#endif
+	"fann",
+	fann_functions,
+	PHP_MINIT(fann),
+	PHP_MSHUTDOWN(fann),
+	NULL,
+	NULL,
+	PHP_MINFO(fann),
+#if ZEND_MODULE_API_NO >= 20010901
+	"0.1",
+#endif
+	STANDARD_MODULE_PROPERTIES
+};
+/* }}} */
+
+#ifdef COMPILE_DL_FANN
+ZEND_GET_MODULE(fann)
+#endif
+
+/* {{{ PHP_INI
+ */
+/* Remove comments and fill if you need to have entries in php.ini
+PHP_INI_BEGIN()
+    STD_PHP_INI_ENTRY("fann.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_fann_globals, fann_globals)
+    STD_PHP_INI_ENTRY("fann.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_fann_globals, fann_globals)
+PHP_INI_END()
+*/
+/* }}} */
+
+/* {{{ php_fann_init_globals
+ */
+/* Uncomment this function if you have INI entries
+static void php_fann_init_globals(zend_fann_globals *fann_globals)
+{
+	fann_globals->global_value = 0;
+	fann_globals->global_string = NULL;
+}
+*/
+/* }}} */
+
+static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
+{
+	struct fann *ann = (struct fann *) rsrc->ptr;
+	fann_destroy(ann);
+}
+
+#define PHP_FANN_ERROR_CHECK(ann) \
+if (fann_get_errno((struct fann_error *) ann) != 0) { \
+	php_error_docref(NULL TSRMLS_CC, E_WARNING, fann_get_errstr((struct fann_error *) ann)); \
+	RETURN_FALSE; \
+}
+
+/* {{{ PHP_MINIT_FUNCTION
+ */
+PHP_MINIT_FUNCTION(fann)
+{
+	le_fannbuf = zend_register_list_destructors_ex(fann_destructor_fannbuf, NULL, le_fannbuf_name, module_number);
+	
+	/* If you have INI entries, uncomment these lines 
+	REGISTER_INI_ENTRIES();
+	*/
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ PHP_MSHUTDOWN_FUNCTION
+ */
+PHP_MSHUTDOWN_FUNCTION(fann)
+{
+	/* uncomment this line if you have INI entries
+	UNREGISTER_INI_ENTRIES();
+	*/
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ PHP_MINFO_FUNCTION
+ */
+PHP_MINFO_FUNCTION(fann)
+{
+	php_info_print_table_start();
+	php_info_print_table_header(2, "fann support", "enabled");
+	php_info_print_table_end();
+
+	/* Remove comments if you have entries in php.ini
+	DISPLAY_INI_ENTRIES();
+	*/
+}
+/* }}} */
+
+
+/* {{{ proto string confirm_fann_compiled(string arg)
+   Confirms that fann is compiled */
+PHP_FUNCTION(confirm_fann_compiled)
+{
+	char *arg = NULL;
+	int arg_len, len;
+	char *strg;
+
+	fann_type *calc_out;	
+	fann_type input[2];
+
+	struct fann *ann = fann_create_from_file("/home/jakub/prog/fann/examples/xor_float.net");
+
+	input[0] = 1;
+	input[1] = -1;
+	calc_out = fann_run(ann, input);
+
+	php_printf("xor test (%f,%f) -> %f\n", input[0], input[1], calc_out[0]);
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
+		return;
+	}
+
+	len = spprintf(&strg, 0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "fann", arg);
+	RETURN_STRINGL(strg, len, 0);
+}
+/* }}} */
+
+/* {{{ proto resource fann_create_from_file(string configuration_file)
+   Initializes neural network from configuration file */
+PHP_FUNCTION(fann_create_from_file)
+{
+	char *cf_name = NULL;
+	int cf_name_len;
+	FILE *cf_file;
+	struct fann *ann;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &cf_name, &cf_name_len) == FAILURE) {
+		return;
+	}
+
+	cf_file = fopen(cf_name, "r");
+	if (!cf_file) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File cannot be opened for reading");
+		RETURN_FALSE;
+	}
+	fclose(cf_file);
+
+	if (!(ann = fann_create_from_file(cf_name))) {
+		RETURN_FALSE;
+	}
+
+	ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf);
+}
+/* }}} */
+
+
+/* {{{ proto resource fann_run(string configuration_file)
+   Runs input through the neural network */
+PHP_FUNCTION(fann_run)
+{
+	zval *z_ann, *array, **elem;
+	HashPosition pos;
+	struct fann *ann;
+	float *input, *calc_out;
+	int c = 0, num_out = 0;
+
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &array) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+	
+	input = (float *) emalloc(sizeof(float) * zend_hash_num_elements(Z_ARRVAL_P(array)));
+
+	for (zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(array), &pos);
+	     zend_hash_get_current_data_ex(Z_ARRVAL_P(array), (void **) &elem, &pos) == SUCCESS;
+	     zend_hash_move_forward_ex(Z_ARRVAL_P(array), &pos)) {
+		convert_to_double(*elem);
+		input[c++] = Z_DVAL_PP(elem);
+	}
+
+	calc_out = fann_run(ann, input);
+
+	num_out = fann_get_num_output(ann);
+	array_init(return_value);
+	for (c = 0; c < num_out; c++) {
+		add_next_index_double(return_value, calc_out[c]);
+	}
+
+	efree(input);
+
+	PHP_FANN_ERROR_CHECK(ann);
+}
+/* }}} */
+
+
+/* {{{ proto resource fann_create_from_file(string configuration_file)
+   Destroys neural network */
+PHP_FUNCTION(fann_destroy)
+{
+	zval *z_ann;
+	struct fann *ann;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+
+	RETURN_BOOL(zend_list_delete(Z_LVAL_P(z_ann)) == SUCCESS);
+}
+/* }}} */
+
+/*
+ * Local variables:
+ * tab-width: 4
+ * c-basic-offset: 4
+ * End:
+ * vim600: noet sw=4 ts=4 fdm=marker
+ * vim<600: noet sw=4 ts=4
+ */
