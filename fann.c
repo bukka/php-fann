@@ -26,7 +26,14 @@
 #include "php_ini.h"
 #include "ext/standard/info.h"
 #include "php_fann.h"
+
+#ifdef PHP_FANN_FIXED
+#include "fixedfann.h"
+#elseif PHP_FANN_DOUBLE
+#include "doublefann.h"
+#else
 #include "floatfann.h"
+#endif
 
 /* If you declare any globals in php_fann.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(fann)
@@ -212,17 +219,28 @@ PHP_FUNCTION(fann_create_from_file)
 }
 /* }}} */
 
+/* {{{ funn_input_foreach
+   callback for converting input hash map to fann_type array */
+int funn_input_foreach(zval **element TSRMLS_DC, int num_args, va_list args, zend_hash_key *hash_key)
+{
+	fann_type *input = va_arg(args, fann_type *);
+	int *pos = va_arg(args, int *);
+	
+	convert_to_double(*element);
+	input[*pos++] = (fann_type) Z_DVAL_PP(element);
+	
+	return ZEND_HASH_APPLY_KEEP;
+}
+
 
 /* {{{ proto resource fann_run(string configuration_file)
    Runs input through the neural network */
 PHP_FUNCTION(fann_run)
 {
-	zval *z_ann, *array, **elem;
-	HashPosition pos;
+	zval *z_ann, *array;
 	struct fann *ann;
-	float *input, *calc_out;
-	int c = 0, num_out = 0;
-
+	fann_type *input, *calc_out;
+	int i = 0, num_out = 0;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &array) == FAILURE) {
 		return;
@@ -231,20 +249,14 @@ PHP_FUNCTION(fann_run)
 	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
 	
 	input = (float *) emalloc(sizeof(float) * zend_hash_num_elements(Z_ARRVAL_P(array)));
-
-	for (zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(array), &pos);
-	     zend_hash_get_current_data_ex(Z_ARRVAL_P(array), (void **) &elem, &pos) == SUCCESS;
-	     zend_hash_move_forward_ex(Z_ARRVAL_P(array), &pos)) {
-		convert_to_double(*elem);
-		input[c++] = Z_DVAL_PP(elem);
-	}
-
+	zend_hash_apply_with_arguments(Z_ARRVAL_P(array) TSRMLS_CC, (apply_func_args_t) funn_input_foreach, 2, input, &i);
+	
 	calc_out = fann_run(ann, input);
-
 	num_out = fann_get_num_output(ann);
+
 	array_init(return_value);
-	for (c = 0; c < num_out; c++) {
-		add_next_index_double(return_value, calc_out[c]);
+	for (i = 0; i < num_out; i++) {
+		add_next_index_double(return_value, (double) calc_out[i]);
 	}
 
 	efree(input);
