@@ -162,35 +162,6 @@ PHP_MINFO_FUNCTION(fann)
 }
 /* }}} */
 
-
-/* {{{ proto string confirm_fann_compiled(string arg)
-   Confirms that fann is compiled */
-PHP_FUNCTION(confirm_fann_compiled)
-{
-	char *arg = NULL;
-	int arg_len, len;
-	char *strg;
-
-	fann_type *calc_out;	
-	fann_type input[2];
-
-	struct fann *ann = fann_create_from_file("/home/jakub/prog/fann/examples/xor_float.net");
-
-	input[0] = 1;
-	input[1] = -1;
-	calc_out = fann_run(ann, input);
-
-	php_printf("xor test (%f,%f) -> %f\n", input[0], input[1], calc_out[0]);
-	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
-		return;
-	}
-
-	len = spprintf(&strg, 0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "fann", arg);
-	RETURN_STRINGL(strg, len, 0);
-}
-/* }}} */
-
 /* {{{ proto resource fann_create_from_file(string configuration_file)
    Initializes neural network from configuration file */
 PHP_FUNCTION(fann_create_from_file)

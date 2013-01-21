@@ -42,7 +42,6 @@ PHP_RINIT_FUNCTION(fann);
 PHP_RSHUTDOWN_FUNCTION(fann);
 PHP_MINFO_FUNCTION(fann);
 
-PHP_FUNCTION(confirm_fann_compiled);
 PHP_FUNCTION(fann_create_from_file);
 PHP_FUNCTION(fann_run);
 PHP_FUNCTION(fann_destroy);
