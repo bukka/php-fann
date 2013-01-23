@@ -41,9 +41,14 @@ ZEND_DECLARE_MODULE_GLOBALS(fann)
 
 /* True global resources - no need for thread safety here */
 static int le_fannbuf;
-#define le_fannbuf_name "FANN Buffer"
+#define le_fannbuf_name "FANN"
 
 /* {{{ arginfo */
+ZEND_BEGIN_ARG_INFO(arginfo_fann_create_standard, 0)
+ZEND_ARG_INFO(0, num_layers)
+ZEND_ARG_INFO(0, ...)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_create_from_file, 0)
 ZEND_ARG_INFO(0, configuration_file)
 ZEND_END_ARG_INFO()
@@ -60,7 +65,7 @@ ZEND_END_ARG_INFO()
 
 /* {{{ fann_functions[] */
 const zend_function_entry fann_functions[] = {
-	PHP_FE(confirm_fann_compiled,   NULL)
+	PHP_FE(fann_create_standard,    arginfo_fann_create_standard)
 	PHP_FE(fann_create_from_file,   arginfo_fann_create_from_file)
 	PHP_FE(fann_run,                arginfo_fann_run)
 	PHP_FE(fann_destroy,            arginfo_fann_destroy)
@@ -161,6 +166,55 @@ PHP_MINFO_FUNCTION(fann)
 	*/
 }
 /* }}} */
+
+
+/* {{{ proto resource fann_create_standard(int configuration_file)
+   Initializes neural network from configuration file */
+PHP_FUNCTION(fann_create_standard)
+{
+	zval ***args;
+	int argc, i;
+	unsigned int *layers;
+	long num_layers;
+	struct fann *ann;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "+", &args, &argc) == FAILURE) {
+		return;
+	}
+
+	convert_to_long_ex(args[0]);
+	num_layers = Z_LVAL_PP(args[0]);
+	if (argc - 1 != num_layers) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid number of arguments");
+		efree(args);
+		RETURN_FALSE;
+	}
+
+	layers = (unsigned int *) emalloc(num_layers * sizeof(unsigned int));
+	for (i = 1; i < argc; i++) {
+		convert_to_long_ex(args[i]);
+		if (Z_LVAL_PP(args[i]) < 0) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Number of neurons cannot be negative");
+			efree(args);
+			efree(layers);
+			RETURN_FALSE;
+		}
+		layers[i - 1] = Z_LVAL_PP(args[i]);
+	}
+	efree(args);
+	
+	ann = fann_create_standard_array(num_layers, layers);
+	efree(layers);
+	
+	if (!ann) {
+		RETURN_FALSE;
+	}
+
+	ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf);
+
+}
+/* }}} */
+
 
 /* {{{ proto resource fann_create_from_file(string configuration_file)
    Initializes neural network from configuration file */
