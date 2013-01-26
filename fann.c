@@ -173,51 +173,107 @@ PHP_MINFO_FUNCTION(fann)
 }
 /* }}} */
 
+/* php_fann_create() {{{ */
+static int php_fann_create(int num_args, float *connection_rate,
+						   unsigned int *num_layers, unsigned int **layers TSRMLS_DC)
+{
+	zval ***args;
+	int argc, i, pos;
+	
+	if (zend_parse_parameters(num_args TSRMLS_CC, "+", &args, &argc) == FAILURE) {
+		return FAILURE;
+	}
+
+	pos = 0;
+	if (connection_rate) {
+		convert_to_double_ex(args[pos]);
+		*connection_rate = Z_DVAL_PP(args[pos++]);
+	}
+	
+	convert_to_long_ex(args[pos]);
+	*num_layers = Z_LVAL_PP(args[pos++]);
+	if (argc - pos != *num_layers) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid number of arguments");
+		efree(args);
+		return FAILURE;
+	}
+
+	*layers = (unsigned int *) emalloc(*num_layers * sizeof(unsigned int));
+	for (i = pos; i < argc; i++) {
+		convert_to_long_ex(args[i]);
+		if (Z_LVAL_PP(args[i]) < 0) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Number of neurons cannot be negative");
+			efree(args);
+			efree(*layers);
+			return FAILURE;
+		}
+		(*layers)[i - pos] = Z_LVAL_PP(args[i]);
+	}
+	efree(args);
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* php_fann_create_array() {{{ */
+static int php_fann_create_array(int num_args, float *conn_rate,
+								 unsigned int *num_layers, unsigned int **layers TSRMLS_DC)
+{
+	zval *array, **ppdata;
+	int i = 0;
+
+	if (conn_rate) {
+		if (zend_parse_parameters(num_args TSRMLS_CC, "fla", conn_rate, num_layers, &array) == FAILURE) {
+			return FAILURE;
+		}
+	}
+	else {
+		if (zend_parse_parameters(num_args TSRMLS_CC, "la", num_layers, &array) == FAILURE) {
+			return FAILURE;
+		}
+	}
+
+	if (zend_hash_num_elements(Z_ARRVAL_P(array)) != *num_layers) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid number of arguments");
+		return FAILURE;
+	}
+
+	*layers = (unsigned int *) emalloc(*num_layers * sizeof(unsigned int));
+	for (zend_hash_internal_pointer_reset(Z_ARRVAL_P(array));
+		 zend_hash_get_current_data(Z_ARRVAL_P(array), (void **) &ppdata) == SUCCESS;
+		 zend_hash_move_forward(Z_ARRVAL_P(array))) {
+		convert_to_long_ex(ppdata);
+		if (Z_LVAL_PP(ppdata) <= 0) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Number of neurons must be greater than zero");
+			efree(*layers);
+			return FAILURE;
+		}
+		(*layers)[i++] = Z_LVAL_PP(ppdata);
+	}
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* macro for returning ann resource */
+#define PHP_FANN_RETURN_ANN() \
+	if (!ann) { RETURN_FALSE; } \
+	ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf)
 
 /* {{{ proto resource fann_create_standard(int num_layers [, int ... ])
    Initializes neural network from configuration file */
 PHP_FUNCTION(fann_create_standard)
 {
-	zval ***args;
-	int argc, i;
-	unsigned int *layers;
-	long num_layers;
+	unsigned int num_layers, *layers; 
 	struct fann *ann;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "+", &args, &argc) == FAILURE) {
-		return;
-	}
-
-	convert_to_long_ex(args[0]);
-	num_layers = Z_LVAL_PP(args[0]);
-	if (argc - 1 != num_layers) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid number of arguments");
-		efree(args);
+	
+	if (php_fann_create(ZEND_NUM_ARGS(), NULL, &num_layers, &layers TSRMLS_CC) == FAILURE) {
 		RETURN_FALSE;
 	}
-
-	layers = (unsigned int *) emalloc(num_layers * sizeof(unsigned int));
-	for (i = 1; i < argc; i++) {
-		convert_to_long_ex(args[i]);
-		if (Z_LVAL_PP(args[i]) < 0) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Number of neurons cannot be negative");
-			efree(args);
-			efree(layers);
-			RETURN_FALSE;
-		}
-		layers[i - 1] = Z_LVAL_PP(args[i]);
-	}
-	efree(args);
 	
 	ann = fann_create_standard_array(num_layers, layers);
 	efree(layers);
-	
-	if (!ann) {
-		RETURN_FALSE;
-	}
-
-	ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf);
-
+	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
 
@@ -225,42 +281,16 @@ PHP_FUNCTION(fann_create_standard)
    Initializes neural network from configuration file using array as 2nd argument */
 PHP_FUNCTION(fann_create_standard_array)
 {
-	zval *array, **ppdata;
-	int i = 0;
-	unsigned int *layers;
-	long num_layers;
+	unsigned int num_layers, *layers; 
 	struct fann *ann;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "la", &num_layers, &array) == FAILURE) {
-		return;
-	}
-
-	if (zend_hash_num_elements(Z_ARRVAL_P(array)) != num_layers) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid number of arguments");
+	
+	if (php_fann_create_array(ZEND_NUM_ARGS(), NULL, &num_layers, &layers TSRMLS_CC) == FAILURE) {
 		RETURN_FALSE;
 	}
-
-	layers = (unsigned int *) emalloc(num_layers * sizeof(unsigned int));
-	for (zend_hash_internal_pointer_reset(Z_ARRVAL_P(array));
-		 zend_hash_get_current_data(Z_ARRVAL_P(array), (void **) &ppdata) == SUCCESS;
-		 zend_hash_move_forward(Z_ARRVAL_P(array))) {
-		convert_to_long(*ppdata);
-		if (Z_LVAL_PP(ppdata) <= 0) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Number of neurons must be greater than zero");
-			efree(layers);
-			RETURN_FALSE;
-		}
-		layers[i++] = Z_LVAL_PP(ppdata);
-	}
-
+	
 	ann = fann_create_standard_array(num_layers, layers);
 	efree(layers);
-	
-	if (!ann) {
-		RETURN_FALSE;
-	}
-
-	ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf);
+	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
 
@@ -285,11 +315,8 @@ PHP_FUNCTION(fann_create_from_file)
 	}
 	fclose(cf_file);
 
-	if (!(ann = fann_create_from_file(cf_name))) {
-		RETURN_FALSE;
-	}
-
-	ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf);
+	ann = fann_create_from_file(cf_name);
+	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
 
