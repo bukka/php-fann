@@ -43,6 +43,7 @@ PHP_RSHUTDOWN_FUNCTION(fann);
 PHP_MINFO_FUNCTION(fann);
 
 PHP_FUNCTION(fann_create_standard);
+PHP_FUNCTION(fann_create_standard_array);
 PHP_FUNCTION(fann_create_from_file);
 PHP_FUNCTION(fann_run);
 PHP_FUNCTION(fann_destroy);
