@@ -225,32 +225,32 @@ PHP_FUNCTION(fann_create_standard)
    Initializes neural network from configuration file using array as 2nd argument */
 PHP_FUNCTION(fann_create_standard_array)
 {
-	zval **array, *pdata;
+	zval *array, **ppdata;
 	int i = 0;
 	unsigned int *layers;
 	long num_layers;
 	struct fann *ann;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "la", &num_layers, array) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "la", &num_layers, &array) == FAILURE) {
 		return;
 	}
 
-	if (zend_hash_num_elements(Z_ARRVAL_PP(array)) != num_layers) {
+	if (zend_hash_num_elements(Z_ARRVAL_P(array)) != num_layers) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid number of arguments");
 		RETURN_FALSE;
 	}
 
 	layers = (unsigned int *) emalloc(num_layers * sizeof(unsigned int));
-	for (zend_hash_internal_pointer_reset(Z_ARRVAL_PP(array));
-		 zend_hash_get_current_data(Z_ARRVAL_PP(array), (void **) &pdata) == SUCCESS;
-		 zend_hash_move_forward(Z_ARRVAL_PP(array))) {
-		convert_to_long_ex(&pdata);
-		if (Z_LVAL_P(pdata) < 0) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Number of neurons cannot be negative");
+	for (zend_hash_internal_pointer_reset(Z_ARRVAL_P(array));
+		 zend_hash_get_current_data(Z_ARRVAL_P(array), (void **) &ppdata) == SUCCESS;
+		 zend_hash_move_forward(Z_ARRVAL_P(array))) {
+		convert_to_long(*ppdata);
+		if (Z_LVAL_PP(ppdata) <= 0) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Number of neurons must be greater than zero");
 			efree(layers);
 			RETURN_FALSE;
 		}
-		layers[i++] = Z_LVAL_P(pdata);
+		layers[i++] = Z_LVAL_PP(ppdata);
 	}
 
 	ann = fann_create_standard_array(num_layers, layers);
