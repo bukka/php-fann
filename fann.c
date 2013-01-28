@@ -46,10 +46,35 @@ static int le_fannbuf;
 /* {{{ arginfo */
 ZEND_BEGIN_ARG_INFO(arginfo_fann_create_standard, 0)
 ZEND_ARG_INFO(0, num_layers)
+ZEND_ARG_INFO(0, arg1)
 ZEND_ARG_INFO(0, ...)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_fann_create_standard_array, 0)
+ZEND_ARG_INFO(0, num_layers)
+ZEND_ARG_INFO(0, layers)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_create_sparse, 0)
+ZEND_ARG_INFO(0, connection_rate)
+ZEND_ARG_INFO(0, num_layers)
+ZEND_ARG_INFO(0, arg1)
+ZEND_ARG_INFO(0, ...)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_create_sparse_array, 0)
+ZEND_ARG_INFO(0, connection_rate)
+ZEND_ARG_INFO(0, num_layers)
+ZEND_ARG_INFO(0, layers)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_create_shortcut, 0)
+ZEND_ARG_INFO(0, num_layers)
+ZEND_ARG_INFO(0, arg1)
+ZEND_ARG_INFO(0, ...)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_create_shortcut_array, 0)
 ZEND_ARG_INFO(0, num_layers)
 ZEND_ARG_INFO(0, layers)
 ZEND_END_ARG_INFO()
@@ -72,6 +97,10 @@ ZEND_END_ARG_INFO()
 const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_create_standard,          arginfo_fann_create_standard)
 	PHP_FE(fann_create_standard_array,    arginfo_fann_create_standard_array)
+	PHP_FE(fann_create_sparse,            arginfo_fann_create_sparse)
+	PHP_FE(fann_create_sparse_array,      arginfo_fann_create_sparse_array)
+	PHP_FE(fann_create_shortcut,          arginfo_fann_create_shortcut)
+	PHP_FE(fann_create_shortcut_array,    arginfo_fann_create_shortcut_array)
 	PHP_FE(fann_create_from_file,         arginfo_fann_create_from_file)
 	PHP_FE(fann_run,                      arginfo_fann_run)
 	PHP_FE(fann_destroy,                  arginfo_fann_destroy)
@@ -223,7 +252,7 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 	int i = 0;
 
 	if (conn_rate) {
-		if (zend_parse_parameters(num_args TSRMLS_CC, "fla", conn_rate, num_layers, &array) == FAILURE) {
+		if (zend_parse_parameters(num_args TSRMLS_CC, "dla", conn_rate, num_layers, &array) == FAILURE) {
 			return FAILURE;
 		}
 	}
@@ -260,8 +289,8 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 	if (!ann) { RETURN_FALSE; } \
 	ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf)
 
-/* {{{ proto resource fann_create_standard(int num_layers [, int ... ])
-   Initializes neural network from configuration file */
+/* {{{ proto resource fann_create_standard(int num_layers, int arg1, [, int ... ])
+   Creates a standard fully connected backpropagation neural network */
 PHP_FUNCTION(fann_create_standard)
 {
 	unsigned int num_layers, *layers; 
@@ -278,7 +307,7 @@ PHP_FUNCTION(fann_create_standard)
 /* }}} */
 
 /* {{{ proto resource fann_create_standard_array(int num_layers, array layers)
-   Initializes neural network from configuration file using array as 2nd argument */
+   Creates a standard fully connected backpropagation neural network (array for layers) */
 PHP_FUNCTION(fann_create_standard_array)
 {
 	unsigned int num_layers, *layers; 
@@ -294,6 +323,78 @@ PHP_FUNCTION(fann_create_standard_array)
 }
 /* }}} */
 
+/* {{{ proto resource fann_create_sparse(float connection_rate, int num_layers, int arg1, [, int ... ])
+   Creates a standard backpropagation neural network, which is not fully connected */
+PHP_FUNCTION(fann_create_sparse)
+{
+	unsigned int num_layers, *layers;
+	float connection_rate;
+	struct fann *ann;
+	
+	if (php_fann_create(ZEND_NUM_ARGS(), &connection_rate, &num_layers, &layers TSRMLS_CC) == FAILURE) {
+		RETURN_FALSE;
+	}
+	
+	ann = fann_create_sparse_array(connection_rate, num_layers, layers);
+	efree(layers);
+	PHP_FANN_RETURN_ANN();
+}
+/* }}} */
+
+/* {{{ proto resource fann_create_sparse_array(float connection_rate, int num_layers, array layers)
+   Creates a standard backpropagation neural network, which is not fully connected
+   (using array for layers)  */
+PHP_FUNCTION(fann_create_sparse_array)
+{
+	unsigned int num_layers, *layers;
+	float connection_rate;
+	struct fann *ann;
+	
+	if (php_fann_create_array(ZEND_NUM_ARGS(), &connection_rate, &num_layers, &layers TSRMLS_CC) == FAILURE) {
+		RETURN_FALSE;
+	}
+	
+	ann = fann_create_sparse_array(connection_rate, num_layers, layers);
+	efree(layers);
+	PHP_FANN_RETURN_ANN();
+}
+/* }}} */
+
+/* {{{ proto resource fann_create_shortcut(int num_layers, int arg1, [, int ... ])
+   Creates a standard backpropagation neural network, which is not fully connected and
+   which also has shortcut connections. */
+PHP_FUNCTION(fann_create_shortcut)
+{
+	unsigned int num_layers, *layers; 
+	struct fann *ann;
+	
+	if (php_fann_create(ZEND_NUM_ARGS(), NULL, &num_layers, &layers TSRMLS_CC) == FAILURE) {
+		RETURN_FALSE;
+	}
+	
+	ann = fann_create_shortcut_array(num_layers, layers);
+	efree(layers);
+	PHP_FANN_RETURN_ANN();
+}
+/* }}} */
+
+/* {{{ proto resource fann_create_shortcut_array(int num_layers, array layers)
+   reates a standard backpropagation neural network, which is not fully connected and
+   which also has shortcut connections (using array of layers) */
+PHP_FUNCTION(fann_create_shortcut_array)
+{
+	unsigned int num_layers, *layers; 
+	struct fann *ann;
+	
+	if (php_fann_create_array(ZEND_NUM_ARGS(), NULL, &num_layers, &layers TSRMLS_CC) == FAILURE) {
+		RETURN_FALSE;
+	}
+	
+	ann = fann_create_shortcut_array(num_layers, layers);
+	efree(layers);
+	PHP_FANN_RETURN_ANN();
+}
+/* }}} */
 
 /* {{{ proto resource fann_create_from_file(string configuration_file)
    Initializes neural network from configuration file */
