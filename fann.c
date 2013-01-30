@@ -164,15 +164,13 @@ if (fann_get_errno((struct fann_error *) ann) != 0) { \
 	RETURN_FALSE; \
 }
 
+
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(fann)
 {
 	le_fannbuf = zend_register_list_destructors_ex(fann_destructor_fannbuf, NULL, le_fannbuf_name, module_number);
 	
-	/* If you have INI entries, uncomment these lines 
-	REGISTER_INI_ENTRIES();
-	*/
 	return SUCCESS;
 }
 /* }}} */
@@ -181,9 +179,6 @@ PHP_MINIT_FUNCTION(fann)
  */
 PHP_MSHUTDOWN_FUNCTION(fann)
 {
-	/* uncomment this line if you have INI entries
-	UNREGISTER_INI_ENTRIES();
-	*/
 	return SUCCESS;
 }
 /* }}} */
@@ -195,10 +190,6 @@ PHP_MINFO_FUNCTION(fann)
 	php_info_print_table_start();
 	php_info_print_table_header(2, "fann support", "enabled");
 	php_info_print_table_end();
-
-	/* Remove comments if you have entries in php.ini
-	DISPLAY_INI_ENTRIES();
-	*/
 }
 /* }}} */
 
