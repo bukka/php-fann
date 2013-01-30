@@ -1,0 +1,1 @@
+- check FANN connection_rate param for create_sparse*
