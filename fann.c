@@ -202,6 +202,32 @@ PHP_MINFO_FUNCTION(fann)
 }
 /* }}} */
 
+/* php_fann_create_check_layers() {{{ */
+static int php_fann_create_check_layers(int specified, int provided TSRMLS_DC)
+{
+	if (specified < 2) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Number of layers must be greater than 2");
+		return FAILURE;
+	}
+	if (specified != provided) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid number of arguments");
+		return FAILURE;
+	}
+	return SUCCESS;
+}
+/* }}} */
+
+/* php_fann_create_check_neurons() {{{ */
+static int php_fann_create_check_neurons(int num_neurons TSRMLS_DC)
+{
+	if (num_neurons < 0) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Number of neurons cannot be negative");
+		return FAILURE;
+	}
+	return SUCCESS;
+}
+/* }}} */
+
 /* php_fann_create() {{{ */
 static int php_fann_create(int num_args, float *connection_rate,
 						   unsigned int *num_layers, unsigned int **layers TSRMLS_DC)
@@ -221,8 +247,8 @@ static int php_fann_create(int num_args, float *connection_rate,
 	
 	convert_to_long_ex(args[pos]);
 	*num_layers = Z_LVAL_PP(args[pos++]);
-	if (argc - pos != *num_layers) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid number of arguments");
+
+	if (php_fann_create_check_layers(*num_layers, argc - pos TSRMLS_CC) == FAILURE) {
 		efree(args);
 		return FAILURE;
 	}
@@ -230,8 +256,7 @@ static int php_fann_create(int num_args, float *connection_rate,
 	*layers = (unsigned int *) emalloc(*num_layers * sizeof(unsigned int));
 	for (i = pos; i < argc; i++) {
 		convert_to_long_ex(args[i]);
-		if (Z_LVAL_PP(args[i]) < 0) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Number of neurons cannot be negative");
+		if (php_fann_create_check_neurons(Z_LVAL_PP(args[i]) TSRMLS_CC) == FAILURE) {
 			efree(args);
 			efree(*layers);
 			return FAILURE;
@@ -262,8 +287,8 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 		}
 	}
 
-	if (zend_hash_num_elements(Z_ARRVAL_P(array)) != *num_layers) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid number of arguments");
+	if (php_fann_create_check_layers(
+			*num_layers, zend_hash_num_elements(Z_ARRVAL_P(array)) TSRMLS_CC) == FAILURE) {
 		return FAILURE;
 	}
 
@@ -272,8 +297,7 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 		 zend_hash_get_current_data(Z_ARRVAL_P(array), (void **) &ppdata) == SUCCESS;
 		 zend_hash_move_forward(Z_ARRVAL_P(array))) {
 		convert_to_long_ex(ppdata);
-		if (Z_LVAL_PP(ppdata) <= 0) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Number of neurons must be greater than zero");
+		if (php_fann_create_check_neurons(Z_LVAL_PP(ppdata) TSRMLS_CC) == FAILURE) {
 			efree(*layers);
 			return FAILURE;
 		}
