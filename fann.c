@@ -79,10 +79,6 @@ ZEND_ARG_INFO(0, num_layers)
 ZEND_ARG_INFO(0, layers)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO(arginfo_fann_create_from_file, 0)
-ZEND_ARG_INFO(0, configuration_file)
-ZEND_END_ARG_INFO()
-
 ZEND_BEGIN_ARG_INFO(arginfo_fann_run, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, info)
@@ -91,19 +87,35 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_INFO(arginfo_fann_destroy, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_function_hidden, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, activation_function)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_function_output, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, activation_function)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_create_from_file, 0)
+ZEND_ARG_INFO(0, configuration_file)
+ZEND_END_ARG_INFO()
 /* }}} */
 
 /* {{{ fann_functions[] */
 const zend_function_entry fann_functions[] = {
-	PHP_FE(fann_create_standard,          arginfo_fann_create_standard)
-	PHP_FE(fann_create_standard_array,    arginfo_fann_create_standard_array)
-	PHP_FE(fann_create_sparse,            arginfo_fann_create_sparse)
-	PHP_FE(fann_create_sparse_array,      arginfo_fann_create_sparse_array)
-	PHP_FE(fann_create_shortcut,          arginfo_fann_create_shortcut)
-	PHP_FE(fann_create_shortcut_array,    arginfo_fann_create_shortcut_array)
-	PHP_FE(fann_create_from_file,         arginfo_fann_create_from_file)
-	PHP_FE(fann_run,                      arginfo_fann_run)
-	PHP_FE(fann_destroy,                  arginfo_fann_destroy)
+	PHP_FE(fann_create_standard,                          arginfo_fann_create_standard)
+	PHP_FE(fann_create_standard_array,                    arginfo_fann_create_standard_array)
+	PHP_FE(fann_create_sparse,                            arginfo_fann_create_sparse)
+	PHP_FE(fann_create_sparse_array,                      arginfo_fann_create_sparse_array)
+	PHP_FE(fann_create_shortcut,                          arginfo_fann_create_shortcut)
+	PHP_FE(fann_create_shortcut_array,                    arginfo_fann_create_shortcut_array)
+	PHP_FE(fann_run,                                      arginfo_fann_run)
+	PHP_FE(fann_destroy,                                  arginfo_fann_destroy)
+	PHP_FE(fann_set_activation_function_hidden,           arginfo_fann_set_activation_function_hidden)
+	PHP_FE(fann_set_activation_function_output,           arginfo_fann_set_activation_function_output)
+	PHP_FE(fann_create_from_file,                         arginfo_fann_create_from_file)
 	PHP_FE_END
 };
 /* }}} */
@@ -178,7 +190,7 @@ PHP_MINIT_FUNCTION(fann)
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_RPROP);
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_QUICKPROP);
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_SARPROP);
-	/* Activation func constants */
+	/* Activation functions constants */
 	REGISTER_FANN_CONSTANT(FANN_LINEAR);
 	REGISTER_FANN_CONSTANT(FANN_THRESHOLD);
 	REGISTER_FANN_CONSTANT(FANN_THRESHOLD_SYMMETRIC);
@@ -197,13 +209,13 @@ PHP_MINIT_FUNCTION(fann)
 	REGISTER_FANN_CONSTANT(FANN_COS_SYMMETRIC);
 	REGISTER_FANN_CONSTANT(FANN_SIN);
 	REGISTER_FANN_CONSTANT(FANN_COS);
-	/* Error func constants */
+	/* Error functions constants */
 	REGISTER_FANN_CONSTANT(FANN_ERRORFUNC_LINEAR);
 	REGISTER_FANN_CONSTANT(FANN_ERRORFUNC_TANH);
-	/* Stop func constants */
+	/* Stop functions constants */
 	REGISTER_FANN_CONSTANT(FANN_STOPFUNC_MSE);
 	REGISTER_FANN_CONSTANT(FANN_STOPFUNC_BIT);
-	/* Net type constants */
+	/* Network type constants */
 	REGISTER_FANN_CONSTANT(FANN_NETTYPE_LAYER);
 	REGISTER_FANN_CONSTANT(FANN_NETTYPE_SHORTCUT);
 	
@@ -519,7 +531,7 @@ PHP_FUNCTION(fann_run)
 /* }}} */
 
 
-/* {{{ proto resource fann_create_from_file(string configuration_file)
+/* {{{ proto bool fann_destroy(resource ann)
    Destroys neural network */
 PHP_FUNCTION(fann_destroy)
 {
@@ -533,6 +545,44 @@ PHP_FUNCTION(fann_destroy)
 	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
 
 	RETURN_BOOL(zend_list_delete(Z_LVAL_P(z_ann)) == SUCCESS);
+}
+/* }}} */
+
+
+/* {{{ proto void fann_set_activation_function_hidden(resource ann, int activation_function)
+   Set the activation function for all of the hidden layers */
+PHP_FUNCTION(fann_set_activation_function_hidden)
+{
+	zval *z_ann;
+	long activation_function;
+	struct fann *ann;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &z_ann, &activation_function) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+
+	fann_set_activation_function_hidden(ann, activation_function);
+}
+/* }}} */
+
+
+/* {{{ proto void fann_set_activation_function_output(resource ann, int activation_function)
+   Set the activation function for the output layer */
+PHP_FUNCTION(fann_set_activation_function_output)
+{
+	zval *z_ann;
+	long activation_function;
+	struct fann *ann;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &z_ann, &activation_function) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+
+	fann_set_activation_function_output(ann, activation_function);
 }
 /* }}} */
 

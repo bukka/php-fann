@@ -42,6 +42,7 @@ PHP_RINIT_FUNCTION(fann);
 PHP_RSHUTDOWN_FUNCTION(fann);
 PHP_MINFO_FUNCTION(fann);
 
+/* FANN Creation/Execution */
 /* Creation, Destruction & Execution */
 PHP_FUNCTION(fann_create_standard);
 PHP_FUNCTION(fann_create_standard_array);
@@ -52,7 +53,13 @@ PHP_FUNCTION(fann_create_shortcut_array);
 PHP_FUNCTION(fann_run);
 PHP_FUNCTION(fann_destroy);
 
+/* FANN Training */
+/* Parameters */
+PHP_FUNCTION(fann_set_activation_function_hidden);
+PHP_FUNCTION(fann_set_activation_function_output);
+
 /* FANN File Input/Output */
+/* File Input and Output  */
 PHP_FUNCTION(fann_create_from_file);
 
 
