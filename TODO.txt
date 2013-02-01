@@ -1,1 +1,10 @@
+- compare PHP outputs with C outputs (simple_train looks different)
+- add new resource type for fann_train
+- check resource type for fann and fann_train
+- add FANN_FETCH_RESOURCE
+- output redirection (never print to STDOUT)
+- group file checking in fann_train_on_file and fann_create_from_file and possibly use php function
+- check if the directory for fann_save exists and is writable
 - check FANN connection_rate param for create_sparse*
+- check int intervals for fann_train_on_fail
+- test function - phpt 

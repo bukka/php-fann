@@ -88,6 +88,14 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_destroy, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_train_on_file, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, filename)
+ZEND_ARG_INFO(0, max_epochs)
+ZEND_ARG_INFO(0, epochs_between_reports)
+ZEND_ARG_INFO(0, desired_error)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_function_hidden, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, activation_function)
@@ -99,6 +107,11 @@ ZEND_ARG_INFO(0, activation_function)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_fann_create_from_file, 0)
+ZEND_ARG_INFO(0, configuration_file)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_save, 0)
+ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, configuration_file)
 ZEND_END_ARG_INFO()
 /* }}} */
@@ -113,9 +126,11 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_create_shortcut_array,                    arginfo_fann_create_shortcut_array)
 	PHP_FE(fann_run,                                      arginfo_fann_run)
 	PHP_FE(fann_destroy,                                  arginfo_fann_destroy)
+	PHP_FE(fann_train_on_file,                            arginfo_fann_train_on_file)
 	PHP_FE(fann_set_activation_function_hidden,           arginfo_fann_set_activation_function_hidden)
 	PHP_FE(fann_set_activation_function_output,           arginfo_fann_set_activation_function_output)
 	PHP_FE(fann_create_from_file,                         arginfo_fann_create_from_file)
+	PHP_FE(fann_save,                                     arginfo_fann_save)
 	PHP_FE_END
 };
 /* }}} */
@@ -459,31 +474,6 @@ PHP_FUNCTION(fann_create_shortcut_array)
 }
 /* }}} */
 
-/* {{{ proto resource fann_create_from_file(string configuration_file)
-   Initializes neural network from configuration file */
-PHP_FUNCTION(fann_create_from_file)
-{
-	char *cf_name = NULL;
-	int cf_name_len;
-	FILE *cf_file;
-	struct fann *ann;
-	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &cf_name, &cf_name_len) == FAILURE) {
-		return;
-	}
-
-	cf_file = fopen(cf_name, "r");
-	if (!cf_file) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File cannot be opened for reading");
-		RETURN_FALSE;
-	}
-	fclose(cf_file);
-
-	ann = fann_create_from_file(cf_name);
-	PHP_FANN_RETURN_ANN();
-}
-/* }}} */
-
 /* {{{ funn_input_foreach
    callback for converting input hash map to fann_type array */
 int funn_input_foreach(zval **element TSRMLS_DC, int num_args, va_list args, zend_hash_key *hash_key)
@@ -548,6 +538,35 @@ PHP_FUNCTION(fann_destroy)
 }
 /* }}} */
 
+/* {{{ proto void fann_train_on_file(resource ann, string filename, int max_epochs, int epochs_between_reports, float desired_error)
+   Set the activation function for all of the hidden layers */
+PHP_FUNCTION(fann_train_on_file)
+{
+	zval *z_ann;
+	FILE *file;
+	char *filename;
+	int filename_len;
+	long max_epochs, epochs_between_reports;
+	double desired_error;
+	struct fann *ann;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rslld", &z_ann, &filename, &filename_len,
+							  &max_epochs, &epochs_between_reports, &desired_error) == FAILURE) {
+		return;
+	}
+
+	file = fopen(filename, "r");
+	if (!file) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File cannot be opened for reading");
+		RETURN_FALSE;
+	}
+	fclose(file);
+
+	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+
+	fann_train_on_file(ann, filename, max_epochs, epochs_between_reports, desired_error);
+}
+/* }}} */
 
 /* {{{ proto void fann_set_activation_function_hidden(resource ann, int activation_function)
    Set the activation function for all of the hidden layers */
@@ -585,6 +604,56 @@ PHP_FUNCTION(fann_set_activation_function_output)
 	fann_set_activation_function_output(ann, activation_function);
 }
 /* }}} */
+
+/* {{{ proto resource fann_create_from_file(string configuration_file)
+   Initializes neural network from configuration file */
+PHP_FUNCTION(fann_create_from_file)
+{
+	char *cf_name = NULL;
+	int cf_name_len;
+	FILE *cf_file;
+	struct fann *ann;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &cf_name, &cf_name_len) == FAILURE) {
+		return;
+	}
+
+	cf_file = fopen(cf_name, "r");
+	if (!cf_file) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File cannot be opened for reading");
+		RETURN_FALSE;
+	}
+	fclose(cf_file);
+
+	ann = fann_create_from_file(cf_name);
+	PHP_FANN_RETURN_ANN();
+}
+/* }}} */
+
+/* {{{ proto bool fann_save(resource ann, string configuration_file)
+   Save the entire network to a configuration file */
+PHP_FUNCTION(fann_save)
+{
+	zval *z_ann;
+	char *cf_name = NULL;
+	int cf_name_len;
+	struct fann *ann;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_ann, &cf_name, &cf_name_len) == FAILURE) {
+		return;
+	}
+
+	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+
+	if (fann_save(ann, cf_name) == 0) {
+		RETURN_TRUE;
+	} else {
+		RETURN_FALSE;
+	}
+}
+/* }}} */
+
+
 
 /*
  * Local variables:
