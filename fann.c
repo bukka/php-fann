@@ -495,19 +495,17 @@ PHP_FUNCTION(fann_run)
 	
 	input = (float *) emalloc(sizeof(float) * zend_hash_num_elements(Z_ARRVAL_P(array)));
 	zend_hash_apply_with_arguments(Z_ARRVAL_P(array) TSRMLS_CC, (apply_func_args_t) funn_input_foreach, 2, input, &i);
+
 	
 	calc_out = fann_run(ann, input);
+	efree(input);
 	num_out = fann_get_num_output(ann);
+	PHP_FANN_ERROR_CHECK();
 
 	array_init(return_value);
 	for (i = 0; i < num_out; i++) {
 		add_next_index_double(return_value, (double) calc_out[i]);
 	}
-
-	efree(input);
-
-	PHP_FANN_ERROR_CHECK();
-	RETURN_TRUE;
 }
 /* }}} */
 
