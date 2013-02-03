@@ -35,10 +35,6 @@
 #include "floatfann.h"
 #endif
 
-/* If you declare any globals in php_fann.h uncomment this:
-ZEND_DECLARE_MODULE_GLOBALS(fann)
-*/
-
 /* True global resources - no need for thread safety here */
 static int le_fannbuf;
 #define le_fannbuf_name "FANN"
@@ -158,28 +154,8 @@ zend_module_entry fann_module_entry = {
 ZEND_GET_MODULE(fann)
 #endif
 
-/* {{{ PHP_INI
- */
-/* Remove comments and fill if you need to have entries in php.ini
-PHP_INI_BEGIN()
-    STD_PHP_INI_ENTRY("fann.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_fann_globals, fann_globals)
-    STD_PHP_INI_ENTRY("fann.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_fann_globals, fann_globals)
-PHP_INI_END()
-*/
-/* }}} */
-
-/* {{{ php_fann_init_globals
- */
-/* Uncomment this function if you have INI entries
-static void php_fann_init_globals(zend_fann_globals *fann_globals)
-{
-	fann_globals->global_value = 0;
-	fann_globals->global_string = NULL;
-}
-*/
-/* }}} */
-
-#define PHP_FANN_ERROR_CHECK() \
+/* macro for checking ann errors */
+#define PHP_FANN_ERROR_CHECK()						  \
 if (fann_get_errno((struct fann_error *) ann) != 0) { \
 	php_error_docref(NULL TSRMLS_CC, E_WARNING, ann->errstr); \
 	RETURN_FALSE; \
@@ -190,18 +166,23 @@ if (fann_get_errno((struct fann_error *) ann) != 0) { \
 if (!ann) { RETURN_FALSE; } \
 ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf)
 
+/* macro for registering FANN constants */
 #define REGISTER_FANN_CONSTANT(__c) REGISTER_LONG_CONSTANT(#__c, __c, CONST_CS | CONST_PERSISTENT)
 
+/* {{{ fann_destructor_fannbuf
+   resource destructor */
 static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
 	struct fann *ann = (struct fann *) rsrc->ptr;
 	fann_destroy(ann);
 }
+/* }}} */
 
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(fann)
 {
+	/* register FANN resource destructor */
 	le_fannbuf = zend_register_list_destructors_ex(fann_destructor_fannbuf, NULL, le_fannbuf_name, module_number);
 
 	/* do not print fann errors */
@@ -654,7 +635,6 @@ PHP_FUNCTION(fann_save)
 	}
 }
 /* }}} */
-
 
 
 /*
