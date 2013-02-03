@@ -1,6 +1,3 @@
-- add new resource type for fann_train
-- check resource type for fann and fann_train
-- add FANN_FETCH_RESOURCE
 - output redirection (never print to STDOUT) - fann_train*
 - streams for file and dir checking
   - group file checking in fann_train_on_file and fann_create_from_file and possibly use php function

@@ -36,8 +36,9 @@
 #endif
 
 /* True global resources - no need for thread safety here */
-static int le_fannbuf;
+static int le_fannbuf, le_fanntrainbuf;
 #define le_fannbuf_name "FANN"
+#define le_fanntrainbuf_name "FANN Train Data"
 
 /* {{{ arginfo */
 ZEND_BEGIN_ARG_INFO(arginfo_fann_create_standard, 0)
@@ -166,11 +167,24 @@ if (fann_get_errno((struct fann_error *) ann) != 0) { \
 if (!ann) { RETURN_FALSE; } \
 ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf)
 
+/* macro for returning train data resource */
+#define PHP_FANN_RETURN_TRAIN_DATA() \
+if (!train_data) { RETURN_FALSE; } \
+ZEND_REGISTER_RESOURCE(return_value, train_data, le_fanntrainbuf)
+
+/* macro for fetching ann resource */
+#define PHP_FANN_FETCH_ANN() \
+ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+
+/* macro for fetching train_data resource */
+#define PHP_FANN_FETCH_TRAIN_DATA() \
+ZEND_FETCH_RESOURCE(train_data, struct fann_train_data *, &z_train_data, -1, le_fanntrainbuf_name, le_fanntrainbuf);
+
 /* macro for registering FANN constants */
 #define REGISTER_FANN_CONSTANT(__c) REGISTER_LONG_CONSTANT(#__c, __c, CONST_CS | CONST_PERSISTENT)
 
-/* {{{ fann_destructor_fannbuf
-   resource destructor */
+/* {{{ fann_destructor_fannbuf()
+   fann resource destructor */
 static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
 	struct fann *ann = (struct fann *) rsrc->ptr;
@@ -178,13 +192,27 @@ static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 }
 /* }}} */
 
+
+/* {{{ fann_destructor_fanntrainbuf()
+   fann_train resource destructor */
+static void fann_destructor_fanntrainbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
+{
+	struct fann_train_data *train_data = (struct fann_train_data *) rsrc->ptr;
+	fann_destroy_train(train_data);
+}
+/* }}} */
+
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(fann)
 {
-	/* register FANN resource destructor */
-	le_fannbuf = zend_register_list_destructors_ex(fann_destructor_fannbuf, NULL, le_fannbuf_name, module_number);
-
+	/* register struct fann resource destructor */
+	le_fannbuf = zend_register_list_destructors_ex(
+		fann_destructor_fannbuf, NULL, le_fannbuf_name, module_number);
+	/* register struct fann_train resource destructor */
+	le_fanntrainbuf = zend_register_list_destructors_ex(
+		fann_destructor_fanntrainbuf, NULL, le_fanntrainbuf_name, module_number);
+	
 	/* do not print fann errors */
 	fann_set_error_log(NULL, NULL);
 	
@@ -491,7 +519,7 @@ PHP_FUNCTION(fann_run)
 		return;
 	}
 	
-	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+	PHP_FANN_FETCH_ANN();
 	
 	input = (float *) emalloc(sizeof(float) * zend_hash_num_elements(Z_ARRVAL_P(array)));
 	zend_hash_apply_with_arguments(Z_ARRVAL_P(array) TSRMLS_CC, (apply_func_args_t) funn_input_foreach, 2, input, &i);
@@ -521,7 +549,7 @@ PHP_FUNCTION(fann_destroy)
 		return;
 	}
 	
-	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+	PHP_FANN_FETCH_ANN();
 
 	RETURN_BOOL(zend_list_delete(Z_LVAL_P(z_ann)) == SUCCESS);
 }
@@ -543,7 +571,7 @@ PHP_FUNCTION(fann_train_on_file)
 		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+	PHP_FANN_FETCH_ANN();
 	
 	fann_train_on_file(ann, filename, max_epochs, epochs_between_reports, desired_error);
 	PHP_FANN_ERROR_CHECK();
@@ -563,7 +591,7 @@ PHP_FUNCTION(fann_set_activation_function_hidden)
 		return;
 	}
 	
-	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+	PHP_FANN_FETCH_ANN();
 
 	fann_set_activation_function_hidden(ann, activation_function);
 	PHP_FANN_ERROR_CHECK();
@@ -584,7 +612,7 @@ PHP_FUNCTION(fann_set_activation_function_output)
 		return;
 	}
 	
-	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+	PHP_FANN_FETCH_ANN();
 
 	fann_set_activation_function_output(ann, activation_function);
 	PHP_FANN_ERROR_CHECK();
@@ -623,7 +651,7 @@ PHP_FUNCTION(fann_save)
 		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+	PHP_FANN_FETCH_ANN();
 
 	if (fann_save(ann, cf_name) == 0) {
 		RETURN_TRUE;
