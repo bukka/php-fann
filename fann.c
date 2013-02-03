@@ -179,19 +179,24 @@ static void php_fann_init_globals(zend_fann_globals *fann_globals)
 */
 /* }}} */
 
+#define PHP_FANN_ERROR_CHECK() \
+if (fann_get_errno((struct fann_error *) ann) != 0) { \
+	php_error_docref(NULL TSRMLS_CC, E_WARNING, ann->errstr); \
+	RETURN_FALSE; \
+}
+
+/* macro for returning ann resource */
+#define PHP_FANN_RETURN_ANN() \
+if (!ann) { RETURN_FALSE; } \
+ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf)
+
+#define REGISTER_FANN_CONSTANT(__c) REGISTER_LONG_CONSTANT(#__c, __c, CONST_CS | CONST_PERSISTENT)
+
 static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
 	struct fann *ann = (struct fann *) rsrc->ptr;
 	fann_destroy(ann);
 }
-
-#define PHP_FANN_ERROR_CHECK(ann) \
-if (fann_get_errno((struct fann_error *) ann) != 0) { \
-	php_error_docref(NULL TSRMLS_CC, E_WARNING, fann_get_errstr((struct fann_error *) ann)); \
-	RETURN_FALSE; \
-}
-
-#define REGISTER_FANN_CONSTANT(__c) REGISTER_LONG_CONSTANT(#__c, __c, CONST_CS | CONST_PERSISTENT)
 
 /* {{{ PHP_MINIT_FUNCTION
  */
@@ -199,6 +204,9 @@ PHP_MINIT_FUNCTION(fann)
 {
 	le_fannbuf = zend_register_list_destructors_ex(fann_destructor_fannbuf, NULL, le_fannbuf_name, module_number);
 
+	/* do not print fann errors */
+	fann_set_error_log(NULL, NULL);
+	
 	/* Train constants */
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_INCREMENTAL);
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_BATCH);
@@ -362,11 +370,6 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 }
 /* }}} */
 
-/* macro for returning ann resource */
-#define PHP_FANN_RETURN_ANN() \
-	if (!ann) { RETURN_FALSE; } \
-	ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf)
-
 /* {{{ proto resource fann_create_standard(int num_layers, int arg1, [, int ... ])
    Creates a standard fully connected backpropagation neural network */
 PHP_FUNCTION(fann_create_standard)
@@ -380,6 +383,7 @@ PHP_FUNCTION(fann_create_standard)
 	
 	ann = fann_create_standard_array(num_layers, layers);
 	efree(layers);
+	PHP_FANN_ERROR_CHECK();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -397,6 +401,7 @@ PHP_FUNCTION(fann_create_standard_array)
 	
 	ann = fann_create_standard_array(num_layers, layers);
 	efree(layers);
+	PHP_FANN_ERROR_CHECK();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -415,6 +420,7 @@ PHP_FUNCTION(fann_create_sparse)
 	
 	ann = fann_create_sparse_array(connection_rate, num_layers, layers);
 	efree(layers);
+	PHP_FANN_ERROR_CHECK();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -434,6 +440,7 @@ PHP_FUNCTION(fann_create_sparse_array)
 	
 	ann = fann_create_sparse_array(connection_rate, num_layers, layers);
 	efree(layers);
+	PHP_FANN_ERROR_CHECK();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -452,6 +459,7 @@ PHP_FUNCTION(fann_create_shortcut)
 	
 	ann = fann_create_shortcut_array(num_layers, layers);
 	efree(layers);
+	PHP_FANN_ERROR_CHECK();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -470,6 +478,7 @@ PHP_FUNCTION(fann_create_shortcut_array)
 	
 	ann = fann_create_shortcut_array(num_layers, layers);
 	efree(layers);
+	PHP_FANN_ERROR_CHECK();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -516,7 +525,8 @@ PHP_FUNCTION(fann_run)
 
 	efree(input);
 
-	PHP_FANN_ERROR_CHECK(ann);
+	PHP_FANN_ERROR_CHECK();
+	RETURN_TRUE;
 }
 /* }}} */
 
@@ -538,12 +548,11 @@ PHP_FUNCTION(fann_destroy)
 }
 /* }}} */
 
-/* {{{ proto void fann_train_on_file(resource ann, string filename, int max_epochs, int epochs_between_reports, float desired_error)
+/* {{{ proto bool fann_train_on_file(resource ann, string filename, int max_epochs, int epochs_between_reports, float desired_error)
    Set the activation function for all of the hidden layers */
 PHP_FUNCTION(fann_train_on_file)
 {
 	zval *z_ann;
-	FILE *file;
 	char *filename;
 	int filename_len;
 	long max_epochs, epochs_between_reports;
@@ -555,20 +564,15 @@ PHP_FUNCTION(fann_train_on_file)
 		return;
 	}
 
-	file = fopen(filename, "r");
-	if (!file) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File cannot be opened for reading");
-		RETURN_FALSE;
-	}
-	fclose(file);
-
 	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
-
+	
 	fann_train_on_file(ann, filename, max_epochs, epochs_between_reports, desired_error);
+	PHP_FANN_ERROR_CHECK();
+	RETURN_TRUE;
 }
 /* }}} */
 
-/* {{{ proto void fann_set_activation_function_hidden(resource ann, int activation_function)
+/* {{{ proto bool fann_set_activation_function_hidden(resource ann, int activation_function)
    Set the activation function for all of the hidden layers */
 PHP_FUNCTION(fann_set_activation_function_hidden)
 {
@@ -583,11 +587,13 @@ PHP_FUNCTION(fann_set_activation_function_hidden)
 	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
 
 	fann_set_activation_function_hidden(ann, activation_function);
+	PHP_FANN_ERROR_CHECK();
+	RETURN_TRUE;
 }
 /* }}} */
 
 
-/* {{{ proto void fann_set_activation_function_output(resource ann, int activation_function)
+/* {{{ proto bool fann_set_activation_function_output(resource ann, int activation_function)
    Set the activation function for the output layer */
 PHP_FUNCTION(fann_set_activation_function_output)
 {
@@ -602,6 +608,8 @@ PHP_FUNCTION(fann_set_activation_function_output)
 	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
 
 	fann_set_activation_function_output(ann, activation_function);
+	PHP_FANN_ERROR_CHECK();
+	RETURN_TRUE;
 }
 /* }}} */
 
@@ -611,21 +619,14 @@ PHP_FUNCTION(fann_create_from_file)
 {
 	char *cf_name = NULL;
 	int cf_name_len;
-	FILE *cf_file;
 	struct fann *ann;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &cf_name, &cf_name_len) == FAILURE) {
 		return;
 	}
 
-	cf_file = fopen(cf_name, "r");
-	if (!cf_file) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File cannot be opened for reading");
-		RETURN_FALSE;
-	}
-	fclose(cf_file);
-
 	ann = fann_create_from_file(cf_name);
+	PHP_FANN_ERROR_CHECK();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -648,6 +649,7 @@ PHP_FUNCTION(fann_save)
 	if (fann_save(ann, cf_name) == 0) {
 		RETURN_TRUE;
 	} else {
+		PHP_FANN_ERROR_CHECK();
 		RETURN_FALSE;
 	}
 }

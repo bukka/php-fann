@@ -15,9 +15,8 @@ if (is_resource($ann)) {
 	fann_set_activation_function_output($ann, FANN_SIGMOID_SYMMETRIC);
 
 	$filename =  dirname(__FILE__) . "/xor.data";
-	fann_train_on_file($ann, $filename, $max_epochs, $epochs_between_reports, $desired_error);
-
-	fann_save($ann, dirname(__FILE__) . "/xor_float.net");
+	if (fann_train_on_file($ann, $filename, $max_epochs, $epochs_between_reports, $desired_error))
+		fann_save($ann, dirname(__FILE__) . "/xor_float.net");
 
 	fann_destroy($ann);
 }
