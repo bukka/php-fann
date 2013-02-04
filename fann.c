@@ -93,6 +93,10 @@ ZEND_ARG_INFO(0, epochs_between_reports)
 ZEND_ARG_INFO(0, desired_error)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_read_train_from_file, 0)
+ZEND_ARG_INFO(0, filename)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_function_hidden, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, activation_function)
@@ -124,6 +128,7 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_run,                                      arginfo_fann_run)
 	PHP_FE(fann_destroy,                                  arginfo_fann_destroy)
 	PHP_FE(fann_train_on_file,                            arginfo_fann_train_on_file)
+	PHP_FE(fann_read_train_from_file,                     arginfo_fann_read_train_from_file)
 	PHP_FE(fann_set_activation_function_hidden,           arginfo_fann_set_activation_function_hidden)
 	PHP_FE(fann_set_activation_function_output,           arginfo_fann_set_activation_function_output)
 	PHP_FE(fann_create_from_file,                         arginfo_fann_create_from_file)
@@ -155,12 +160,19 @@ zend_module_entry fann_module_entry = {
 ZEND_GET_MODULE(fann)
 #endif
 
-/* macro for checking ann errors */
-#define PHP_FANN_ERROR_CHECK()						  \
-if (fann_get_errno((struct fann_error *) ann) != 0) { \
-	php_error_docref(NULL TSRMLS_CC, E_WARNING, ann->errstr); \
+/* macro for chencking fann_error structs */
+#define PHP_FANN_ERROR_CHECK(__fann_struct) \
+if (fann_get_errno((struct fann_error *) __fann_struct) != 0) { \
+	php_error_docref(NULL TSRMLS_CC, E_WARNING, __fann_struct->errstr); \
 	RETURN_FALSE; \
 }
+
+/* macro for checking ann errors */
+#define PHP_FANN_ERROR_CHECK_ANN() PHP_FANN_ERROR_CHECK(ann)
+
+/* macro for checking ann errors */
+#define PHP_FANN_ERROR_CHECK_TRAIN_DATA() PHP_FANN_ERROR_CHECK(train_data)
+
 
 /* macro for returning ann resource */
 #define PHP_FANN_RETURN_ANN() \
@@ -392,7 +404,7 @@ PHP_FUNCTION(fann_create_standard)
 	
 	ann = fann_create_standard_array(num_layers, layers);
 	efree(layers);
-	PHP_FANN_ERROR_CHECK();
+	PHP_FANN_ERROR_CHECK_ANN();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -410,7 +422,7 @@ PHP_FUNCTION(fann_create_standard_array)
 	
 	ann = fann_create_standard_array(num_layers, layers);
 	efree(layers);
-	PHP_FANN_ERROR_CHECK();
+	PHP_FANN_ERROR_CHECK_ANN();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -429,7 +441,7 @@ PHP_FUNCTION(fann_create_sparse)
 	
 	ann = fann_create_sparse_array(connection_rate, num_layers, layers);
 	efree(layers);
-	PHP_FANN_ERROR_CHECK();
+	PHP_FANN_ERROR_CHECK_ANN();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -449,7 +461,7 @@ PHP_FUNCTION(fann_create_sparse_array)
 	
 	ann = fann_create_sparse_array(connection_rate, num_layers, layers);
 	efree(layers);
-	PHP_FANN_ERROR_CHECK();
+	PHP_FANN_ERROR_CHECK_ANN();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -468,7 +480,7 @@ PHP_FUNCTION(fann_create_shortcut)
 	
 	ann = fann_create_shortcut_array(num_layers, layers);
 	efree(layers);
-	PHP_FANN_ERROR_CHECK();
+	PHP_FANN_ERROR_CHECK_ANN();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -487,7 +499,7 @@ PHP_FUNCTION(fann_create_shortcut_array)
 	
 	ann = fann_create_shortcut_array(num_layers, layers);
 	efree(layers);
-	PHP_FANN_ERROR_CHECK();
+	PHP_FANN_ERROR_CHECK_ANN();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -528,7 +540,7 @@ PHP_FUNCTION(fann_run)
 	calc_out = fann_run(ann, input);
 	efree(input);
 	num_out = fann_get_num_output(ann);
-	PHP_FANN_ERROR_CHECK();
+	PHP_FANN_ERROR_CHECK_ANN();
 
 	array_init(return_value);
 	for (i = 0; i < num_out; i++) {
@@ -574,8 +586,27 @@ PHP_FUNCTION(fann_train_on_file)
 	PHP_FANN_FETCH_ANN();
 	
 	fann_train_on_file(ann, filename, max_epochs, epochs_between_reports, desired_error);
-	PHP_FANN_ERROR_CHECK();
+	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
+}
+/* }}} */
+
+
+/* {{{ proto resource fann_read_train_from_file(string filename)
+   Reads a file that stores training data */
+PHP_FUNCTION(fann_read_train_from_file)
+{
+	char *filename;
+	int filename_len;
+	struct fann_train_data *train_data;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filename, &filename_len) == FAILURE) {
+		return;
+	}
+
+	train_data = fann_read_train_from_file(filename);
+	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
+	PHP_FANN_RETURN_TRAIN_DATA();
 }
 /* }}} */
 
@@ -594,7 +625,7 @@ PHP_FUNCTION(fann_set_activation_function_hidden)
 	PHP_FANN_FETCH_ANN();
 
 	fann_set_activation_function_hidden(ann, activation_function);
-	PHP_FANN_ERROR_CHECK();
+	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
 }
 /* }}} */
@@ -615,7 +646,7 @@ PHP_FUNCTION(fann_set_activation_function_output)
 	PHP_FANN_FETCH_ANN();
 
 	fann_set_activation_function_output(ann, activation_function);
-	PHP_FANN_ERROR_CHECK();
+	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
 }
 /* }}} */
@@ -633,7 +664,7 @@ PHP_FUNCTION(fann_create_from_file)
 	}
 
 	ann = fann_create_from_file(cf_name);
-	PHP_FANN_ERROR_CHECK();
+	PHP_FANN_ERROR_CHECK_ANN();
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -656,7 +687,7 @@ PHP_FUNCTION(fann_save)
 	if (fann_save(ann, cf_name) == 0) {
 		RETURN_TRUE;
 	} else {
-		PHP_FANN_ERROR_CHECK();
+		PHP_FANN_ERROR_CHECK_ANN();
 		RETURN_FALSE;
 	}
 }
