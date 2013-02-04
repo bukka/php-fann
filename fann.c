@@ -97,6 +97,10 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_read_train_from_file, 0)
 ZEND_ARG_INFO(0, filename)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_destroy_train, 0)
+ZEND_ARG_INFO(0, train_data)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_function_hidden, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, activation_function)
@@ -129,6 +133,7 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_destroy,                                  arginfo_fann_destroy)
 	PHP_FE(fann_train_on_file,                            arginfo_fann_train_on_file)
 	PHP_FE(fann_read_train_from_file,                     arginfo_fann_read_train_from_file)
+	PHP_FE(fann_destroy_train,                            arginfo_fann_destroy_train)
 	PHP_FE(fann_set_activation_function_hidden,           arginfo_fann_set_activation_function_hidden)
 	PHP_FE(fann_set_activation_function_output,           arginfo_fann_set_activation_function_output)
 	PHP_FE(fann_create_from_file,                         arginfo_fann_create_from_file)
@@ -546,7 +551,6 @@ PHP_FUNCTION(fann_run)
 }
 /* }}} */
 
-
 /* {{{ proto bool fann_destroy(resource ann)
    Destroys neural network */
 PHP_FUNCTION(fann_destroy)
@@ -602,6 +606,23 @@ PHP_FUNCTION(fann_read_train_from_file)
 	train_data = fann_read_train_from_file(filename);
 	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
 	PHP_FANN_RETURN_TRAIN_DATA();
+}
+/* }}} */
+
+
+/* {{{ proto bool fann_destroy_train(resource train_data)
+   Destructs the training data */
+PHP_FUNCTION(fann_destroy_train)
+{
+	zval *z_train_data;
+	struct fann_train_data *train_data;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_train_data) == FAILURE) {
+		return;
+	}
+
+	PHP_FANN_FETCH_TRAIN_DATA();
+	RETURN_BOOL(zend_list_delete(Z_LVAL_P(z_train_data)) == SUCCESS);
 }
 /* }}} */
 

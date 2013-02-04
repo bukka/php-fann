@@ -58,6 +58,7 @@ PHP_FUNCTION(fann_destroy);
 PHP_FUNCTION(fann_train_on_file);
 /* Training Data Manipulation */
 PHP_FUNCTION(fann_read_train_from_file);
+PHP_FUNCTION(fann_destroy_train);
 /* Parameters */
 PHP_FUNCTION(fann_set_activation_function_hidden);
 PHP_FUNCTION(fann_set_activation_function_output);
