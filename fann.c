@@ -173,7 +173,6 @@ if (fann_get_errno((struct fann_error *) __fann_struct) != 0) { \
 /* macro for checking ann errors */
 #define PHP_FANN_ERROR_CHECK_TRAIN_DATA() PHP_FANN_ERROR_CHECK(train_data)
 
-
 /* macro for returning ann resource */
 #define PHP_FANN_RETURN_ANN() \
 if (!ann) { RETURN_FALSE; } \
@@ -203,7 +202,6 @@ static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 	fann_destroy(ann);
 }
 /* }}} */
-
 
 /* {{{ fann_destructor_fanntrainbuf()
    fann_train resource destructor */
@@ -530,12 +528,11 @@ PHP_FUNCTION(fann_run)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &array) == FAILURE) {
 		return;
 	}
-	
 	PHP_FANN_FETCH_ANN();
 	
 	input = (float *) emalloc(sizeof(float) * zend_hash_num_elements(Z_ARRVAL_P(array)));
-	zend_hash_apply_with_arguments(Z_ARRVAL_P(array) TSRMLS_CC, (apply_func_args_t) funn_input_foreach, 2, input, &i);
-
+	zend_hash_apply_with_arguments(Z_ARRVAL_P(array) TSRMLS_CC,
+								   (apply_func_args_t) funn_input_foreach, 2, input, &i);
 	
 	calc_out = fann_run(ann, input);
 	efree(input);
@@ -560,9 +557,8 @@ PHP_FUNCTION(fann_destroy)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
 		return;
 	}
-	
-	PHP_FANN_FETCH_ANN();
 
+	PHP_FANN_FETCH_ANN();
 	RETURN_BOOL(zend_list_delete(Z_LVAL_P(z_ann)) == SUCCESS);
 }
 /* }}} */
@@ -584,7 +580,6 @@ PHP_FUNCTION(fann_train_on_file)
 	}
 
 	PHP_FANN_FETCH_ANN();
-	
 	fann_train_on_file(ann, filename, max_epochs, epochs_between_reports, desired_error);
 	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
@@ -623,7 +618,6 @@ PHP_FUNCTION(fann_set_activation_function_hidden)
 	}
 	
 	PHP_FANN_FETCH_ANN();
-
 	fann_set_activation_function_hidden(ann, activation_function);
 	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
@@ -644,7 +638,6 @@ PHP_FUNCTION(fann_set_activation_function_output)
 	}
 	
 	PHP_FANN_FETCH_ANN();
-
 	fann_set_activation_function_output(ann, activation_function);
 	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
@@ -683,7 +676,6 @@ PHP_FUNCTION(fann_save)
 	}
 
 	PHP_FANN_FETCH_ANN();
-
 	if (fann_save(ann, cf_name) == 0) {
 		RETURN_TRUE;
 	} else {
