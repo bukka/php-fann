@@ -13,7 +13,7 @@ $ann = fann_create_standard($num_layers, $num_input, $num_neurons_hidden, $num_o
 if (!is_resource($ann))
 	die("FANN instance could not be created");
 
-$data = fann_read_train_from_file("xor.data");
+$data = fann_read_train_from_file(dirname(__FILE__) . "/xor.data");
 if (!is_resource($data))
 	die("Train data could not be created");
 

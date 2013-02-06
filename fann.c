@@ -604,6 +604,10 @@ PHP_FUNCTION(fann_read_train_from_file)
 	}
 
 	train_data = fann_read_train_from_file(filename);
+	if (!train_data) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Train data file reading failed");
+		RETURN_FALSE;
+	}
 	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
 	PHP_FANN_RETURN_TRAIN_DATA();
 }
