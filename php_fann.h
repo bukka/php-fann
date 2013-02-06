@@ -62,6 +62,8 @@ PHP_FUNCTION(fann_destroy_train);
 /* Parameters */
 PHP_FUNCTION(fann_set_activation_function_hidden);
 PHP_FUNCTION(fann_set_activation_function_output);
+PHP_FUNCTION(fann_set_activation_steepness_hidden);
+PHP_FUNCTION(fann_set_activation_steepness_output);
 
 /* FANN File Input/Output */
 /* File Input and Output  */

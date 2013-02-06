@@ -111,6 +111,16 @@ ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, activation_function)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_steepness_hidden, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, steepness)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_steepness_output, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, steepness)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_create_from_file, 0)
 ZEND_ARG_INFO(0, configuration_file)
 ZEND_END_ARG_INFO()
@@ -136,6 +146,8 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_destroy_train,                            arginfo_fann_destroy_train)
 	PHP_FE(fann_set_activation_function_hidden,           arginfo_fann_set_activation_function_hidden)
 	PHP_FE(fann_set_activation_function_output,           arginfo_fann_set_activation_function_output)
+	PHP_FE(fann_set_activation_steepness_hidden,          arginfo_fann_set_activation_steepness_hidden)
+	PHP_FE(fann_set_activation_steepness_output,          arginfo_fann_set_activation_steepness_output)
 	PHP_FE(fann_create_from_file,                         arginfo_fann_create_from_file)
 	PHP_FE(fann_save,                                     arginfo_fann_save)
 	PHP_FE_END
@@ -664,6 +676,45 @@ PHP_FUNCTION(fann_set_activation_function_output)
 	
 	PHP_FANN_FETCH_ANN();
 	fann_set_activation_function_output(ann, activation_function);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto bool fann_set_activation_steepness_hidden(resource ann, double steepness)
+   Set the steepness of the activation steepness in all of the hidden layers */
+PHP_FUNCTION(fann_set_activation_steepness_hidden)
+{
+	zval *z_ann;
+	double steepness;
+	struct fann *ann;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rd", &z_ann, &steepness) == FAILURE) {
+		return;
+	}
+	
+	PHP_FANN_FETCH_ANN();
+	fann_set_activation_steepness_hidden(ann, (fann_type) steepness);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
+}
+/* }}} */
+
+
+/* {{{ proto bool fann_set_activation_steepness_output(resource ann, double steepness)
+   Set the steepness of the activation steepness in the output layer */
+PHP_FUNCTION(fann_set_activation_steepness_output)
+{
+	zval *z_ann;
+	double steepness;
+	struct fann *ann;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rd", &z_ann, &steepness) == FAILURE) {
+		return;
+	}
+	
+	PHP_FANN_FETCH_ANN();
+	fann_set_activation_steepness_output(ann, (fann_type) steepness);
 	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
 }

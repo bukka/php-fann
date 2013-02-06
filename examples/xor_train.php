@@ -17,13 +17,13 @@ $data = fann_read_train_from_file(dirname(__FILE__) . "/xor.data");
 if (!is_resource($data))
 	die("Train data could not be created");
 
-/*
 fann_set_activation_steepness_hidden($ann, 1);
 fann_set_activation_steepness_output($ann, 1);
 
 fann_set_activation_function_hidden($ann, FANN_SIGMOID_SYMMETRIC);
 fann_set_activation_function_output($ann, FANN_SIGMOID_SYMMETRIC);
 
+/*
 fann_set_train_stop_function($ann, FANN_STOPFUNC_BIT);
 fann_set_bit_fail_limit($ann, 0.01);
 
