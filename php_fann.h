@@ -60,6 +60,8 @@ PHP_FUNCTION(fann_train_on_file);
 PHP_FUNCTION(fann_read_train_from_file);
 PHP_FUNCTION(fann_destroy_train);
 /* Parameters */
+PHP_FUNCTION(fann_get_training_algorithm);
+PHP_FUNCTION(fann_set_training_algorithm);
 PHP_FUNCTION(fann_set_activation_function_hidden);
 PHP_FUNCTION(fann_set_activation_function_output);
 PHP_FUNCTION(fann_set_activation_steepness_hidden);

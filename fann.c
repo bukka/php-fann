@@ -101,6 +101,15 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_destroy_train, 0)
 ZEND_ARG_INFO(0, train_data)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_training_algorithm, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_training_algorithm, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, training_algorithm)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_function_hidden, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, activation_function)
@@ -144,6 +153,8 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_train_on_file,                            arginfo_fann_train_on_file)
 	PHP_FE(fann_read_train_from_file,                     arginfo_fann_read_train_from_file)
 	PHP_FE(fann_destroy_train,                            arginfo_fann_destroy_train)
+	PHP_FE(fann_get_training_algorithm,                   arginfo_fann_get_training_algorithm)
+	PHP_FE(fann_set_training_algorithm,                   arginfo_fann_set_training_algorithm)
 	PHP_FE(fann_set_activation_function_hidden,           arginfo_fann_set_activation_function_hidden)
 	PHP_FE(fann_set_activation_function_output,           arginfo_fann_set_activation_function_output)
 	PHP_FE(fann_set_activation_steepness_hidden,          arginfo_fann_set_activation_steepness_hidden)
@@ -641,6 +652,41 @@ PHP_FUNCTION(fann_destroy_train)
 	RETURN_BOOL(zend_list_delete(Z_LVAL_P(z_train_data)) == SUCCESS);
 }
 /* }}} */
+
+/* {{{ proto bool fann_get_training_algorithm(resource ann)
+   Return the training algorithm that is used by fann_train_on_data and associated functions */
+PHP_FUNCTION(fann_get_training_algorithm)
+{
+	zval *z_ann;
+	struct fann *ann;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
+		return;
+	}
+	
+	PHP_FANN_FETCH_ANN();
+	RETURN_LONG(fann_get_training_algorithm(ann));
+}
+
+/* {{{ proto bool fann_set_training_algorithm(resource ann, int training_algorithm)
+   Set the training algorithm that is used by fann_train_on_data and associated functions */
+PHP_FUNCTION(fann_set_training_algorithm)
+{
+	zval *z_ann;
+	long training_algorithm;
+	struct fann *ann;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &z_ann, &training_algorithm) == FAILURE) {
+		return;
+	}
+	
+	PHP_FANN_FETCH_ANN();
+	fann_set_training_algorithm(ann, training_algorithm);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
+}
+/* }}} */
+
 
 /* {{{ proto bool fann_set_activation_function_hidden(resource ann, int activation_function)
    Set the activation function for all of the hidden layers */
