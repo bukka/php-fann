@@ -76,12 +76,40 @@ ZEND_ARG_INFO(0, num_layers)
 ZEND_ARG_INFO(0, layers)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_destroy, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_run, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, info)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO(arginfo_fann_destroy, 0)
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_num_input, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_num_output, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_total_neurons, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_total_connections, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_network_type, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_connection_rate, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_num_layers, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
 
@@ -794,6 +822,56 @@ PHP_FUNCTION(fann_destroy)
 }
 /* }}} */
 
+/* {{{ proto long fann_get_num_input(resource ann)
+   Returns the number of input neurons */
+PHP_FUNCTION(fann_get_num_input)
+{
+	PHP_FANN_GET_PARAM(fann_get_num_input, RETURN_LONG);
+}
+
+/* {{{ proto long fann_get_num_output(resource ann)
+   Returns the number of output neurons */
+PHP_FUNCTION(fann_get_num_output)
+{
+	PHP_FANN_GET_PARAM(fann_get_num_output, RETURN_LONG);
+}
+
+/* {{{ proto long fann_get_total_neurons(resource ann)
+   Returns the number of output neurons the total number of neurons in the entire network
+   (this number does also include the bias neurons, so a 2-4-2 network has 2+4+2 +2(bias) = 10 neurons) */
+PHP_FUNCTION(fann_get_total_neurons)
+{
+	PHP_FANN_GET_PARAM(fann_get_total_neurons, RETURN_LONG);
+}
+
+/* {{{ proto long fann_get_total_connections(resource ann)
+   Returns the total number of connections in the entire network */
+PHP_FUNCTION(fann_get_total_connections)
+{
+	PHP_FANN_GET_PARAM(fann_get_total_connections, RETURN_LONG);
+}
+
+/* {{{ proto long fann_get_network_type(resource ann)
+   Returns the type of neural network it was created as */
+PHP_FUNCTION(fann_get_network_type)
+{
+	PHP_FANN_GET_PARAM(fann_get_network_type, RETURN_LONG);
+}
+
+/* {{{ proto double fann_get_connection_rate(resource ann)
+   Returns the connection rate used when the network was created  */
+PHP_FUNCTION(fann_get_connection_rate)
+{
+	PHP_FANN_GET_PARAM(fann_get_connection_rate, RETURN_DOUBLE);
+}
+
+/* {{{ proto long fann_get_num_layers(resource ann)
+   Returns the number of layers in the network */
+PHP_FUNCTION(fann_get_num_layers)
+{
+	PHP_FANN_GET_PARAM(fann_get_num_layers, RETURN_LONG);
+}
+
 /* {{{ proto bool fann_train_on_file(resource ann, string filename, int max_epochs, int epochs_between_reports, float desired_error)
    Set the activation function for all of the hidden layers */
 PHP_FUNCTION(fann_train_on_file)
@@ -857,7 +935,7 @@ PHP_FUNCTION(fann_destroy_train)
 }
 /* }}} */
 
-/* {{{ proto bool fann_get_training_algorithm(resource ann)
+/* {{{ proto int fann_get_training_algorithm(resource ann)
    Returns the training algorithm that is used by fann_train_on_data and associated functions */
 PHP_FUNCTION(fann_get_training_algorithm)
 {
@@ -872,11 +950,11 @@ PHP_FUNCTION(fann_set_training_algorithm)
 }
 /* }}} */
 
-/* {{{ proto bool fann_get_learning_rate(resource ann)
+/* {{{ proto double fann_get_learning_rate(resource ann)
    Returns the learning rate */
 PHP_FUNCTION(fann_get_learning_rate)
 {
-	PHP_FANN_GET_PARAM(fann_get_learning_rate, RETURN_LONG);
+	PHP_FANN_GET_PARAM(fann_get_learning_rate, RETURN_DOUBLE);
 }
 
 /* {{{ proto bool fann_set_learning_rate(resource ann, double learning_rate)
@@ -887,7 +965,7 @@ PHP_FUNCTION(fann_set_learning_rate)
 }
 /* }}} */
 
-/* {{{ proto bool fann_get_learning_momentum(resource ann)
+/* {{{ proto int fann_get_learning_momentum(resource ann)
    Returns the learning momentum */
 PHP_FUNCTION(fann_get_learning_momentum)
 {

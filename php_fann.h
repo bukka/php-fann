@@ -52,6 +52,14 @@ PHP_FUNCTION(fann_create_shortcut);
 PHP_FUNCTION(fann_create_shortcut_array);
 PHP_FUNCTION(fann_run);
 PHP_FUNCTION(fann_destroy);
+/* Parameters */
+PHP_FUNCTION(fann_get_num_input);
+PHP_FUNCTION(fann_get_num_output);
+PHP_FUNCTION(fann_get_total_neurons);
+PHP_FUNCTION(fann_get_total_connections);
+PHP_FUNCTION(fann_get_network_type);
+PHP_FUNCTION(fann_get_connection_rate);
+PHP_FUNCTION(fann_get_num_layers);
 
 /* FANN Training */
 /* Training Data Training */
@@ -66,7 +74,7 @@ PHP_FUNCTION(fann_get_learning_rate);
 PHP_FUNCTION(fann_set_learning_rate);
 PHP_FUNCTION(fann_get_learning_momentum);
 PHP_FUNCTION(fann_set_learning_momentum);
-PHP_FUNCTION(fann_set_activation_function_hidden);
+PHP_FUNCTION(fann_set_activation_function_hidden); 
 PHP_FUNCTION(fann_set_activation_function_output);
 PHP_FUNCTION(fann_set_activation_steepness_hidden);
 PHP_FUNCTION(fann_set_activation_steepness_output);
