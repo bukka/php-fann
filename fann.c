@@ -190,10 +190,10 @@ ZEND_GET_MODULE(fann)
 
 /* macro for chencking fann_error structs */
 #define PHP_FANN_ERROR_CHECK(__fann_struct) \
-if (fann_get_errno((struct fann_error *) __fann_struct) != 0) { \
-	php_error_docref(NULL TSRMLS_CC, E_WARNING, __fann_struct->errstr); \
-	RETURN_FALSE; \
-}
+	if (fann_get_errno((struct fann_error *) __fann_struct) != 0) {	\
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, __fann_struct->errstr); \
+		RETURN_FALSE; \
+	}
 
 /* macro for checking ann errors */
 #define PHP_FANN_ERROR_CHECK_ANN() PHP_FANN_ERROR_CHECK(ann)
@@ -203,17 +203,39 @@ if (fann_get_errno((struct fann_error *) __fann_struct) != 0) { \
 
 /* macro for returning ann resource */
 #define PHP_FANN_RETURN_ANN() \
-if (!ann) { RETURN_FALSE; } \
-ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf)
+	if (!ann) { RETURN_FALSE; } \
+	ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf)
 
 /* macro for returning train data resource */
 #define PHP_FANN_RETURN_TRAIN_DATA() \
-if (!train_data) { RETURN_FALSE; } \
+	if (!train_data) { RETURN_FALSE; } \
 ZEND_REGISTER_RESOURCE(return_value, train_data, le_fanntrainbuf)
 
 /* macro for fetching ann resource */
 #define PHP_FANN_FETCH_ANN() \
-ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
+
+/* macro for getting one ann param */
+#define PHP_FANN_GET_PARAM1(__fce, __return) \
+	zval *z_ann; struct fann *ann; \
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) return; \
+	PHP_FANN_FETCH_ANN(); \
+	__return(__fce(ann))
+
+/* macro for getting ann param (just alian for one param macro) */
+#define PHP_FANN_GET_PARAM PHP_FANN_GET_PARAM1
+
+/* macro for setting one ann param */
+#define PHP_FANN_SET_PARAM1(__fce, __zppval, __type) \
+	zval *z_ann; struct fann *ann; __type param; \
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #__zppval, &z_ann, &param) == FAILURE) return; \
+	PHP_FANN_FETCH_ANN(); \
+	__fce(ann, param); \
+	PHP_FANN_ERROR_CHECK_ANN();	\
+	RETURN_TRUE
+
+/* macro for setting ann param (just alian for one param macro) */
+#define PHP_FANN_SET_PARAM PHP_FANN_SET_PARAM1
 
 /* macro for fetching train_data resource */
 #define PHP_FANN_FETCH_TRAIN_DATA() \
@@ -657,33 +679,14 @@ PHP_FUNCTION(fann_destroy_train)
    Return the training algorithm that is used by fann_train_on_data and associated functions */
 PHP_FUNCTION(fann_get_training_algorithm)
 {
-	zval *z_ann;
-	struct fann *ann;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
-		return;
-	}
-	
-	PHP_FANN_FETCH_ANN();
-	RETURN_LONG(fann_get_training_algorithm(ann));
+	PHP_FANN_GET_PARAM(fann_get_training_algorithm, RETURN_LONG);
 }
 
 /* {{{ proto bool fann_set_training_algorithm(resource ann, int training_algorithm)
    Set the training algorithm that is used by fann_train_on_data and associated functions */
 PHP_FUNCTION(fann_set_training_algorithm)
 {
-	zval *z_ann;
-	long training_algorithm;
-	struct fann *ann;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &z_ann, &training_algorithm) == FAILURE) {
-		return;
-	}
-	
-	PHP_FANN_FETCH_ANN();
-	fann_set_training_algorithm(ann, training_algorithm);
-	PHP_FANN_ERROR_CHECK_ANN();
-	RETURN_TRUE;
+    PHP_FANN_SET_PARAM(fann_set_training_algorithm, l, long);
 }
 /* }}} */
 
@@ -692,18 +695,8 @@ PHP_FUNCTION(fann_set_training_algorithm)
    Set the activation function for all of the hidden layers */
 PHP_FUNCTION(fann_set_activation_function_hidden)
 {
-	zval *z_ann;
-	long activation_function;
-	struct fann *ann;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &z_ann, &activation_function) == FAILURE) {
-		return;
-	}
+	PHP_FANN_SET_PARAM(fann_set_activation_function_hidden, l, long);
 	
-	PHP_FANN_FETCH_ANN();
-	fann_set_activation_function_hidden(ann, activation_function);
-	PHP_FANN_ERROR_CHECK_ANN();
-	RETURN_TRUE;
 }
 /* }}} */
 
@@ -712,18 +705,7 @@ PHP_FUNCTION(fann_set_activation_function_hidden)
    Set the activation function for the output layer */
 PHP_FUNCTION(fann_set_activation_function_output)
 {
-	zval *z_ann;
-	long activation_function;
-	struct fann *ann;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &z_ann, &activation_function) == FAILURE) {
-		return;
-	}
-	
-	PHP_FANN_FETCH_ANN();
-	fann_set_activation_function_output(ann, activation_function);
-	PHP_FANN_ERROR_CHECK_ANN();
-	RETURN_TRUE;
+	PHP_FANN_SET_PARAM(fann_set_activation_function_output, l, long);
 }
 /* }}} */
 
@@ -731,18 +713,7 @@ PHP_FUNCTION(fann_set_activation_function_output)
    Set the steepness of the activation steepness in all of the hidden layers */
 PHP_FUNCTION(fann_set_activation_steepness_hidden)
 {
-	zval *z_ann;
-	double steepness;
-	struct fann *ann;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rd", &z_ann, &steepness) == FAILURE) {
-		return;
-	}
-	
-	PHP_FANN_FETCH_ANN();
-	fann_set_activation_steepness_hidden(ann, (fann_type) steepness);
-	PHP_FANN_ERROR_CHECK_ANN();
-	RETURN_TRUE;
+	PHP_FANN_SET_PARAM(fann_set_activation_steepness_hidden, d, double);
 }
 /* }}} */
 
@@ -751,18 +722,7 @@ PHP_FUNCTION(fann_set_activation_steepness_hidden)
    Set the steepness of the activation steepness in the output layer */
 PHP_FUNCTION(fann_set_activation_steepness_output)
 {
-	zval *z_ann;
-	double steepness;
-	struct fann *ann;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rd", &z_ann, &steepness) == FAILURE) {
-		return;
-	}
-	
-	PHP_FANN_FETCH_ANN();
-	fann_set_activation_steepness_output(ann, (fann_type) steepness);
-	PHP_FANN_ERROR_CHECK_ANN();
-	RETURN_TRUE;
+	PHP_FANN_SET_PARAM(fann_set_activation_steepness_output, d, double);
 }
 /* }}} */
 
