@@ -62,10 +62,43 @@ PHP_FUNCTION(fann_destroy_train);
 /* Parameters */
 PHP_FUNCTION(fann_get_training_algorithm);
 PHP_FUNCTION(fann_set_training_algorithm);
+PHP_FUNCTION(fann_get_learning_rate);
+PHP_FUNCTION(fann_set_learning_rate);
+PHP_FUNCTION(fann_get_learning_momentum);
+PHP_FUNCTION(fann_set_learning_momentum);
 PHP_FUNCTION(fann_set_activation_function_hidden);
 PHP_FUNCTION(fann_set_activation_function_output);
 PHP_FUNCTION(fann_set_activation_steepness_hidden);
 PHP_FUNCTION(fann_set_activation_steepness_output);
+PHP_FUNCTION(fann_get_train_error_function);
+PHP_FUNCTION(fann_set_train_error_function);
+PHP_FUNCTION(fann_get_train_stop_function);
+PHP_FUNCTION(fann_set_train_stop_function);
+PHP_FUNCTION(fann_get_bit_fail_limit);
+PHP_FUNCTION(fann_set_bit_fail_limit);
+PHP_FUNCTION(fann_set_callback);
+PHP_FUNCTION(fann_get_quickprop_decay);
+PHP_FUNCTION(fann_set_quickprop_decay);
+PHP_FUNCTION(fann_get_quickprop_mu);
+PHP_FUNCTION(fann_set_quickprop_mu);
+PHP_FUNCTION(fann_get_rprop_increase_factor);
+PHP_FUNCTION(fann_set_rprop_increase_factor);
+PHP_FUNCTION(fann_get_rprop_decrease_factor);
+PHP_FUNCTION(fann_set_rprop_decrease_factor);
+PHP_FUNCTION(fann_get_rprop_delta_min);
+PHP_FUNCTION(fann_set_rprop_delta_min);
+PHP_FUNCTION(fann_get_rprop_delta_max);
+PHP_FUNCTION(fann_set_rprop_delta_max);
+PHP_FUNCTION(fann_get_rprop_delta_zero);
+PHP_FUNCTION(fann_set_rprop_delta_zero);
+PHP_FUNCTION(fann_get_sarprop_weight_decay_shift);
+PHP_FUNCTION(fann_set_sarprop_weight_decay_shift);
+PHP_FUNCTION(fann_get_sarprop_step_error_threshold_factor);
+PHP_FUNCTION(fann_set_sarprop_step_error_threshold_factor);
+PHP_FUNCTION(fann_get_sarprop_step_error_shift);
+PHP_FUNCTION(fann_set_sarprop_step_error_shift);
+PHP_FUNCTION(fann_get_sarprop_temperature);
+PHP_FUNCTION(fann_set_sarprop_temperature);
 
 /* FANN File Input/Output */
 /* File Input and Output  */

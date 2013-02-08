@@ -110,6 +110,155 @@ ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, training_algorithm)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_learning_rate, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_learning_rate, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, learning_rate)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_learning_momentum, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_learning_momentum, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, learning_momentum)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_train_error_function, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_train_error_function, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, error_function)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_train_stop_function, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_train_stop_function, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, stop_function)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_bit_fail_limit, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_bit_fail_limit, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, bit_fail_limit)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_callback, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, callback)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_quickprop_decay, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_quickprop_decay, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, quickprop_decay)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_quickprop_mu, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_quickprop_mu, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, quickprop_mu)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_rprop_increase_factor, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_rprop_increase_factor, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, rprop_increase_factor)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_rprop_decrease_factor, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_rprop_decrease_factor, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, rprop_decrease_factor)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_rprop_delta_min, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_rprop_delta_min, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, rprop_delta_min)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_rprop_delta_max, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_rprop_delta_max, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, rprop_delta_max)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_rprop_delta_zero, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_rprop_delta_zero, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0 , rprop_delta_zero)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_sarprop_weight_decay_shift, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_sarprop_weight_decay_shift, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, sarprop_weight_decay_shift)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_sarprop_step_error_threshold_factor, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_sarprop_step_error_threshold_factor, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, sarprop_step_error_threshold_factor)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_sarprop_step_error_shift, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_sarprop_step_error_shift, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, sarprop_step_error_shift)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_sarprop_temperature, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_sarprop_temperature, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, sarprop_temperature)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_function_hidden, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, activation_function)
@@ -153,6 +302,39 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_train_on_file,                            arginfo_fann_train_on_file)
 	PHP_FE(fann_read_train_from_file,                     arginfo_fann_read_train_from_file)
 	PHP_FE(fann_destroy_train,                            arginfo_fann_destroy_train)
+	PHP_FE(fann_get_learning_rate,                        arginfo_fann_get_learning_rate)
+	PHP_FE(fann_set_learning_rate,                        arginfo_fann_set_learning_rate)
+	PHP_FE(fann_get_learning_momentum,                    arginfo_fann_get_learning_momentum)
+	PHP_FE(fann_set_learning_momentum,                    arginfo_fann_set_learning_momentum)
+	PHP_FE(fann_get_train_error_function,                 arginfo_fann_get_train_error_function)
+	PHP_FE(fann_set_train_error_function,                 arginfo_fann_set_train_error_function)
+	PHP_FE(fann_get_train_stop_function,                  arginfo_fann_get_train_stop_function)
+	PHP_FE(fann_set_train_stop_function,                  arginfo_fann_set_train_stop_function)
+	PHP_FE(fann_get_bit_fail_limit,                       arginfo_fann_get_bit_fail_limit)
+	PHP_FE(fann_set_bit_fail_limit,                       arginfo_fann_set_bit_fail_limit)
+	PHP_FE(fann_set_callback,                             arginfo_fann_set_callback)
+	PHP_FE(fann_get_quickprop_decay,                      arginfo_fann_get_quickprop_decay)
+	PHP_FE(fann_set_quickprop_decay,                      arginfo_fann_set_quickprop_decay)
+	PHP_FE(fann_get_quickprop_mu,                         arginfo_fann_get_quickprop_mu)
+	PHP_FE(fann_set_quickprop_mu,                         arginfo_fann_set_quickprop_mu)
+	PHP_FE(fann_get_rprop_increase_factor,                arginfo_fann_get_rprop_increase_factor)
+	PHP_FE(fann_set_rprop_increase_factor,                arginfo_fann_set_rprop_increase_factor)
+	PHP_FE(fann_get_rprop_decrease_factor,                arginfo_fann_get_rprop_decrease_factor)
+	PHP_FE(fann_set_rprop_decrease_factor,                arginfo_fann_set_rprop_decrease_factor)
+	PHP_FE(fann_get_rprop_delta_min,                      arginfo_fann_get_rprop_delta_min)
+	PHP_FE(fann_set_rprop_delta_min,                      arginfo_fann_set_rprop_delta_min)
+	PHP_FE(fann_get_rprop_delta_max,                      arginfo_fann_get_rprop_delta_max)
+	PHP_FE(fann_set_rprop_delta_max,                      arginfo_fann_set_rprop_delta_max)
+	PHP_FE(fann_get_rprop_delta_zero,                     arginfo_fann_get_rprop_delta_zero)
+	PHP_FE(fann_set_rprop_delta_zero,                     arginfo_fann_set_rprop_delta_zero)
+	PHP_FE(fann_get_sarprop_weight_decay_shift,           arginfo_fann_get_sarprop_weight_decay_shift)
+	PHP_FE(fann_set_sarprop_weight_decay_shift,           arginfo_fann_set_sarprop_weight_decay_shift)
+	PHP_FE(fann_get_sarprop_step_error_threshold_factor,  arginfo_fann_get_sarprop_step_error_threshold_factor)
+	PHP_FE(fann_set_sarprop_step_error_threshold_factor,  arginfo_fann_set_sarprop_step_error_threshold_factor)
+	PHP_FE(fann_get_sarprop_step_error_shift,             arginfo_fann_get_sarprop_step_error_shift)
+	PHP_FE(fann_set_sarprop_step_error_shift,             arginfo_fann_set_sarprop_step_error_shift)
+	PHP_FE(fann_get_sarprop_temperature,                  arginfo_fann_get_sarprop_temperature)
+	PHP_FE(fann_set_sarprop_temperature,                  arginfo_fann_set_sarprop_temperature)
 	PHP_FE(fann_get_training_algorithm,                   arginfo_fann_get_training_algorithm)
 	PHP_FE(fann_set_training_algorithm,                   arginfo_fann_set_training_algorithm)
 	PHP_FE(fann_set_activation_function_hidden,           arginfo_fann_set_activation_function_hidden)
@@ -676,23 +858,52 @@ PHP_FUNCTION(fann_destroy_train)
 /* }}} */
 
 /* {{{ proto bool fann_get_training_algorithm(resource ann)
-   Return the training algorithm that is used by fann_train_on_data and associated functions */
+   Returns the training algorithm that is used by fann_train_on_data and associated functions */
 PHP_FUNCTION(fann_get_training_algorithm)
 {
 	PHP_FANN_GET_PARAM(fann_get_training_algorithm, RETURN_LONG);
 }
 
 /* {{{ proto bool fann_set_training_algorithm(resource ann, int training_algorithm)
-   Set the training algorithm that is used by fann_train_on_data and associated functions */
+   Sets the training algorithm that is used by fann_train_on_data and associated functions */
 PHP_FUNCTION(fann_set_training_algorithm)
 {
     PHP_FANN_SET_PARAM(fann_set_training_algorithm, l, long);
 }
 /* }}} */
 
+/* {{{ proto bool fann_get_learning_rate(resource ann)
+   Returns the learning rate */
+PHP_FUNCTION(fann_get_learning_rate)
+{
+	PHP_FANN_GET_PARAM(fann_get_learning_rate, RETURN_LONG);
+}
+
+/* {{{ proto bool fann_set_learning_rate(resource ann, double learning_rate)
+   Sets the learning rate */
+PHP_FUNCTION(fann_set_learning_rate)
+{
+    PHP_FANN_SET_PARAM(fann_set_learning_rate, d, double);
+}
+/* }}} */
+
+/* {{{ proto bool fann_get_learning_momentum(resource ann)
+   Returns the learning momentum */
+PHP_FUNCTION(fann_get_learning_momentum)
+{
+	PHP_FANN_GET_PARAM(fann_get_learning_momentum, RETURN_LONG);
+}
+
+/* {{{ proto bool fann_set_learning_momentum(resource ann, double learning_momentum)
+   Sets the learning momentum */
+PHP_FUNCTION(fann_set_learning_momentum)
+{
+    PHP_FANN_SET_PARAM(fann_set_learning_momentum, d, double);
+}
+/* }}} */
 
 /* {{{ proto bool fann_set_activation_function_hidden(resource ann, int activation_function)
-   Set the activation function for all of the hidden layers */
+   Sets the activation function for all of the hidden layers */
 PHP_FUNCTION(fann_set_activation_function_hidden)
 {
 	PHP_FANN_SET_PARAM(fann_set_activation_function_hidden, l, long);
@@ -700,9 +911,8 @@ PHP_FUNCTION(fann_set_activation_function_hidden)
 }
 /* }}} */
 
-
 /* {{{ proto bool fann_set_activation_function_output(resource ann, int activation_function)
-   Set the activation function for the output layer */
+   Sets the activation function for the output layer */
 PHP_FUNCTION(fann_set_activation_function_output)
 {
 	PHP_FANN_SET_PARAM(fann_set_activation_function_output, l, long);
@@ -710,7 +920,7 @@ PHP_FUNCTION(fann_set_activation_function_output)
 /* }}} */
 
 /* {{{ proto bool fann_set_activation_steepness_hidden(resource ann, double steepness)
-   Set the steepness of the activation steepness in all of the hidden layers */
+   Sets the steepness of the activation steepness in all of the hidden layers */
 PHP_FUNCTION(fann_set_activation_steepness_hidden)
 {
 	PHP_FANN_SET_PARAM(fann_set_activation_steepness_hidden, d, double);
@@ -719,10 +929,231 @@ PHP_FUNCTION(fann_set_activation_steepness_hidden)
 
 
 /* {{{ proto bool fann_set_activation_steepness_output(resource ann, double steepness)
-   Set the steepness of the activation steepness in the output layer */
+   Sets the steepness of the activation steepness in the output layer */
 PHP_FUNCTION(fann_set_activation_steepness_output)
 {
 	PHP_FANN_SET_PARAM(fann_set_activation_steepness_output, d, double);
+}
+/* }}} */
+
+/* {{{ proto int fann_get_train_error_function(resource ann)
+   Returns the error function used during training */
+PHP_FUNCTION(fann_get_train_error_function)
+{
+	PHP_FANN_GET_PARAM(fann_get_train_error_function, RETURN_LONG);
+}
+
+/* {{{ proto bool fann_set_train_error_function(resource ann, int train_error_function)
+   Sets the error function used during training */
+PHP_FUNCTION(fann_set_train_error_function)
+{
+    PHP_FANN_SET_PARAM(fann_set_train_error_function, l, long);
+}
+/* }}} */
+
+/* {{{ proto int fann_get_train_stop_function(resource ann)
+   Returns the stop function used during training */
+PHP_FUNCTION(fann_get_train_stop_function)
+{
+	PHP_FANN_GET_PARAM(fann_get_train_stop_function, RETURN_LONG);
+}
+
+/* {{{ proto bool fann_set_train_stop_function(resource ann, int train_stop_function)
+   Sets the stop function used during training */
+PHP_FUNCTION(fann_set_train_stop_function)
+{
+    PHP_FANN_SET_PARAM(fann_set_train_stop_function, l, long);
+}
+/* }}} */
+
+/* {{{ proto bool fann_get_bit_fail_limit(resource ann)
+   Returns the bit fail limit used during training */
+PHP_FUNCTION(fann_get_bit_fail_limit)
+{
+	PHP_FANN_GET_PARAM(fann_get_bit_fail_limit, RETURN_DOUBLE);
+}
+
+/* {{{ proto bool fann_set_bit_fail_limit(resource ann, double bit_fail_limit)
+   Sets the bit fail limit used during training */
+PHP_FUNCTION(fann_set_bit_fail_limit)
+{
+    PHP_FANN_SET_PARAM(fann_set_bit_fail_limit, d, double);
+}
+/* }}} */
+
+/* {{{ proto bool fann_set_callback(resource ann, int callback)
+   Sets the callback function for use during training */
+PHP_FUNCTION(fann_set_callback)
+{
+    /* TODO: callback fce: fann_callback_type */
+}
+/* }}} */
+
+/* {{{ proto double fann_get_quickprop_decay(resource ann)
+   Returns the quickprop decay factor. */
+PHP_FUNCTION(fann_get_quickprop_decay)
+{
+	PHP_FANN_GET_PARAM(fann_get_quickprop_decay, RETURN_DOUBLE);
+}
+
+/* {{{ proto bool fann_set_quickprop_decay(resource ann, double quickprop_decay)
+   Sets the quickprop decay factor */
+PHP_FUNCTION(fann_set_quickprop_decay)
+{
+    PHP_FANN_SET_PARAM(fann_set_quickprop_decay, d, double);
+}
+/* }}} */
+
+/* {{{ proto double fann_get_quickprop_mu(resource ann)
+   Returns the quickprop mu factor */
+PHP_FUNCTION(fann_get_quickprop_mu)
+{
+	PHP_FANN_GET_PARAM(fann_get_quickprop_mu, RETURN_DOUBLE);
+}
+
+/* {{{ proto bool fann_set_quickprop_mu(resource ann, double quickprop_mu)
+   Sets the quickprop mu factor */
+PHP_FUNCTION(fann_set_quickprop_mu)
+{
+    PHP_FANN_SET_PARAM(fann_set_quickprop_mu, d, double);
+}
+/* }}} */
+
+/* {{{ proto double fann_get_rprop_increase_factor(resource ann)
+   Returns the increase factor is a value larger than 1,
+   which is used to increase the step-size during RPROP training */
+PHP_FUNCTION(fann_get_rprop_increase_factor)
+{
+	PHP_FANN_GET_PARAM(fann_get_rprop_increase_factor, RETURN_DOUBLE);
+}
+
+/* {{{ proto bool fann_set_rprop_increase_factor(resource ann, double rprop_increase_factor)
+   Sets the increase factor used during RPROP training */
+PHP_FUNCTION(fann_set_rprop_increase_factor)
+{
+    PHP_FANN_SET_PARAM(fann_set_rprop_increase_factor, d, double);
+}
+/* }}} */
+
+/* {{{ proto double fann_get_rprop_decrease_factor(resource ann)
+   Returns The decrease factor is a value smaller than 1,
+   which is used to decrease the step-size during RPROP training */
+PHP_FUNCTION(fann_get_rprop_decrease_factor)
+{
+	PHP_FANN_GET_PARAM(fann_get_rprop_decrease_factor, RETURN_DOUBLE);
+}
+
+/* {{{ proto bool fann_set_rprop_decrease_factor(resource ann, double rprop_decrease_factor)
+   Sets the decrease factor is a value smaller than 1,
+   which is used to decrease the step-size during RPROP training */
+PHP_FUNCTION(fann_set_rprop_decrease_factor)
+{
+    PHP_FANN_SET_PARAM(fann_set_rprop_decrease_factor, d, double);
+}
+/* }}} */
+
+/* {{{ proto double fann_get_rprop_delta_min(resource ann)
+   Returns the minimum step-size is a small positive number determining how small the minimum step-size may be */
+PHP_FUNCTION(fann_get_rprop_delta_min)
+{
+	PHP_FANN_GET_PARAM(fann_get_rprop_delta_min, RETURN_DOUBLE);
+}
+
+/* {{{ proto bool fann_set_rprop_delta_min(resource ann, double rprop_delta_min)
+   Sets the minimum step-size is a small positive number determining how small the minimum step-size may be */
+PHP_FUNCTION(fann_set_rprop_delta_min)
+{
+    PHP_FANN_SET_PARAM(fann_set_rprop_delta_min, d, double);
+}
+/* }}} */
+
+/* {{{ proto bool fann_get_rprop_delta_max(resource ann)
+   Returns the maximum step-size is a positive number determining how large the maximum step-size may be */
+PHP_FUNCTION(fann_get_rprop_delta_max)
+{
+	PHP_FANN_GET_PARAM(fann_get_rprop_delta_max, RETURN_DOUBLE);
+}
+
+/* {{{ proto bool fann_set_rprop_delta_max(resource ann, double rprop_delta_max)
+   Sets the maximum step-size is a positive number determining how large the maximum step-size may be */
+PHP_FUNCTION(fann_set_rprop_delta_max)
+{
+    PHP_FANN_SET_PARAM(fann_set_rprop_delta_max, d, double);
+}
+/* }}} */
+
+/* {{{ proto double fann_get_rprop_delta_zero(resource ann)
+   Returns the initial step-size is a positive number determining the initial step size */
+PHP_FUNCTION(fann_get_rprop_delta_zero)
+{
+	PHP_FANN_GET_PARAM(fann_get_rprop_delta_zero, RETURN_DOUBLE);
+}
+
+/* {{{ proto bool fann_set_rprop_delta_zero(resource ann, double rprop_delta_zero)
+   Sets the initial step-size is a positive number determining the initial step size */
+PHP_FUNCTION(fann_set_rprop_delta_zero)
+{
+    PHP_FANN_SET_PARAM(fann_set_rprop_delta_zero, d, double);
+}
+/* }}} */
+
+/* {{{ proto double fann_get_sarprop_weight_decay_shift(resource ann)
+   Returns the sarprop weight decay shift */
+PHP_FUNCTION(fann_get_sarprop_weight_decay_shift)
+{
+	PHP_FANN_GET_PARAM(fann_get_sarprop_weight_decay_shift, RETURN_DOUBLE);
+}
+
+/* {{{ proto bool fann_set_sarprop_weight_decay_shift(resource ann, double sarprop_weight_decay_shift)
+   Sets the sarprop weight decay shift */
+PHP_FUNCTION(fann_set_sarprop_weight_decay_shift)
+{
+    PHP_FANN_SET_PARAM(fann_set_sarprop_weight_decay_shift, d, double);
+}
+/* }}} */
+
+/* {{{ proto double fann_get_sarprop_step_error_threshold_factor(resource ann)
+   Returns the sarprop step error threshold factor */
+PHP_FUNCTION(fann_get_sarprop_step_error_threshold_factor)
+{
+	PHP_FANN_GET_PARAM(fann_get_sarprop_step_error_threshold_factor, RETURN_DOUBLE);
+}
+
+/* {{{ proto bool fann_set_sarprop_step_error_threshold_factor(resource ann, double sarprop_step_error_threshold_factor)
+   Sets the sarprop step error threshold factor */
+PHP_FUNCTION(fann_set_sarprop_step_error_threshold_factor)
+{
+    PHP_FANN_SET_PARAM(fann_set_sarprop_step_error_threshold_factor, d, double);
+}
+/* }}} */
+
+/* {{{ proto double fann_get_sarprop_step_error_shift(resource ann)
+   Returns the sarprop step error shift */
+PHP_FUNCTION(fann_get_sarprop_step_error_shift)
+{
+	PHP_FANN_GET_PARAM(fann_get_sarprop_step_error_shift, RETURN_DOUBLE);
+}
+
+/* {{{ proto bool fann_set_sarprop_step_error_shift(resource ann, double sarprop_step_error_shift)
+   Sets the sarprop step error shift */
+PHP_FUNCTION(fann_set_sarprop_step_error_shift)
+{
+    PHP_FANN_SET_PARAM(fann_set_sarprop_step_error_shift, d, double);
+}
+/* }}} */
+
+/* {{{ proto double fann_get_sarprop_temperature(resource ann)
+   Returns the sarprop_temperature */
+PHP_FUNCTION(fann_get_sarprop_temperature)
+{
+	PHP_FANN_GET_PARAM(fann_get_sarprop_temperature, RETURN_DOUBLE);
+}
+
+/* {{{ proto bool fann_set_(resource ann, double sarprop_temperature)
+   Sets the sarprop_temperature */
+PHP_FUNCTION(fann_set_sarprop_temperature)
+{
+    PHP_FANN_SET_PARAM(fann_set_sarprop_temperature, d, double);
 }
 /* }}} */
 
