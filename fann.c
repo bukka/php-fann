@@ -41,7 +41,7 @@ static int le_fannbuf, le_fanntrainbuf;
 #define le_fanntrainbuf_name "FANN Train Data"
 
 /* {{{ arginfo */
-ZEND_BEGIN_ARG_INFO(arginfo_fann_create_standard, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_fann_create_standard, 0, 0, 2)
 ZEND_ARG_INFO(0, num_layers)
 ZEND_ARG_INFO(0, arg1)
 ZEND_ARG_INFO(0, ...)
@@ -52,7 +52,7 @@ ZEND_ARG_INFO(0, num_layers)
 ZEND_ARG_INFO(0, layers)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO(arginfo_fann_create_sparse, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_fann_create_sparse, 0, 0, 3)
 ZEND_ARG_INFO(0, connection_rate)
 ZEND_ARG_INFO(0, num_layers)
 ZEND_ARG_INFO(0, arg1)
@@ -65,7 +65,7 @@ ZEND_ARG_INFO(0, num_layers)
 ZEND_ARG_INFO(0, layers)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO(arginfo_fann_create_shortcut, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_fann_create_shortcut, 0, 0, 2)
 ZEND_ARG_INFO(0, num_layers)
 ZEND_ARG_INFO(0, arg1)
 ZEND_ARG_INFO(0, ...)
