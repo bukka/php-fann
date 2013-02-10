@@ -399,10 +399,10 @@ ZEND_GET_MODULE(fann)
 #endif
 
 /* macro for chencking fann_error structs */
-#define PHP_FANN_ERROR_CHECK(__fann_struct) \
-	if (fann_get_errno((struct fann_error *) __fann_struct) != 0) {	\
+#define PHP_FANN_ERROR_CHECK(__fann_struct)								\
+	if (fann_get_errno((struct fann_error *) __fann_struct) != 0) {		\
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, __fann_struct->errstr); \
-		RETURN_FALSE; \
+		RETURN_FALSE;													\
 	}
 
 /* macro for checking ann errors */
@@ -412,43 +412,76 @@ ZEND_GET_MODULE(fann)
 #define PHP_FANN_ERROR_CHECK_TRAIN_DATA() PHP_FANN_ERROR_CHECK(train_data)
 
 /* macro for returning ann resource */
-#define PHP_FANN_RETURN_ANN() \
-	if (!ann) { RETURN_FALSE; } \
+#define PHP_FANN_RETURN_ANN()								\
+	if (!ann) { RETURN_FALSE; }								\
 	ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf)
 
 /* macro for returning train data resource */
-#define PHP_FANN_RETURN_TRAIN_DATA() \
-	if (!train_data) { RETURN_FALSE; } \
+#define PHP_FANN_RETURN_TRAIN_DATA()								\
+	if (!train_data) { RETURN_FALSE; }								\
 ZEND_REGISTER_RESOURCE(return_value, train_data, le_fanntrainbuf)
 
 /* macro for fetching ann resource */
-#define PHP_FANN_FETCH_ANN() \
+#define PHP_FANN_FETCH_ANN()											\
 	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
 
-/* macro for getting one ann param */
-#define PHP_FANN_GET_PARAM1(__fce, __return) \
-	zval *z_ann; struct fann *ann; \
+/* macro for getting ann param identified by 0 args */
+#define PHP_FANN_GET_PARAM0(__fce, __return)							\
+	zval *z_ann; struct fann *ann;										\
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) return; \
-	PHP_FANN_FETCH_ANN(); \
+	PHP_FANN_FETCH_ANN();												\
 	__return(__fce(ann))
 
-/* macro for getting ann param (just alian for one param macro) */
-#define PHP_FANN_GET_PARAM PHP_FANN_GET_PARAM1
+/* macro for getting ann param identified by 2 args */
+#define PHP_FANN_GET_PARAM2(__fce, __return, __zppval, __type1, __type2) \
+	zval *z_ann; struct fann *ann;										\
+	__type1 param1; __type2 param2;										\
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #__zppval, &z_ann, &param1, &param2) == FAILURE) \
+		return;															\
+	PHP_FANN_FETCH_ANN();												\
+	__return(__fce(ann, param1, param2))
 
-/* macro for setting one ann param */
-#define PHP_FANN_SET_PARAM1(__fce, __zppval, __type) \
-	zval *z_ann; struct fann *ann; __type param; \
+
+/* macro for getting ann param (just alias for one param macro) */
+#define PHP_FANN_GET_PARAM PHP_FANN_GET_PARAM0
+
+/* macro for setting ann param identified by 1 arg */
+#define PHP_FANN_SET_PARAM1(__fce, __zppval, __type)					\
+	zval *z_ann; struct fann *ann; __type param;						\
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #__zppval, &z_ann, &param) == FAILURE) return; \
-	PHP_FANN_FETCH_ANN(); \
-	__fce(ann, param); \
-	PHP_FANN_ERROR_CHECK_ANN();	\
+	PHP_FANN_FETCH_ANN();												\
+	__fce(ann, param);													\
+	PHP_FANN_ERROR_CHECK_ANN();											\
+	RETURN_TRUE
+
+
+/* macro for setting ann param identified by 2 args */
+#define PHP_FANN_SET_PARAM2(__fce, __zppval, __type1, __type2)			\
+	zval *z_ann; struct fann *ann;										\
+	__type1 param1; __type2 param2;										\
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #__zppval, &z_ann, &param1, &param2) == FAILURE) \
+		return;															\
+	PHP_FANN_FETCH_ANN();												\
+	__fce(ann, param1, param2);											\
+	PHP_FANN_ERROR_CHECK_ANN();											\
+	RETURN_TRUE
+
+/* macro for setting ann param identified by 3 args */
+#define PHP_FANN_SET_PARAM3(__fce, __zppval, __type1, __type2, __type3)	\
+	zval *z_ann; struct fann *ann;										\
+	__type1 param1; __type2 param2; __type3 param3;						\
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #__zppval, &z_ann, &param1, &param2, &param3) \
+		== FAILURE) return;												\
+	PHP_FANN_FETCH_ANN();												\
+	__fce(ann, param1, param2, $param3);								\
+	PHP_FANN_ERROR_CHECK_ANN();											\
 	RETURN_TRUE
 
 /* macro for setting ann param (just alian for one param macro) */
 #define PHP_FANN_SET_PARAM PHP_FANN_SET_PARAM1
 
 /* macro for fetching train_data resource */
-#define PHP_FANN_FETCH_TRAIN_DATA() \
+#define PHP_FANN_FETCH_TRAIN_DATA()										\
 ZEND_FETCH_RESOURCE(train_data, struct fann_train_data *, &z_train_data, -1, le_fanntrainbuf_name, le_fanntrainbuf);
 
 /* macro for registering FANN constants */
