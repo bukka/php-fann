@@ -41,9 +41,10 @@ static int le_fannbuf, le_fanntrainbuf;
 #define le_fanntrainbuf_name "FANN Train Data"
 
 /* {{{ arginfo */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_fann_create_standard, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_fann_create_standard, 0, 0, 3)
 ZEND_ARG_INFO(0, num_layers)
-ZEND_ARG_INFO(0, arg1)
+ZEND_ARG_INFO(0, num_neurons1)
+ZEND_ARG_INFO(0, num_neurons2)
 ZEND_ARG_INFO(0, ...)
 ZEND_END_ARG_INFO()
 
@@ -52,10 +53,11 @@ ZEND_ARG_INFO(0, num_layers)
 ZEND_ARG_INFO(0, layers)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_fann_create_sparse, 0, 0, 3)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_fann_create_sparse, 0, 0, 4)
 ZEND_ARG_INFO(0, connection_rate)
 ZEND_ARG_INFO(0, num_layers)
-ZEND_ARG_INFO(0, arg1)
+ZEND_ARG_INFO(0, num_neurons1)
+ZEND_ARG_INFO(0, num_neurons2)
 ZEND_ARG_INFO(0, ...)
 ZEND_END_ARG_INFO()
 
@@ -65,9 +67,10 @@ ZEND_ARG_INFO(0, num_layers)
 ZEND_ARG_INFO(0, layers)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_fann_create_shortcut, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_fann_create_shortcut, 0, 0, 3)
 ZEND_ARG_INFO(0, num_layers)
-ZEND_ARG_INFO(0, arg1)
+ZEND_ARG_INFO(0, num_neurons1)
+ZEND_ARG_INFO(0, num_neurons2)
 ZEND_ARG_INFO(0, ...)
 ZEND_END_ARG_INFO()
 
@@ -473,7 +476,7 @@ ZEND_REGISTER_RESOURCE(return_value, train_data, le_fanntrainbuf)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #__zppval, &z_ann, &param1, &param2, &param3) \
 		== FAILURE) return;												\
 	PHP_FANN_FETCH_ANN();												\
-	__fce(ann, param1, param2, $param3);								\
+	__fce(ann, param1, param2, param3);									\
 	PHP_FANN_ERROR_CHECK_ANN();											\
 	RETURN_TRUE
 
@@ -682,7 +685,7 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 }
 /* }}} */
 
-/* {{{ proto resource fann_create_standard(int num_layers, int arg1, [, int ... ])
+/* {{{ proto resource fann_create_standard(int num_layers, int num_neurons1, int num_neurons2, [, int ... ])
    Creates a standard fully connected backpropagation neural network */
 PHP_FUNCTION(fann_create_standard)
 {
@@ -718,7 +721,7 @@ PHP_FUNCTION(fann_create_standard_array)
 }
 /* }}} */
 
-/* {{{ proto resource fann_create_sparse(float connection_rate, int num_layers, int arg1, [, int ... ])
+/* {{{ proto resource fann_create_sparse(float connection_rate, int num_layers, int num_neurons1, int num_neurons2, [, int ... ])
    Creates a standard backpropagation neural network, which is not fully connected */
 PHP_FUNCTION(fann_create_sparse)
 {
@@ -757,7 +760,7 @@ PHP_FUNCTION(fann_create_sparse_array)
 }
 /* }}} */
 
-/* {{{ proto resource fann_create_shortcut(int num_layers, int arg1, [, int ... ])
+/* {{{ proto resource fann_create_shortcut(int num_layers, int num_neurons1, int num_neurons2, [, int ... ])
    Creates a standard backpropagation neural network, which is not fully connected and
    which also has shortcut connections. */
 PHP_FUNCTION(fann_create_shortcut)
