@@ -85,7 +85,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_fann_run, 0)
 ZEND_ARG_INFO(0, ann)
-ZEND_ARG_INFO(0, info)
+ZEND_ARG_INFO(0, input)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_fann_get_num_input, 0)
