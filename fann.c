@@ -83,6 +83,10 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_destroy, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_copy, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_run, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, input)
@@ -328,6 +332,7 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_create_sparse_array,                      arginfo_fann_create_sparse_array)
 	PHP_FE(fann_create_shortcut,                          arginfo_fann_create_shortcut)
 	PHP_FE(fann_create_shortcut_array,                    arginfo_fann_create_shortcut_array)
+	PHP_FE(fann_copy,                                     arginfo_fann_copy)
 	PHP_FE(fann_run,                                      arginfo_fann_run)
 	PHP_FE(fann_destroy,                                  arginfo_fann_destroy)
 	PHP_FE(fann_train_on_file,                            arginfo_fann_train_on_file)
@@ -798,7 +803,7 @@ PHP_FUNCTION(fann_create_shortcut_array)
 }
 /* }}} */
 
-/* {{{ funn_input_foreach
+/* {{{ funn_input_foreach()
    callback for converting input hash map to fann_type array */
 int funn_input_foreach(zval **element TSRMLS_DC, int num_args, va_list args, zend_hash_key *hash_key)
 {
@@ -810,9 +815,29 @@ int funn_input_foreach(zval **element TSRMLS_DC, int num_args, va_list args, zen
 	
 	return ZEND_HASH_APPLY_KEEP;
 }
+/* }}} */
 
+/* {{{ proto resource fann_copy(resource ann)
+   Creates a copy of the neural network */
+PHP_FUNCTION(fann_copy)
+{
+	zval *z_ann;
+	struct fann *ann, *ann_copy;
+		
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
 
-/* {{{ proto resource fann_run(string configuration_file)
+	ann_copy = fann_copy(ann);
+	if (!ann_copy) {
+		RETURN_FALSE;
+	}
+	ZEND_REGISTER_RESOURCE(return_value, ann_copy, le_fannbuf)
+}
+/* }}} */
+
+/* {{{ proto array fann_run(resource ann, array input)
    Runs input through the neural network */
 PHP_FUNCTION(fann_run)
 {
