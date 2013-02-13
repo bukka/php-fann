@@ -92,6 +92,17 @@ ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, input)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_randomize_weights, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, min_weight)
+ZEND_ARG_INFO(0, max_weight)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_init_weights, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, train_data)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_get_num_input, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
@@ -332,9 +343,11 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_create_sparse_array,                      arginfo_fann_create_sparse_array)
 	PHP_FE(fann_create_shortcut,                          arginfo_fann_create_shortcut)
 	PHP_FE(fann_create_shortcut_array,                    arginfo_fann_create_shortcut_array)
+	PHP_FE(fann_destroy,                                  arginfo_fann_destroy)
 	PHP_FE(fann_copy,                                     arginfo_fann_copy)
 	PHP_FE(fann_run,                                      arginfo_fann_run)
-	PHP_FE(fann_destroy,                                  arginfo_fann_destroy)
+	PHP_FE(fann_randomize_weights,                        arginfo_fann_randomize_weights)
+	PHP_FE(fann_init_weights,                             arginfo_fann_init_weights)
 	PHP_FE(fann_train_on_file,                            arginfo_fann_train_on_file)
 	PHP_FE(fann_read_train_from_file,                     arginfo_fann_read_train_from_file)
 	PHP_FE(fann_destroy_train,                            arginfo_fann_destroy_train)
@@ -433,6 +446,10 @@ ZEND_REGISTER_RESOURCE(return_value, train_data, le_fanntrainbuf)
 #define PHP_FANN_FETCH_ANN()											\
 	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf);
 
+/* macro for fetching train data resource */
+#define PHP_FANN_FETCH_TRAIN_DATA()											\
+	ZEND_FETCH_RESOURCE(train_data, struct fann_train_data *, &z_train_data, -1, le_fanntrainbuf_name, le_fanntrainbuf);
+
 /* macro for getting ann param identified by 0 args */
 #define PHP_FANN_GET_PARAM0(__fce, __return)							\
 	zval *z_ann; struct fann *ann;										\
@@ -487,10 +504,6 @@ ZEND_REGISTER_RESOURCE(return_value, train_data, le_fanntrainbuf)
 
 /* macro for setting ann param (just alian for one param macro) */
 #define PHP_FANN_SET_PARAM PHP_FANN_SET_PARAM1
-
-/* macro for fetching train_data resource */
-#define PHP_FANN_FETCH_TRAIN_DATA()										\
-ZEND_FETCH_RESOURCE(train_data, struct fann_train_data *, &z_train_data, -1, le_fanntrainbuf_name, le_fanntrainbuf);
 
 /* macro for registering FANN constants */
 #define REGISTER_FANN_CONSTANT(__c) REGISTER_LONG_CONSTANT(#__c, __c, CONST_CS | CONST_PERSISTENT)
@@ -817,6 +830,22 @@ int funn_input_foreach(zval **element TSRMLS_DC, int num_args, va_list args, zen
 }
 /* }}} */
 
+/* {{{ proto bool fann_destroy(resource ann)
+   Destroys neural network */
+PHP_FUNCTION(fann_destroy)
+{
+	zval *z_ann;
+	struct fann *ann;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
+		return;
+	}
+
+	PHP_FANN_FETCH_ANN();
+	RETURN_BOOL(zend_list_delete(Z_LVAL_P(z_ann)) == SUCCESS);
+}
+/* }}} */
+
 /* {{{ proto resource fann_copy(resource ann)
    Creates a copy of the neural network */
 PHP_FUNCTION(fann_copy)
@@ -867,19 +896,44 @@ PHP_FUNCTION(fann_run)
 }
 /* }}} */
 
-/* {{{ proto bool fann_destroy(resource ann)
-   Destroys neural network */
-PHP_FUNCTION(fann_destroy)
+
+/* {{{ proto bool fann_randomize_weights(resource ann, double min_weight, double max_weight)
+   Gives each connection a random weight between min_weight and max_weight */
+PHP_FUNCTION(fann_randomize_weights)
 {
 	zval *z_ann;
 	struct fann *ann;
+	double min_weight, max_weight;
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &z_ann, &min_weight, &max_weight) == FAILURE) {
 		return;
 	}
-
+	
 	PHP_FANN_FETCH_ANN();
-	RETURN_BOOL(zend_list_delete(Z_LVAL_P(z_ann)) == SUCCESS);
+	fann_randomize_weights(ann, min_weight, max_weight);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
+}
+/* }}} */
+
+
+/* {{{ proto bool fann_init_weights(resource ann, resource train_data)
+   Initializes weights using Widrow + Nguyen’s algorithm */
+PHP_FUNCTION(fann_init_weights)
+{
+	zval *z_ann, *z_train_data;
+	struct fann *ann;
+	struct fann_train_data *train_data;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rr", &z_ann, &z_train_data) == FAILURE) {
+		return;
+	}
+	
+	PHP_FANN_FETCH_ANN();
+	PHP_FANN_FETCH_TRAIN_DATA();
+	fann_init_weights(ann, train_data);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
 }
 /* }}} */
 

@@ -50,9 +50,11 @@ PHP_FUNCTION(fann_create_sparse);
 PHP_FUNCTION(fann_create_sparse_array);
 PHP_FUNCTION(fann_create_shortcut);
 PHP_FUNCTION(fann_create_shortcut_array);
+PHP_FUNCTION(fann_destroy);
 PHP_FUNCTION(fann_copy);
 PHP_FUNCTION(fann_run);
-PHP_FUNCTION(fann_destroy);
+PHP_FUNCTION(fann_randomize_weights);
+PHP_FUNCTION(fann_init_weights);
 /* Parameters */
 PHP_FUNCTION(fann_get_num_input);
 PHP_FUNCTION(fann_get_num_output);
