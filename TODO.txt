@@ -1,8 +1,17 @@
+Generic
 - output redirection (never print to STDOUT) - fann_train*
 - streams for file and dir checking
   - group file checking in fann_train_on_file and fann_create_from_file and possibly use php function
   - check if the directory for fann_save exists and is writable
-- check FANN connection_rate param for create_sparse*
-- check int intervals for fann_train_on_fail
-- test function - phpt 
+- check parameters ranges
+  - valid contants
+  - FANN connection_rate param for create_sparse*
+  - check int intervals for fann_train_on_fail
 - compare PHP outputs with C outputs for all examples
+
+Functions - implementation
+- fann_print_connections - either rewrite or redirect output
+- fann_print_parameters - either rewrite or redirect output
+
+Functions - tests
+- fann_init_weights - train_data test must be done first
