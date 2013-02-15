@@ -63,6 +63,8 @@ PHP_FUNCTION(fann_get_total_connections);
 PHP_FUNCTION(fann_get_network_type);
 PHP_FUNCTION(fann_get_connection_rate);
 PHP_FUNCTION(fann_get_num_layers);
+PHP_FUNCTION(fann_get_layer_array);
+PHP_FUNCTION(fann_get_bias_array);
 
 /* FANN Training */
 /* Training Data Training */

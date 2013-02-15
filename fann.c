@@ -131,6 +131,14 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_get_num_layers, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_layer_array, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_bias_array, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_train_on_file, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, filename)
@@ -355,6 +363,8 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_get_network_type,                         arginfo_fann_get_network_type)
 	PHP_FE(fann_get_connection_rate,                      arginfo_fann_get_connection_rate)
 	PHP_FE(fann_get_num_layers,                           arginfo_fann_get_num_layers)
+	PHP_FE(fann_get_layer_array,                          arginfo_fann_get_layer_array)
+	PHP_FE(fann_get_bias_array,                           arginfo_fann_get_bias_array)
 	PHP_FE(fann_train_on_file,                            arginfo_fann_train_on_file)
 	PHP_FE(fann_read_train_from_file,                     arginfo_fann_read_train_from_file)
 	PHP_FE(fann_destroy_train,                            arginfo_fann_destroy_train)
@@ -632,7 +642,7 @@ static int php_fann_create_check_neurons(int num_neurons TSRMLS_DC)
 
 /* php_fann_create() {{{ */
 static int php_fann_create(int num_args, float *connection_rate,
-						   unsigned int *num_layers, unsigned int **layers TSRMLS_DC)
+						   uint *num_layers, uint **layers TSRMLS_DC)
 {
 	zval ***args;
 	int argc, i, pos;
@@ -655,7 +665,7 @@ static int php_fann_create(int num_args, float *connection_rate,
 		return FAILURE;
 	}
 
-	*layers = (unsigned int *) emalloc(*num_layers * sizeof(unsigned int));
+	*layers = (uint *) emalloc(*num_layers * sizeof(uint));
 	for (i = pos; i < argc; i++) {
 		convert_to_long_ex(args[i]);
 		if (php_fann_create_check_neurons(Z_LVAL_PP(args[i]) TSRMLS_CC) == FAILURE) {
@@ -673,7 +683,7 @@ static int php_fann_create(int num_args, float *connection_rate,
 
 /* php_fann_create_array() {{{ */
 static int php_fann_create_array(int num_args, float *conn_rate,
-								 unsigned int *num_layers, unsigned int **layers TSRMLS_DC)
+								 uint *num_layers, uint **layers TSRMLS_DC)
 {
 	zval *array, **ppdata;
 	int i = 0;
@@ -694,7 +704,7 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 		return FAILURE;
 	}
 
-	*layers = (unsigned int *) emalloc(*num_layers * sizeof(unsigned int));
+	*layers = (uint *) emalloc(*num_layers * sizeof(uint));
 	for (zend_hash_internal_pointer_reset(Z_ARRVAL_P(array));
 		 zend_hash_get_current_data(Z_ARRVAL_P(array), (void **) &ppdata) == SUCCESS;
 		 zend_hash_move_forward(Z_ARRVAL_P(array))) {
@@ -714,7 +724,7 @@ static int php_fann_create_array(int num_args, float *conn_rate,
    Creates a standard fully connected backpropagation neural network */
 PHP_FUNCTION(fann_create_standard)
 {
-	unsigned int num_layers, *layers; 
+	uint num_layers, *layers; 
 	struct fann *ann;
 	
 	if (php_fann_create(ZEND_NUM_ARGS(), NULL, &num_layers, &layers TSRMLS_CC) == FAILURE) {
@@ -732,7 +742,7 @@ PHP_FUNCTION(fann_create_standard)
    Creates a standard fully connected backpropagation neural network (array for layers) */
 PHP_FUNCTION(fann_create_standard_array)
 {
-	unsigned int num_layers, *layers; 
+	uint num_layers, *layers; 
 	struct fann *ann;
 	
 	if (php_fann_create_array(ZEND_NUM_ARGS(), NULL, &num_layers, &layers TSRMLS_CC) == FAILURE) {
@@ -750,7 +760,7 @@ PHP_FUNCTION(fann_create_standard_array)
    Creates a standard backpropagation neural network, which is not fully connected */
 PHP_FUNCTION(fann_create_sparse)
 {
-	unsigned int num_layers, *layers;
+	uint num_layers, *layers;
 	float connection_rate;
 	struct fann *ann;
 	
@@ -770,7 +780,7 @@ PHP_FUNCTION(fann_create_sparse)
    (using array for layers)  */
 PHP_FUNCTION(fann_create_sparse_array)
 {
-	unsigned int num_layers, *layers;
+	uint num_layers, *layers;
 	float connection_rate;
 	struct fann *ann;
 	
@@ -790,7 +800,7 @@ PHP_FUNCTION(fann_create_sparse_array)
    which also has shortcut connections. */
 PHP_FUNCTION(fann_create_shortcut)
 {
-	unsigned int num_layers, *layers; 
+	uint num_layers, *layers; 
 	struct fann *ann;
 	
 	if (php_fann_create(ZEND_NUM_ARGS(), NULL, &num_layers, &layers TSRMLS_CC) == FAILURE) {
@@ -809,7 +819,7 @@ PHP_FUNCTION(fann_create_shortcut)
    which also has shortcut connections (using array of layers) */
 PHP_FUNCTION(fann_create_shortcut_array)
 {
-	unsigned int num_layers, *layers; 
+	uint num_layers, *layers; 
 	struct fann *ann;
 	
 	if (php_fann_create_array(ZEND_NUM_ARGS(), NULL, &num_layers, &layers TSRMLS_CC) == FAILURE) {
@@ -992,6 +1002,54 @@ PHP_FUNCTION(fann_get_connection_rate)
 PHP_FUNCTION(fann_get_num_layers)
 {
 	PHP_FANN_GET_PARAM(fann_get_num_layers, RETURN_LONG);
+}
+
+/* {{{ proto array fann_get_layer_array(resource ann)
+   Returns the number of neurons in each layer in the network (bias is not included) */
+PHP_FUNCTION(fann_get_layer_array)
+{
+	zval *z_ann;
+	struct fann *ann;
+	uint num_layers, *layers, i;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
+		return;
+	}
+	
+	PHP_FANN_FETCH_ANN();
+	num_layers = fann_get_num_layers(ann);
+	PHP_FANN_ERROR_CHECK_ANN();
+	layers = (uint *) emalloc(num_layers * sizeof(uint)); 
+	fann_get_layer_array(ann, layers);
+	array_init(return_value);
+	for (i = 0; i < num_layers; i++) {
+		add_index_long(return_value, i, layers[i]);
+	}
+	efree(layers);
+}
+
+/* {{{ proto array fann_get_bias_array(resource ann)
+   Returns the number of bias in each layer in the network */
+PHP_FUNCTION(fann_get_bias_array)
+{
+	zval *z_ann;
+	struct fann *ann;
+	uint num_layers, *layers, i;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
+		return;
+	}
+	
+	PHP_FANN_FETCH_ANN();
+	num_layers = fann_get_num_layers(ann);
+	PHP_FANN_ERROR_CHECK_ANN();
+	layers = (uint *) emalloc(num_layers * sizeof(uint)); 
+	fann_get_bias_array(ann, layers);
+	array_init(return_value);
+	for (i = 0; i < num_layers; i++) {
+		add_index_long(return_value, i, layers[i]);
+	}
+	efree(layers);
 }
 
 /* {{{ proto bool fann_train_on_file(resource ann, string filename, int max_epochs, int epochs_between_reports, float desired_error)
