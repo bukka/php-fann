@@ -47,6 +47,6 @@ if test "$PHP_FANN" != "no"; then
   
   PHP_SUBST(FANN_SHARED_LIBADD)
 
-  PHP_NEW_EXTENSION(fann, fann.c, $ext_shared)
+  PHP_NEW_EXTENSION(fann, fann.c fann_connection.c, $ext_shared)
 fi
 

@@ -7,6 +7,6 @@ if (PHP_FANN == "yes") {
 	if (CHECK_LIB("libfann.lib", "fann_create_standard") &&
 			CHECK_HEADER_ADD_INCLUDE("fann.h", "CFLAGS_FANN")) {
 
-		EXTENSION("fann", "fann.c");
+		EXTENSION("fann", "fann.c fann_connection.c");
 	}
 }

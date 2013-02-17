@@ -119,6 +119,10 @@ PHP_FUNCTION(fann_create_from_file);
 PHP_FUNCTION(fann_save);
 
 
+/* FANNConnection class */
+void php_fannconnection_register_class(TSRMLS_D);
+PHP_FANN_API extern zend_class_entry *php_fann_FANNConnection_class;
+
 #endif	/* PHP_FANN_H */
 
 

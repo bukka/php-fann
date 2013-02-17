@@ -591,6 +591,9 @@ PHP_MINIT_FUNCTION(fann)
 	/* Network type constants */
 	REGISTER_FANN_CONSTANT(FANN_NETTYPE_LAYER);
 	REGISTER_FANN_CONSTANT(FANN_NETTYPE_SHORTCUT);
+
+	/* Init FANNConnection class */
+	php_fannconnection_register_class(TSRMLS_C);
 	
 	return SUCCESS;
 }
