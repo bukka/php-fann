@@ -139,6 +139,22 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_get_bias_array, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_connection_array, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_weight_array, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, connections)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_weight, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, from_neuron)
+ZEND_ARG_INFO(0, to_neuron)
+ZEND_ARG_INFO(0, weight)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_train_on_file, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, filename)
@@ -365,6 +381,9 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_get_num_layers,                           arginfo_fann_get_num_layers)
 	PHP_FE(fann_get_layer_array,                          arginfo_fann_get_layer_array)
 	PHP_FE(fann_get_bias_array,                           arginfo_fann_get_bias_array)
+	PHP_FE(fann_get_connection_array,                     arginfo_fann_get_connection_array)
+	PHP_FE(fann_set_weight_array,                         arginfo_fann_set_weight_array)
+	PHP_FE(fann_set_weight,                               arginfo_fann_set_weight)
 	PHP_FE(fann_train_on_file,                            arginfo_fann_train_on_file)
 	PHP_FE(fann_read_train_from_file,                     arginfo_fann_read_train_from_file)
 	PHP_FE(fann_destroy_train,                            arginfo_fann_destroy_train)
@@ -1024,6 +1043,7 @@ PHP_FUNCTION(fann_get_layer_array)
 	PHP_FANN_ERROR_CHECK_ANN();
 	layers = (uint *) emalloc(num_layers * sizeof(uint)); 
 	fann_get_layer_array(ann, layers);
+	PHP_FANN_ERROR_CHECK_ANN();
 	array_init(return_value);
 	for (i = 0; i < num_layers; i++) {
 		add_index_long(return_value, i, layers[i]);
@@ -1048,11 +1068,104 @@ PHP_FUNCTION(fann_get_bias_array)
 	PHP_FANN_ERROR_CHECK_ANN();
 	layers = (uint *) emalloc(num_layers * sizeof(uint)); 
 	fann_get_bias_array(ann, layers);
+	PHP_FANN_ERROR_CHECK_ANN();
 	array_init(return_value);
 	for (i = 0; i < num_layers; i++) {
 		add_index_long(return_value, i, layers[i]);
 	}
 	efree(layers);
+}
+
+/* {{{ proto array fann_get_connection_array(resource ann)
+   Returns connections in the network */
+PHP_FUNCTION(fann_get_connection_array)
+{
+	zval *z_ann, *z_connection;
+	struct fann *ann;
+	struct fann_connection *connections;
+	uint num_connections, i;
+	long from_neuron, to_neuron;
+	double weight;
+		
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
+		return;
+	}
+	
+	PHP_FANN_FETCH_ANN();
+	num_connections = fann_get_total_connections(ann);
+	PHP_FANN_ERROR_CHECK_ANN();
+	connections = (struct fann_connection *) emalloc(num_connections * sizeof(struct fann_connection)); 
+	fann_get_connection_array(ann, connections);
+	PHP_FANN_ERROR_CHECK_ANN();
+	array_init(return_value);
+	for (i = 0; i < num_connections; i++) {
+		from_neuron = (long) connections[i].from_neuron;
+		to_neuron = (long) connections[i].to_neuron;
+		weight = (double) connections[i].weight;
+		object_init_ex(z_connection, php_fann_FANNConnection_class);
+		PHP_FANN_CONN_PROP_UPDATE(long, z_connection, "from_neuron", from_neuron);
+		PHP_FANN_CONN_PROP_UPDATE(long, z_connection, "to_neuron", to_neuron);
+		PHP_FANN_CONN_PROP_UPDATE(double, z_connection, "weight",  weight);
+		add_index_zval(return_value, i, z_connection);
+	}
+	efree(connections);
+}
+
+/* {{{ proto bool fann_set_weight_array(resource ann, array connections)
+   Sets connections in the network */
+PHP_FUNCTION(fann_set_weight_array)
+{
+	zval *z_ann, *array, **current;
+	struct fann *ann;
+	struct fann_connection *connections;
+	uint num_connections, i = 0;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &array) == FAILURE) {
+		return;
+	}
+
+	PHP_FANN_FETCH_ANN();
+	num_connections = zend_hash_num_elements(Z_ARRVAL_P(array));
+	connections = (struct fann_connection *) emalloc(num_connections * sizeof(struct fann_connection));
+	for (zend_hash_internal_pointer_reset(Z_ARRVAL_P(array));
+		 zend_hash_get_current_data(Z_ARRVAL_P(array), (void **) &current) == SUCCESS;
+		 zend_hash_move_forward(Z_ARRVAL_P(array))) {
+		if (Z_TYPE_PP(current) == IS_OBJECT && instanceof_function(
+				Z_OBJCE_PP(current), php_fann_FANNConnection_class TSRMLS_CC)) {
+			connections[i].from_neuron = Z_LVAL_P(PHP_FANN_CONN_PROP_READ(*current, "from_neuron"));
+			connections[i].to_neuron = Z_LVAL_P(PHP_FANN_CONN_PROP_READ(*current, "to_neuron"));
+			connections[i].weight = Z_DVAL_P(PHP_FANN_CONN_PROP_READ(*current, "weight"));
+			++i;
+		}
+		else {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Weights array can contain only object of FANNConnection");
+			efree(connections);
+			RETURN_FALSE;
+		}
+	}
+	fann_set_weight_array(ann, connections, i);
+	efree(connections);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
+}
+
+/* {{{ proto bool fann_set_weight(resource ann, int from_neuron, int to_neuron, double weight)
+   Sets a connection in the network */
+PHP_FUNCTION(fann_set_weight)
+{
+	zval *z_ann;
+	struct fann *ann;
+	long from_neuron, to_neuron;
+	double weight;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlld", &z_ann, &from_neuron, &to_neuron, &weight)
+		== FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	fann_set_weight(ann, from_neuron, to_neuron, weight);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
 }
 
 /* {{{ proto bool fann_train_on_file(resource ann, string filename, int max_epochs, int epochs_between_reports, float desired_error)

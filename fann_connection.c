@@ -27,13 +27,6 @@
 
 PHP_FANN_API zend_class_entry *php_fann_FANNConnection_class;
 
-/* macros for dealing with FANNConnection property */
-#define PHP_FANN_PROP(__name, __value) #__name, sizeof(#__name) - 1, __value
-#define PHP_FANN_PROP_UPDATE(__name)									\
-	php_fann_FANNConnection_class, getThis(), PHP_FANN_PROP(__name, __name) TSRMLS_CC
-#define PHP_FANN_PROP_DECLARE(__name)									\
-	php_fann_FANNConnection_class, PHP_FANN_PROP(__name, 0), ZEND_ACC_PUBLIC TSRMLS_CC
-
 /* {{{ proto FANNConnection::__construct(int from_neuron, int to_neuron, double weight)
    Constructs a new FANNConnection instance */
 PHP_METHOD(FANNConnection, __construct)
@@ -46,9 +39,10 @@ PHP_METHOD(FANNConnection, __construct)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lld", &from_neuron, &to_neuron, &weight) == FAILURE) {
 		return;
 	}
-	zend_update_property_long(PHP_FANN_PROP_UPDATE(from_neuron));
-	zend_update_property_long(PHP_FANN_PROP_UPDATE(to_neuron));
-	zend_update_property_double(PHP_FANN_PROP_UPDATE(weight));
+
+	PHP_FANN_CONN_PROP_UPDATE(long, return_value, "from_neuron", from_neuron);
+	PHP_FANN_CONN_PROP_UPDATE(long, return_value, "to_neuron", to_neuron);
+	PHP_FANN_CONN_PROP_UPDATE(double, return_value, "weight",  weight);
 }
 /* }}} */
 
@@ -99,10 +93,9 @@ ZEND_METHOD(FANNConnection, setWeight)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "d", &weight) == FAILURE) {
 		return;
 	}
-	zend_update_property_double(PHP_FANN_PROP_UPDATE(weight));
+    PHP_FANN_CONN_PROP_UPDATE(double, getThis(), "weight", weight);
 }
 /* }}} */
-
 
 /* {{{ arginfo for FANNConnection class */
 ZEND_BEGIN_ARG_INFO(arginfo_fannconnection___construct, 0)
@@ -132,8 +125,8 @@ void php_fannconnection_register_class(TSRMLS_D)
 	zend_class_entry ce;
 	INIT_CLASS_ENTRY(ce, "FANNConnection", fannconnection_funcs);
 	php_fann_FANNConnection_class = zend_register_internal_class(&ce TSRMLS_CC);
-	zend_declare_property_long(PHP_FANN_PROP_DECLARE(from_neuron));
-	zend_declare_property_long(PHP_FANN_PROP_DECLARE(to_neuron));
-	zend_declare_property_double(PHP_FANN_PROP_DECLARE(weight));
+    PHP_FANN_CONN_PROP_DECLARE(long, "from_neuron");
+    PHP_FANN_CONN_PROP_DECLARE(long, "to_neuron");
+    PHP_FANN_CONN_PROP_DECLARE(double, "weight");
 }
 /* }}} */

@@ -65,6 +65,9 @@ PHP_FUNCTION(fann_get_connection_rate);
 PHP_FUNCTION(fann_get_num_layers);
 PHP_FUNCTION(fann_get_layer_array);
 PHP_FUNCTION(fann_get_bias_array);
+PHP_FUNCTION(fann_get_connection_array);
+PHP_FUNCTION(fann_set_weight_array);
+PHP_FUNCTION(fann_set_weight);
 
 /* FANN Training */
 /* Training Data Training */
@@ -122,6 +125,18 @@ PHP_FUNCTION(fann_save);
 /* FANNConnection class */
 void php_fannconnection_register_class(TSRMLS_D);
 PHP_FANN_API extern zend_class_entry *php_fann_FANNConnection_class;
+
+/* macros for dealing with FANNConnection properties */
+#define PHP_FANN_CONN_PROP_NAME(__name)  __name, sizeof(__name)-1
+#define PHP_FANN_CONN_PROP_UPDATE(__type, __obj, __name, __value)		\
+	zend_update_property_##__type(php_fann_FANNConnection_class, (__obj), \
+								  PHP_FANN_CONN_PROP_NAME(__name), (__value) TSRMLS_CC)
+#define PHP_FANN_CONN_PROP_DECLARE(__type, __name)					\
+	zend_declare_property_##__type(php_fann_FANNConnection_class, PHP_FANN_CONN_PROP_NAME(__name), \
+								   0, ZEND_ACC_PUBLIC TSRMLS_CC)
+#define PHP_FANN_CONN_PROP_READ(__obj, __name) \
+	zend_read_property(php_fann_FANNConnection_class, (__obj),	\
+					   PHP_FANN_CONN_PROP_NAME(__name), 0 TSRMLS_CC)
 
 #endif	/* PHP_FANN_H */
 
