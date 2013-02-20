@@ -1102,6 +1102,7 @@ PHP_FUNCTION(fann_get_connection_array)
 		from_neuron = (long) connections[i].from_neuron;
 		to_neuron = (long) connections[i].to_neuron;
 		weight = (double) connections[i].weight;
+		MAKE_STD_ZVAL(z_connection);
 		object_init_ex(z_connection, php_fann_FANNConnection_class);
 		PHP_FANN_CONN_PROP_UPDATE(long, z_connection, "from_neuron", from_neuron);
 		PHP_FANN_CONN_PROP_UPDATE(long, z_connection, "to_neuron", to_neuron);
