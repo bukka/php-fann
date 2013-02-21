@@ -155,6 +155,18 @@ ZEND_ARG_INFO(0, to_neuron)
 ZEND_ARG_INFO(0, weight)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_MSE, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_bit_fail, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_reset_MSE, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_train_on_file, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, filename)
@@ -384,6 +396,9 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_get_connection_array,                     arginfo_fann_get_connection_array)
 	PHP_FE(fann_set_weight_array,                         arginfo_fann_set_weight_array)
 	PHP_FE(fann_set_weight,                               arginfo_fann_set_weight)
+	PHP_FE(fann_get_MSE,                                  arginfo_fann_get_MSE)
+	PHP_FE(fann_get_bit_fail,                             arginfo_fann_get_bit_fail)
+	PHP_FE(fann_reset_MSE,                                arginfo_fann_reset_MSE)
 	PHP_FE(fann_train_on_file,                            arginfo_fann_train_on_file)
 	PHP_FE(fann_read_train_from_file,                     arginfo_fann_read_train_from_file)
 	PHP_FE(fann_destroy_train,                            arginfo_fann_destroy_train)
@@ -502,9 +517,17 @@ ZEND_REGISTER_RESOURCE(return_value, train_data, le_fanntrainbuf)
 	PHP_FANN_FETCH_ANN();												\
 	__return(__fce(ann, param1, param2))
 
-
 /* macro for getting ann param (just alias for one param macro) */
 #define PHP_FANN_GET_PARAM PHP_FANN_GET_PARAM0
+
+/* macro for setting ann param not identified by arg */
+#define PHP_FANN_SET_PARAM0(__fce)										\
+	zval *z_ann; struct fann *ann;										\
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) return; \
+	PHP_FANN_FETCH_ANN();												\
+	__fce(ann);															\
+	PHP_FANN_ERROR_CHECK_ANN();											\
+	RETURN_TRUE
 
 /* macro for setting ann param identified by 1 arg */
 #define PHP_FANN_SET_PARAM1(__fce, __zppval, __type)					\
@@ -540,6 +563,8 @@ ZEND_REGISTER_RESOURCE(return_value, train_data, le_fanntrainbuf)
 
 /* macro for setting ann param (just alian for one param macro) */
 #define PHP_FANN_SET_PARAM PHP_FANN_SET_PARAM1
+/* macro for resetting ann param */
+#define PHP_FANN_RESET_PARAM PHP_FANN_SET_PARAM0
 
 /* macro for registering FANN constants */
 #define REGISTER_FANN_CONSTANT(__c) REGISTER_LONG_CONSTANT(#__c, __c, CONST_CS | CONST_PERSISTENT)
@@ -1167,6 +1192,27 @@ PHP_FUNCTION(fann_set_weight)
 	fann_set_weight(ann, from_neuron, to_neuron, weight);
 	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
+}
+
+/* {{{ proto double fann_get_MSE(resource ann)
+   Reads the mean square error from the network */
+PHP_FUNCTION(fann_get_MSE)
+{
+	PHP_FANN_GET_PARAM(fann_get_MSE, RETURN_DOUBLE);
+}
+
+/* {{{ proto int fann_get_bit_fail(resource ann)
+   Returns he number of fail bits; means the number of output neurons which differ more than the bit fail limit */
+PHP_FUNCTION(fann_get_bit_fail)
+{
+	PHP_FANN_GET_PARAM(fann_get_bit_fail, RETURN_LONG);
+}
+
+/* {{{ proto bool fann_reset_MSE(resource ann)
+   Resets the mean square error from the network */
+PHP_FUNCTION(fann_reset_MSE)
+{
+	PHP_FANN_RESET_PARAM(fann_reset_MSE);
 }
 
 /* {{{ proto bool fann_train_on_file(resource ann, string filename, int max_epochs, int epochs_between_reports, float desired_error)
