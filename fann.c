@@ -155,6 +155,18 @@ ZEND_ARG_INFO(0, to_neuron)
 ZEND_ARG_INFO(0, weight)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_train, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, input)
+ZEND_ARG_INFO(0, desired_output)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_test, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, input)
+ZEND_ARG_INFO(0, desired_output)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_get_MSE, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
@@ -396,6 +408,8 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_get_connection_array,                     arginfo_fann_get_connection_array)
 	PHP_FE(fann_set_weight_array,                         arginfo_fann_set_weight_array)
 	PHP_FE(fann_set_weight,                               arginfo_fann_set_weight)
+	PHP_FE(fann_train,                                    arginfo_fann_train)
+	PHP_FE(fann_test,                                     arginfo_fann_test)
 	PHP_FE(fann_get_MSE,                                  arginfo_fann_get_MSE)
 	PHP_FE(fann_get_bit_fail,                             arginfo_fann_get_bit_fail)
 	PHP_FE(fann_reset_MSE,                                arginfo_fann_reset_MSE)
@@ -661,8 +675,23 @@ PHP_MINFO_FUNCTION(fann)
 }
 /* }}} */
 
-/* php_fann_create_check_layers() {{{ */
-static int php_fann_create_check_layers(int specified, int provided TSRMLS_DC)
+
+/* {{{ php_funn_io_foreach()
+   callback for converting input hash map to fann_type array */
+int php_funn_io_foreach(zval **element TSRMLS_DC, int num_args, va_list args, zend_hash_key *hash_key)
+{
+	fann_type *input = va_arg(args, fann_type *);
+	int *pos = va_arg(args, int *);
+	
+	convert_to_double(*element);
+	input[*pos++] = (fann_type) Z_DVAL_PP(element);
+	
+	return ZEND_HASH_APPLY_KEEP;
+}
+/* }}} */
+
+/* php_fann_check_num_layers() {{{ */
+static int php_fann_check_num_layers(int specified, int provided TSRMLS_DC)
 {
 	if (specified < 2) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Number of layers must be greater than 2");
@@ -676,11 +705,35 @@ static int php_fann_create_check_layers(int specified, int provided TSRMLS_DC)
 }
 /* }}} */
 
-/* php_fann_create_check_neurons() {{{ */
-static int php_fann_create_check_neurons(int num_neurons TSRMLS_DC)
+/* php_fann_check_num_neurons() {{{ */
+static int php_fann_check_num_neurons(int num_neurons TSRMLS_DC)
 {
 	if (num_neurons < 0) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Number of neurons cannot be negative");
+		return FAILURE;
+	}
+	return SUCCESS;
+}
+/* }}} */
+
+/* php_fann_check_num_inputs() {{{ */
+static int php_fann_check_num_inputs(struct fann *ann, int num_inputs TSRMLS_DC)
+{
+	if  (fann_get_num_input(ann) != num_inputs) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING,
+						 "Number of inputs is different than number of neurons in the input layer");
+		return FAILURE;
+	}
+	return SUCCESS;
+}
+/* }}} */
+
+/* php_fann_check_num_outputs() {{{ */
+static int php_fann_check_num_outputs(struct fann *ann, int num_outputs TSRMLS_DC)
+{
+	if  (fann_get_num_output(ann) != num_outputs) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING,
+						 "Number of outputs is different than number of neurons in the output layer");
 		return FAILURE;
 	}
 	return SUCCESS;
@@ -707,7 +760,7 @@ static int php_fann_create(int num_args, float *connection_rate,
 	convert_to_long_ex(args[pos]);
 	*num_layers = Z_LVAL_PP(args[pos++]);
 
-	if (php_fann_create_check_layers(*num_layers, argc - pos TSRMLS_CC) == FAILURE) {
+	if (php_fann_check_num_layers(*num_layers, argc - pos TSRMLS_CC) == FAILURE) {
 		efree(args);
 		return FAILURE;
 	}
@@ -715,7 +768,7 @@ static int php_fann_create(int num_args, float *connection_rate,
 	*layers = (uint *) emalloc(*num_layers * sizeof(uint));
 	for (i = pos; i < argc; i++) {
 		convert_to_long_ex(args[i]);
-		if (php_fann_create_check_neurons(Z_LVAL_PP(args[i]) TSRMLS_CC) == FAILURE) {
+		if (php_fann_check_num_neurons(Z_LVAL_PP(args[i]) TSRMLS_CC) == FAILURE) {
 			efree(args);
 			efree(*layers);
 			return FAILURE;
@@ -746,7 +799,7 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 		}
 	}
 
-	if (php_fann_create_check_layers(
+	if (php_fann_check_num_layers(
 			*num_layers, zend_hash_num_elements(Z_ARRVAL_P(array)) TSRMLS_CC) == FAILURE) {
 		return FAILURE;
 	}
@@ -756,7 +809,7 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 		 zend_hash_get_current_data(Z_ARRVAL_P(array), (void **) &ppdata) == SUCCESS;
 		 zend_hash_move_forward(Z_ARRVAL_P(array))) {
 		convert_to_long_ex(ppdata);
-		if (php_fann_create_check_neurons(Z_LVAL_PP(ppdata) TSRMLS_CC) == FAILURE) {
+		if (php_fann_check_num_neurons(Z_LVAL_PP(ppdata) TSRMLS_CC) == FAILURE) {
 			efree(*layers);
 			return FAILURE;
 		}
@@ -880,20 +933,6 @@ PHP_FUNCTION(fann_create_shortcut_array)
 }
 /* }}} */
 
-/* {{{ funn_input_foreach()
-   callback for converting input hash map to fann_type array */
-int funn_input_foreach(zval **element TSRMLS_DC, int num_args, va_list args, zend_hash_key *hash_key)
-{
-	fann_type *input = va_arg(args, fann_type *);
-	int *pos = va_arg(args, int *);
-	
-	convert_to_double(*element);
-	input[*pos++] = (fann_type) Z_DVAL_PP(element);
-	
-	return ZEND_HASH_APPLY_KEEP;
-}
-/* }}} */
-
 /* {{{ proto bool fann_destroy(resource ann)
    Destroys neural network */
 PHP_FUNCTION(fann_destroy)
@@ -937,16 +976,19 @@ PHP_FUNCTION(fann_run)
 	zval *z_ann, *array;
 	struct fann *ann;
 	fann_type *input, *calc_out;
-	int i = 0, num_out = 0;
+	int i = 0, num_out, num_inputs;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &array) == FAILURE) {
 		return;
 	}
 	PHP_FANN_FETCH_ANN();
-	
-	input = (float *) emalloc(sizeof(float) * zend_hash_num_elements(Z_ARRVAL_P(array)));
+	num_inputs = zend_hash_num_elements(Z_ARRVAL_P(array));
+	if (php_fann_check_num_inputs(ann, num_inputs TSRMLS_CC) == FAILURE) {
+		RETURN_FALSE;
+	}
+	input = (float *) emalloc(sizeof(float) * num_inputs);
 	zend_hash_apply_with_arguments(Z_ARRVAL_P(array) TSRMLS_CC,
-								   (apply_func_args_t) funn_input_foreach, 2, input, &i);
+								   (apply_func_args_t) php_funn_io_foreach, 2, input, &i);
 	
 	calc_out = fann_run(ann, input);
 	efree(input);
@@ -1193,6 +1235,89 @@ PHP_FUNCTION(fann_set_weight)
 	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
 }
+
+/* {{{ proto bool fann_train(resource ann, array input, array desired_output)
+   Trains one iteration with a set of inputs, and a set of desired outputs */
+PHP_FUNCTION(fann_train)
+{
+	zval *z_ann, *z_input, *z_output;
+	struct fann *ann;
+	fann_type *input, *desired_output;
+	int i = 0, num_outputs, num_inputs;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "raa", &z_ann, &z_input, &z_output) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	// check params
+	num_inputs = zend_hash_num_elements(Z_ARRVAL_P(z_input));
+	if (php_fann_check_num_inputs(ann, num_inputs TSRMLS_CC) == FAILURE) {
+		RETURN_FALSE;
+	}
+	num_outputs = zend_hash_num_elements(Z_ARRVAL_P(z_output));
+	if (php_fann_check_num_outputs(ann, num_outputs TSRMLS_CC) == FAILURE) {
+		RETURN_FALSE;
+	}
+	
+	input = (fann_type *) emalloc(sizeof(fann_type) * num_inputs);
+	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_input) TSRMLS_CC,
+								   (apply_func_args_t) php_funn_io_foreach, 2, input, &i);
+	i = 0;
+	desired_output = (fann_type *) emalloc(sizeof(fann_type) * num_outputs);
+	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_output) TSRMLS_CC,
+								   (apply_func_args_t) php_funn_io_foreach, 2, desired_output, &i);
+	
+	fann_test(ann, input, desired_output);
+	efree(input);
+	efree(desired_output);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto array fann_test(resource ann, array input, array desired_output)
+   Tests with a set of inputs, and a set of desired outputs -
+   this operation updates the mean square error, but does not change the network in any way. */
+PHP_FUNCTION(fann_test)
+{
+	zval *z_ann, *z_input, *z_output;
+	struct fann *ann;
+	fann_type *input, *desired_output, *output;
+	int i = 0, num_outputs, num_inputs;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "raa", &z_ann, &z_input, &z_output) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	// check params
+	num_inputs = zend_hash_num_elements(Z_ARRVAL_P(z_input));
+	if (php_fann_check_num_inputs(ann, num_inputs TSRMLS_CC) == FAILURE) {
+		RETURN_FALSE;
+	}
+	num_outputs = zend_hash_num_elements(Z_ARRVAL_P(z_output));
+	if (php_fann_check_num_outputs(ann, num_outputs TSRMLS_CC) == FAILURE) {
+		RETURN_FALSE;
+	}
+	
+	input = (fann_type *) emalloc(sizeof(fann_type) * num_inputs);
+	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_input) TSRMLS_CC,
+								   (apply_func_args_t) php_funn_io_foreach, 2, input, &i);
+	i = 0;
+	desired_output = (fann_type *) emalloc(sizeof(fann_type) * num_outputs);
+	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_output) TSRMLS_CC,
+								   (apply_func_args_t) php_funn_io_foreach, 2, desired_output, &i);
+	
+	output = fann_test(ann, input, desired_output);
+	efree(input);
+	efree(desired_output);
+	PHP_FANN_ERROR_CHECK_ANN();
+
+	array_init(return_value);
+	for (i = 0; i < num_outputs; i++) {
+		add_next_index_double(return_value, (double) output[i]);
+	}
+}
+/* }}} */
 
 /* {{{ proto double fann_get_MSE(resource ann)
    Reads the mean square error from the network */

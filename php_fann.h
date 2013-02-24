@@ -71,6 +71,8 @@ PHP_FUNCTION(fann_set_weight);
 
 /* FANN Training */
 /* Training */
+PHP_FUNCTION(fann_train);
+PHP_FUNCTION(fann_test);
 PHP_FUNCTION(fann_get_MSE);
 PHP_FUNCTION(fann_get_bit_fail);
 PHP_FUNCTION(fann_reset_MSE);
