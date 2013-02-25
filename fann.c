@@ -676,20 +676,6 @@ PHP_MINFO_FUNCTION(fann)
 /* }}} */
 
 
-/* {{{ php_funn_io_foreach()
-   callback for converting input hash map to fann_type array */
-int php_funn_io_foreach(zval **element TSRMLS_DC, int num_args, va_list args, zend_hash_key *hash_key)
-{
-	fann_type *input = va_arg(args, fann_type *);
-	int *pos = va_arg(args, int *);
-	
-	convert_to_double(*element);
-	input[*pos++] = (fann_type) Z_DVAL_PP(element);
-	
-	return ZEND_HASH_APPLY_KEEP;
-}
-/* }}} */
-
 /* php_fann_check_num_layers() {{{ */
 static int php_fann_check_num_layers(int specified, int provided TSRMLS_DC)
 {
@@ -737,6 +723,37 @@ static int php_fann_check_num_outputs(struct fann *ann, int num_outputs TSRMLS_D
 		return FAILURE;
 	}
 	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ php_funn_io_foreach()
+   callback for converting input hash map to fann_type array */
+static int php_funn_process_array_foreach(zval **element TSRMLS_DC, int num_args,
+										  va_list args, zend_hash_key *hash_key)
+{
+	fann_type *input = va_arg(args, fann_type *);
+	int *pos = va_arg(args, int *);
+	
+	convert_to_double_ex(element);
+	input[*pos++] = (fann_type) Z_DVAL_PP(element);
+	
+	return ZEND_HASH_APPLY_KEEP;
+}
+/* }}} */
+
+/* php_fann_convert_array() {{{ */
+static int php_fann_process_array(struct fann *ann, zval *z_array, fann_type **array, int is_input TSRMLS_DC)
+{
+	int i = 0, n;
+	n = zend_hash_num_elements(Z_ARRVAL_P(z_array));
+	if ((is_input && php_fann_check_num_inputs(ann, n TSRMLS_CC) == FAILURE) ||
+		(!is_input && php_fann_check_num_outputs(ann, n TSRMLS_CC))) {
+		return 0;
+	}
+	*array = (fann_type *) emalloc(sizeof(fann_type) * n);
+	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_array) TSRMLS_CC,
+								   (apply_func_args_t) php_funn_process_array_foreach, 2, *array, &i);
+	return n;
 }
 /* }}} */
 
@@ -973,31 +990,28 @@ PHP_FUNCTION(fann_copy)
    Runs input through the neural network */
 PHP_FUNCTION(fann_run)
 {
-	zval *z_ann, *array;
+	zval *z_ann, *z_input;
 	struct fann *ann;
-	fann_type *input, *calc_out;
-	int i = 0, num_out, num_inputs;
+	fann_type *input, *output;
+	int num_outputs, i;
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &array) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &z_input) == FAILURE) {
 		return;
 	}
 	PHP_FANN_FETCH_ANN();
-	num_inputs = zend_hash_num_elements(Z_ARRVAL_P(array));
-	if (php_fann_check_num_inputs(ann, num_inputs TSRMLS_CC) == FAILURE) {
+	/* process input array */
+	if (!php_fann_process_array(ann, z_input, &input, 1 TSRMLS_CC)) {
 		RETURN_FALSE;
 	}
-	input = (float *) emalloc(sizeof(float) * num_inputs);
-	zend_hash_apply_with_arguments(Z_ARRVAL_P(array) TSRMLS_CC,
-								   (apply_func_args_t) php_funn_io_foreach, 2, input, &i);
-	
-	calc_out = fann_run(ann, input);
+		
+	output = fann_run(ann, input);
 	efree(input);
-	num_out = fann_get_num_output(ann);
+	num_outputs = fann_get_num_output(ann);
 	PHP_FANN_ERROR_CHECK_ANN();
 
 	array_init(return_value);
-	for (i = 0; i < num_out; i++) {
-		add_next_index_double(return_value, (double) calc_out[i]);
+	for (i = 0; i < num_outputs; i++) {
+		add_next_index_double(return_value, (double) output[i]);
 	}
 }
 /* }}} */
@@ -1243,30 +1257,22 @@ PHP_FUNCTION(fann_train)
 	zval *z_ann, *z_input, *z_output;
 	struct fann *ann;
 	fann_type *input, *desired_output;
-	int i = 0, num_outputs, num_inputs;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "raa", &z_ann, &z_input, &z_output) == FAILURE) {
 		return;
 	}
 	PHP_FANN_FETCH_ANN();
-	// check params
-	num_inputs = zend_hash_num_elements(Z_ARRVAL_P(z_input));
-	if (php_fann_check_num_inputs(ann, num_inputs TSRMLS_CC) == FAILURE) {
+	
+	/* process input array */
+	if (!php_fann_process_array(ann, z_input, &input, 1 TSRMLS_CC)) {
 		RETURN_FALSE;
 	}
-	num_outputs = zend_hash_num_elements(Z_ARRVAL_P(z_output));
-	if (php_fann_check_num_outputs(ann, num_outputs TSRMLS_CC) == FAILURE) {
+	/* process output array */
+	if (!php_fann_process_array(ann, z_output, &desired_output, 0 TSRMLS_CC)) {
+		efree(input);
 		RETURN_FALSE;
 	}
-	
-	input = (fann_type *) emalloc(sizeof(fann_type) * num_inputs);
-	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_input) TSRMLS_CC,
-								   (apply_func_args_t) php_funn_io_foreach, 2, input, &i);
-	i = 0;
-	desired_output = (fann_type *) emalloc(sizeof(fann_type) * num_outputs);
-	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_output) TSRMLS_CC,
-								   (apply_func_args_t) php_funn_io_foreach, 2, desired_output, &i);
-	
+		
 	fann_test(ann, input, desired_output);
 	efree(input);
 	efree(desired_output);
@@ -1274,6 +1280,8 @@ PHP_FUNCTION(fann_train)
 	RETURN_TRUE;
 }
 /* }}} */
+
+
 
 /* {{{ proto array fann_test(resource ann, array input, array desired_output)
    Tests with a set of inputs, and a set of desired outputs -
@@ -1283,30 +1291,22 @@ PHP_FUNCTION(fann_test)
 	zval *z_ann, *z_input, *z_output;
 	struct fann *ann;
 	fann_type *input, *desired_output, *output;
-	int i = 0, num_outputs, num_inputs;
+	int num_outputs, i;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "raa", &z_ann, &z_input, &z_output) == FAILURE) {
 		return;
 	}
 	PHP_FANN_FETCH_ANN();
-	// check params
-	num_inputs = zend_hash_num_elements(Z_ARRVAL_P(z_input));
-	if (php_fann_check_num_inputs(ann, num_inputs TSRMLS_CC) == FAILURE) {
+	/* process input array */
+	if (!php_fann_process_array(ann, z_input, &input, 1 TSRMLS_CC)) {
 		RETURN_FALSE;
 	}
-	num_outputs = zend_hash_num_elements(Z_ARRVAL_P(z_output));
-	if (php_fann_check_num_outputs(ann, num_outputs TSRMLS_CC) == FAILURE) {
+	/* process output array */
+	if (!(num_outputs = php_fann_process_array(ann, z_output, &desired_output, 0 TSRMLS_CC))) {
+		efree(input);
 		RETURN_FALSE;
 	}
-	
-	input = (fann_type *) emalloc(sizeof(fann_type) * num_inputs);
-	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_input) TSRMLS_CC,
-								   (apply_func_args_t) php_funn_io_foreach, 2, input, &i);
-	i = 0;
-	desired_output = (fann_type *) emalloc(sizeof(fann_type) * num_outputs);
-	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_output) TSRMLS_CC,
-								   (apply_func_args_t) php_funn_io_foreach, 2, desired_output, &i);
-	
+		
 	output = fann_test(ann, input, desired_output);
 	efree(input);
 	efree(desired_output);
