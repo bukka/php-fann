@@ -77,7 +77,10 @@ PHP_FUNCTION(fann_get_MSE);
 PHP_FUNCTION(fann_get_bit_fail);
 PHP_FUNCTION(fann_reset_MSE);
 /* Training Data Training */
+PHP_FUNCTION(fann_train_on_data);
 PHP_FUNCTION(fann_train_on_file);
+PHP_FUNCTION(fann_train_epoch);
+PHP_FUNCTION(fann_test_data);
 /* Training Data Manipulation */
 PHP_FUNCTION(fann_read_train_from_file);
 PHP_FUNCTION(fann_destroy_train);

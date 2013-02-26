@@ -179,12 +179,30 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_reset_MSE, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_train_on_data, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, data)
+ZEND_ARG_INFO(0, max_epochs)
+ZEND_ARG_INFO(0, epochs_between_reports)
+ZEND_ARG_INFO(0, desired_error)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_train_on_file, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, filename)
 ZEND_ARG_INFO(0, max_epochs)
 ZEND_ARG_INFO(0, epochs_between_reports)
 ZEND_ARG_INFO(0, desired_error)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_train_epoch, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, data)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_test_data, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, data)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_fann_read_train_from_file, 0)
@@ -413,7 +431,10 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_get_MSE,                                  arginfo_fann_get_MSE)
 	PHP_FE(fann_get_bit_fail,                             arginfo_fann_get_bit_fail)
 	PHP_FE(fann_reset_MSE,                                arginfo_fann_reset_MSE)
+	PHP_FE(fann_train_on_data,                            arginfo_fann_train_on_data)
 	PHP_FE(fann_train_on_file,                            arginfo_fann_train_on_file)
+	PHP_FE(fann_train_epoch,                              arginfo_fann_train_epoch)
+	PHP_FE(fann_test_data,                                arginfo_fann_test_data)
 	PHP_FE(fann_read_train_from_file,                     arginfo_fann_read_train_from_file)
 	PHP_FE(fann_destroy_train,                            arginfo_fann_destroy_train)
 	PHP_FE(fann_get_learning_rate,                        arginfo_fann_get_learning_rate)
@@ -1340,9 +1361,9 @@ PHP_FUNCTION(fann_reset_MSE)
 	PHP_FANN_RESET_PARAM(fann_reset_MSE);
 }
 
-/* {{{ proto bool fann_train_on_file(resource ann, string filename, int max_epochs, int epochs_between_reports, float desired_error)
-   Set the activation function for all of the hidden layers */
-PHP_FUNCTION(fann_train_on_file)
+/* {{{ proto bool fann_train_on_data(resource ann, resource data, int max_epochs, int epochs_between_reports, float desired_error)
+   Trains on an entire dataset, for a period of time */
+PHP_FUNCTION(fann_train_on_data)
 {
 	zval *z_ann;
 	char *filename;
@@ -1355,7 +1376,6 @@ PHP_FUNCTION(fann_train_on_file)
 							  &max_epochs, &epochs_between_reports, &desired_error) == FAILURE) {
 		return;
 	}
-
 	PHP_FANN_FETCH_ANN();
 	fann_train_on_file(ann, filename, max_epochs, epochs_between_reports, desired_error);
 	PHP_FANN_ERROR_CHECK_ANN();
@@ -1363,6 +1383,67 @@ PHP_FUNCTION(fann_train_on_file)
 }
 /* }}} */
 
+/* {{{ proto bool fann_train_on_file(resource ann, string filename, int max_epochs, int epochs_between_reports, float desired_error)
+   Trains on an entire dataset, for a period of time (data are read from file) */
+PHP_FUNCTION(fann_train_on_file)
+{
+	zval *z_ann, *z_train_data;
+	long max_epochs, epochs_between_reports;
+	double desired_error;
+	struct fann *ann;
+	struct fann_train_data *train_data;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rrlld", &z_ann, &z_train_data,
+							  &max_epochs, &epochs_between_reports, &desired_error) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	PHP_FANN_FETCH_TRAIN_DATA();
+	fann_train_on_data(ann, train_data, max_epochs, epochs_between_reports, desired_error);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto double fann_train_epoch(resource ann, resource train_data)
+   Trains one epoch with a set of training data */
+PHP_FUNCTION(fann_train_epoch)
+{
+	zval *z_ann, *z_train_data;
+	struct fann *ann;
+	struct fann_train_data *train_data;
+	double mse;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rr", &z_ann, &z_train_data) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	PHP_FANN_FETCH_TRAIN_DATA();
+	mse = (double) fann_train_epoch(ann, train_data);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_DOUBLE(mse);
+}
+/* }}} */
+
+/* {{{ proto double fann_test_data(resource ann, resource train_data)
+   Tests a set of training data and calculates the MSE for the training data */
+PHP_FUNCTION(fann_test_data)
+{
+	zval *z_ann, *z_train_data;
+	struct fann *ann;
+	struct fann_train_data *train_data;
+	double mse;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rr", &z_ann, &z_train_data) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	PHP_FANN_FETCH_TRAIN_DATA();
+	mse = (double) fann_test_data(ann, train_data);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_DOUBLE(mse);
+}
+/* }}} */
 
 /* {{{ proto resource fann_read_train_from_file(string filename)
    Reads a file that stores training data */
