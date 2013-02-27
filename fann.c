@@ -213,6 +213,20 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_destroy_train, 0)
 ZEND_ARG_INFO(0, train_data)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_shuffle_train_data, 0)
+ZEND_ARG_INFO(0, train_data)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_scale_train, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, train_data)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_descale_train, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, train_data)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_get_training_algorithm, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
@@ -437,6 +451,9 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_test_data,                                arginfo_fann_test_data)
 	PHP_FE(fann_read_train_from_file,                     arginfo_fann_read_train_from_file)
 	PHP_FE(fann_destroy_train,                            arginfo_fann_destroy_train)
+	PHP_FE(fann_shuffle_train_data,                       arginfo_fann_shuffle_train_data)
+	PHP_FE(fann_scale_train,                              arginfo_fann_scale_train)
+	PHP_FE(fann_descale_train,                            arginfo_fann_descale_train)
 	PHP_FE(fann_get_learning_rate,                        arginfo_fann_get_learning_rate)
 	PHP_FE(fann_set_learning_rate,                        arginfo_fann_set_learning_rate)
 	PHP_FE(fann_get_learning_momentum,                    arginfo_fann_get_learning_momentum)
@@ -1478,9 +1495,63 @@ PHP_FUNCTION(fann_destroy_train)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_train_data) == FAILURE) {
 		return;
 	}
-
 	PHP_FANN_FETCH_TRAIN_DATA();
 	RETURN_BOOL(zend_list_delete(Z_LVAL_P(z_train_data)) == SUCCESS);
+}
+/* }}} */
+
+/* {{{ proto bool fann_shuffle_train_data(resource train_data)
+   Shuffles training data randomizing the order */
+PHP_FUNCTION(fann_shuffle_train_data)
+{
+	zval *z_train_data;
+	struct fann_train_data *train_data;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_train_data) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_TRAIN_DATA();
+	fann_shuffle_train_data(train_data);
+	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto bool fann_scale_train(resource ann, resource train_data)
+   Scales input and output data based on previously calculated parameters */
+PHP_FUNCTION(fann_scale_train)
+{
+	zval *z_ann, *z_train_data;
+	struct fann *ann;
+	struct fann_train_data *train_data;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rr", &z_ann, &z_train_data) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	PHP_FANN_FETCH_TRAIN_DATA();
+	fann_scale_train(ann, train_data);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto bool fann_descale_train(resource ann, resource train_data)
+   Descales input and output data based on previously calculated parameters */
+PHP_FUNCTION(fann_descale_train)
+{
+	zval *z_ann, *z_train_data;
+	struct fann *ann;
+	struct fann_train_data *train_data;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rr", &z_ann, &z_train_data) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	PHP_FANN_FETCH_TRAIN_DATA();
+	fann_descale_train(ann, train_data);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
 }
 /* }}} */
 
