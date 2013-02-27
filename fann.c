@@ -1378,9 +1378,9 @@ PHP_FUNCTION(fann_reset_MSE)
 	PHP_FANN_RESET_PARAM(fann_reset_MSE);
 }
 
-/* {{{ proto bool fann_train_on_data(resource ann, resource data, int max_epochs, int epochs_between_reports, float desired_error)
-   Trains on an entire dataset, for a period of time */
-PHP_FUNCTION(fann_train_on_data)
+/* {{{ proto bool fann_train_on_file(resource ann, string filename, int max_epochs, int epochs_between_reports, float desired_error)
+   Trains on an entire dataset, for a period of time (data are read from file) */
+PHP_FUNCTION(fann_train_on_file)
 {
 	zval *z_ann;
 	char *filename;
@@ -1400,10 +1400,11 @@ PHP_FUNCTION(fann_train_on_data)
 }
 /* }}} */
 
-/* {{{ proto bool fann_train_on_file(resource ann, string filename, int max_epochs, int epochs_between_reports, float desired_error)
-   Trains on an entire dataset, for a period of time (data are read from file) */
-PHP_FUNCTION(fann_train_on_file)
+/* {{{ proto bool fann_train_on_data(resource ann, resource data, int max_epochs, int epochs_between_reports, float desired_error)
+   Trains on an entire dataset, for a period of time */
+PHP_FUNCTION(fann_train_on_data)
 {
+
 	zval *z_ann, *z_train_data;
 	long max_epochs, epochs_between_reports;
 	double desired_error;

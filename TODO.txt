@@ -1,5 +1,6 @@
 Generic
-- output redirection (never print to STDOUT) - fann_train*
+- output redirection (never print to STDOUT) - fann_train_on_data
+  - ann->callback needs to be registered otherwise printf is used
 - streams for file and dir checking
   - group file checking in fann_train_on_file and fann_create_from_file and possibly use php function
   - check if the directory for fann_save exists and is writable
