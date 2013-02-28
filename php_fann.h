@@ -83,6 +83,8 @@ PHP_FUNCTION(fann_train_epoch);
 PHP_FUNCTION(fann_test_data);
 /* Training Data Manipulation */
 PHP_FUNCTION(fann_read_train_from_file);
+PHP_FUNCTION(fann_create_train);
+PHP_FUNCTION(fann_create_train_from_callback);
 PHP_FUNCTION(fann_destroy_train);
 PHP_FUNCTION(fann_shuffle_train_data);
 PHP_FUNCTION(fann_scale_train);

@@ -209,6 +209,19 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_read_train_from_file, 0)
 ZEND_ARG_INFO(0, filename)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_create_train, 0)
+ZEND_ARG_INFO(0, num_data)
+ZEND_ARG_INFO(0, num_input)
+ZEND_ARG_INFO(0, num_output)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_create_train_from_callback, 0)
+ZEND_ARG_INFO(0, num_data)
+ZEND_ARG_INFO(0, num_input)
+ZEND_ARG_INFO(0, num_output)
+ZEND_ARG_INFO(0, user_function)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_destroy_train, 0)
 ZEND_ARG_INFO(0, train_data)
 ZEND_END_ARG_INFO()
@@ -450,6 +463,8 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_train_epoch,                              arginfo_fann_train_epoch)
 	PHP_FE(fann_test_data,                                arginfo_fann_test_data)
 	PHP_FE(fann_read_train_from_file,                     arginfo_fann_read_train_from_file)
+	PHP_FE(fann_create_train,                             arginfo_fann_create_train)
+	PHP_FE(fann_create_train_from_callback,               arginfo_fann_create_train_from_callback)
 	PHP_FE(fann_destroy_train,                            arginfo_fann_destroy_train)
 	PHP_FE(fann_shuffle_train_data,                       arginfo_fann_shuffle_train_data)
 	PHP_FE(fann_scale_train,                              arginfo_fann_scale_train)
@@ -1485,6 +1500,89 @@ PHP_FUNCTION(fann_read_train_from_file)
 }
 /* }}} */
 
+/* {{{ proto resource fann_create_train(int num_data, int num_input, int num_output)
+   Creates an empty training data struct */
+PHP_FUNCTION(fann_create_train)
+{
+	long num_data, num_input, num_output;
+	struct fann_train_data *train_data;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lll", &num_data, &num_input, &num_output) == FAILURE) {
+		return;
+	}
+	train_data = fann_create_train(num_data, num_input, num_output);
+	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
+	PHP_FANN_RETURN_TRAIN_DATA();
+}
+/* }}} */
+
+/* {{{ proto resource fann_create_train_from_callback(int num_data, int num_input, int num_output, callable user_function)
+   Creates the training data struct from a user supplied function */
+PHP_FUNCTION(fann_create_train_from_callback)
+{
+	zval *z_num_data, *z_num_input, *z_num_output, *retval;
+	zval **z_input, **z_output, **params[3];
+	zend_fcall_info fci;
+	zend_fcall_info_cache fci_cache = empty_fcall_info_cache;
+	int i = 0;
+	struct fann_train_data *train_data;
+	
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zzzf", &z_num_data, &z_num_input, &z_num_output,
+							  &fci, &fci_cache) == FAILURE) {
+		return;
+	}
+	convert_to_long_ex(&z_num_data);
+	convert_to_long_ex(&z_num_input);
+	convert_to_long_ex(&z_num_output);
+	
+	train_data = fann_create_train(Z_LVAL_P(z_num_data), Z_LVAL_P(z_num_input), Z_LVAL_P(z_num_output));
+	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
+
+	fci.retval_ptr_ptr = &retval;
+	fci.no_separation = 0;
+	fci.param_count = 3;
+	fci.params = params;
+	params[0] = &z_num_data;
+	params[1] = &z_num_input;
+	params[2] = &z_num_output;
+	for (; i < Z_LVAL_P(z_num_data); i++) {
+		if (zend_call_function(&fci, &fci_cache TSRMLS_CC) != SUCCESS || !retval) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "An error occurred while invoking the user callback");
+			RETURN_FALSE;
+		}
+		if (Z_TYPE_P(retval) != IS_ARRAY) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "The user callback result should be an array");
+			RETURN_FALSE;
+		}
+		if (zend_hash_index_find(Z_ARRVAL_P(retval), 0, (void **) &z_input) != SUCCESS &&
+			zend_hash_find(Z_ARRVAL_P(retval), "input", sizeof("input")-1, (void **) &z_input) != SUCCESS) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "The return value must have 'input' or 0 key for input");
+			RETURN_FALSE;
+		}
+		if (zend_hash_index_find(Z_ARRVAL_P(retval), 1, (void **) &z_output) != SUCCESS &&
+			zend_hash_find(Z_ARRVAL_P(retval), "output", sizeof("output")-1, (void **) &z_output) != SUCCESS) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "The return value must have 'output' or 1 key for output");
+			RETURN_FALSE;
+		}
+		if (Z_TYPE_PP(z_input) != IS_ARRAY ||
+			zend_hash_num_elements(Z_ARRVAL_PP(z_input)) != Z_LVAL_P(z_num_input)) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Returned input must be an array with %ld elements",
+							 Z_LVAL_P(z_num_input));
+			RETURN_FALSE;
+		}
+		if (Z_TYPE_PP(z_output) != IS_ARRAY ||
+			zend_hash_num_elements(Z_ARRVAL_PP(z_output)) != Z_LVAL_P(z_num_output)) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Returned input must be an array with %ld elements",
+							 Z_LVAL_P(z_num_output));
+			RETURN_FALSE;
+		}
+		
+	}
+	
+	PHP_FANN_RETURN_TRAIN_DATA();
+}
+/* }}} */
 
 /* {{{ proto bool fann_destroy_train(resource train_data)
    Destructs the training data */
