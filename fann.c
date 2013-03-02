@@ -1524,7 +1524,7 @@ PHP_FUNCTION(fann_create_train_from_callback)
 	zval **z_input, **z_output, **params[3];
 	zend_fcall_info fci;
 	zend_fcall_info_cache fci_cache = empty_fcall_info_cache;
-	int i = 0;
+	int i, j;
 	struct fann_train_data *train_data;
 	
 	
@@ -1538,7 +1538,8 @@ PHP_FUNCTION(fann_create_train_from_callback)
 	
 	train_data = fann_create_train(Z_LVAL_P(z_num_data), Z_LVAL_P(z_num_input), Z_LVAL_P(z_num_output));
 	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
-
+	
+	// initialize callback function
 	fci.retval_ptr_ptr = &retval;
 	fci.no_separation = 0;
 	fci.param_count = 3;
@@ -1546,7 +1547,8 @@ PHP_FUNCTION(fann_create_train_from_callback)
 	params[0] = &z_num_data;
 	params[1] = &z_num_input;
 	params[2] = &z_num_output;
-	for (; i < Z_LVAL_P(z_num_data); i++) {
+	// call callback for each data
+	for (i = 0; i < Z_LVAL_P(z_num_data); i++) {
 		if (zend_call_function(&fci, &fci_cache TSRMLS_CC) != SUCCESS || !retval) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "An error occurred while invoking the user callback");
 			RETURN_FALSE;
@@ -1577,9 +1579,17 @@ PHP_FUNCTION(fann_create_train_from_callback)
 							 Z_LVAL_P(z_num_output));
 			RETURN_FALSE;
 		}
-		
+		// convert input array
+		j = 0;
+		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_input) TSRMLS_CC,
+									   (apply_func_args_t) php_funn_process_array_foreach, 2,
+									   train_data->input[i], &j);
+		// convert output array
+		j = 0;
+		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_input) TSRMLS_CC,
+									   (apply_func_args_t) php_funn_process_array_foreach, 2,
+									   train_data->output[i], &j);
 	}
-	
 	PHP_FANN_RETURN_TRAIN_DATA();
 }
 /* }}} */
