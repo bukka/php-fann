@@ -25,6 +25,7 @@
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
+#include "ext/standard/php_filestat.h"
 #include "php_fann.h"
 
 #ifdef PHP_FANN_FIXED
@@ -728,6 +729,25 @@ PHP_MINFO_FUNCTION(fann)
 }
 /* }}} */
 
+/* php_fann_get_file_path() {{{ */
+static char *php_fann_get_path_for_open(char *path, int path_len, int read TSRMLS_DC)
+{
+	zval *retval;
+	char *path_for_open;
+
+	MAKE_STD_ZVAL(retval);
+	php_stat(path, (php_stat_len) path_len, read ? FS_IS_R : FS_IS_W, retval TSRMLS_CC); 
+	if (Z_TYPE_P(retval) != IS_BOOL || !Z_BVAL_P(retval))  {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Filename '%s' cannot be opened for %s",
+		  path, read ? "reading" : "writing");
+		path_for_open = NULL;
+	}
+	else
+		php_stream_locate_url_wrapper(path, &path_for_open, 0 TSRMLS_CC);
+	FREE_ZVAL(retval);
+	return path_for_open;
+}
+/* }}} */
 
 /* php_fann_check_num_layers() {{{ */
 static int php_fann_check_num_layers(int specified, int provided TSRMLS_DC)
@@ -1404,11 +1424,15 @@ PHP_FUNCTION(fann_train_on_file)
 	double desired_error;
 	struct fann *ann;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rslld", &z_ann, &filename, &filename_len,
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rplld", &z_ann, &filename, &filename_len,
 							  &max_epochs, &epochs_between_reports, &desired_error) == FAILURE) {
 		return;
 	}
 	PHP_FANN_FETCH_ANN();
+	filename = php_fann_get_path_for_open(filename, filename_len, 1 TSRMLS_CC);
+	if (!filename) {
+		RETURN_FALSE;
+	}
 	fann_train_on_file(ann, filename, max_epochs, epochs_between_reports, desired_error);
 	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
@@ -1486,15 +1510,15 @@ PHP_FUNCTION(fann_read_train_from_file)
 	int filename_len;
 	struct fann_train_data *train_data;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filename, &filename_len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p", &filename, &filename_len) == FAILURE) {
 		return;
 	}
-
-	train_data = fann_read_train_from_file(filename);
-	if (!train_data) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Train data file reading failed");
+	filename = php_fann_get_path_for_open(filename, filename_len, 1 TSRMLS_CC);
+	if (!filename) {
 		RETURN_FALSE;
 	}
+	train_data = fann_read_train_from_file(filename);
+	
 	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
 	PHP_FANN_RETURN_TRAIN_DATA();
 }
@@ -1972,10 +1996,13 @@ PHP_FUNCTION(fann_create_from_file)
 	int cf_name_len;
 	struct fann *ann;
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &cf_name, &cf_name_len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p", &cf_name, &cf_name_len) == FAILURE) {
 		return;
 	}
-
+	cf_name = php_fann_get_path_for_open(cf_name, cf_name_len, 1 TSRMLS_CC);
+	if (!cf_name) {
+		RETURN_FALSE;
+	}
 	ann = fann_create_from_file(cf_name);
 	PHP_FANN_ERROR_CHECK_ANN();
 	PHP_FANN_RETURN_ANN();
@@ -1991,10 +2018,13 @@ PHP_FUNCTION(fann_save)
 	int cf_name_len;
 	struct fann *ann;
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_ann, &cf_name, &cf_name_len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rp", &z_ann, &cf_name, &cf_name_len) == FAILURE) {
 		return;
 	}
-
+	cf_name = php_fann_get_path_for_open(cf_name, cf_name_len, 0 TSRMLS_CC);
+	if (!cf_name) {
+		RETURN_FALSE;
+	}
 	PHP_FANN_FETCH_ANN();
 	if (fann_save(ann, cf_name) == 0) {
 		RETURN_TRUE;
