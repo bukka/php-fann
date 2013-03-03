@@ -241,6 +241,11 @@ ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, train_data)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_save_train, 0)
+ZEND_ARG_INFO(0, data)
+ZEND_ARG_INFO(0, file_name)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_get_training_algorithm, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
@@ -470,6 +475,7 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_shuffle_train_data,                       arginfo_fann_shuffle_train_data)
 	PHP_FE(fann_scale_train,                              arginfo_fann_scale_train)
 	PHP_FE(fann_descale_train,                            arginfo_fann_descale_train)
+	PHP_FE(fann_save_train,                               arginfo_fann_save_train)
 	PHP_FE(fann_get_learning_rate,                        arginfo_fann_get_learning_rate)
 	PHP_FE(fann_set_learning_rate,                        arginfo_fann_set_learning_rate)
 	PHP_FE(fann_get_learning_momentum,                    arginfo_fann_get_learning_momentum)
@@ -1685,6 +1691,34 @@ PHP_FUNCTION(fann_descale_train)
 	fann_descale_train(ann, train_data);
 	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto bool fann_save_train(resource train_data, string filename)
+   Saves the training structure to the file */
+PHP_FUNCTION(fann_save_train)
+{
+	char *filename;
+	int filename_len;
+	zval *z_train_data;
+	struct fann_train_data *train_data;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rp", &z_train_data, &filename, &filename_len)
+		== FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_TRAIN_DATA();
+	filename = php_fann_get_path_for_open(filename, filename_len, 0 TSRMLS_CC);
+	if (!filename) {
+		RETURN_FALSE;
+	}
+	if (fann_save_train(train_data, filename) == 0) {
+		RETURN_TRUE;
+	}
+	else {
+		PHP_FANN_ERROR_CHECK_TRAIN_DATA();
+		RETURN_FALSE;
+	}
 }
 /* }}} */
 
