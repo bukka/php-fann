@@ -26,6 +26,7 @@
 #include "php_ini.h"
 #include "ext/standard/info.h"
 #include "ext/standard/php_filestat.h"
+#include "ext/standard/php_string.h"
 #include "php_fann.h"
 
 #ifdef PHP_FANN_FIXED
@@ -735,6 +736,8 @@ PHP_MINFO_FUNCTION(fann)
 }
 /* }}} */
 
+#define PHP_FANN_PATH_OK(_retval) Z_TYPE_P(_retval) != IS_BOOL || !Z_BVAL_P(_retval)
+
 /* php_fann_get_file_path() {{{ */
 static char *php_fann_get_path_for_open(char *path, int path_len, int read TSRMLS_DC)
 {
@@ -742,8 +745,19 @@ static char *php_fann_get_path_for_open(char *path, int path_len, int read TSRML
 	char *path_for_open;
 
 	MAKE_STD_ZVAL(retval);
-	php_stat(path, (php_stat_len) path_len, read ? FS_IS_R : FS_IS_W, retval TSRMLS_CC); 
-	if (Z_TYPE_P(retval) != IS_BOOL || !Z_BVAL_P(retval))  {
+	if (read) {
+		php_stat(path, (php_stat_len) path_len, FS_IS_R, retval TSRMLS_CC);
+	}
+	else {
+		php_stat(path, (php_stat_len) path_len, FS_IS_W, retval TSRMLS_CC);
+		if (!PHP_FANN_PATH_OK(retval)) {
+			char *dirname = estrndup(path, path_len);
+			size_t dirname_len = php_dirname(dirname, (size_t) path_len);
+			php_stat(dirname, (php_stat_len) dirname_len, FS_IS_W, retval TSRMLS_CC);
+			efree(dirname);
+		}
+	}
+	if (PHP_FANN_PATH_OK(retval))  {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Filename '%s' cannot be opened for %s",
 		  path, read ? "reading" : "writing");
 		path_for_open = NULL;

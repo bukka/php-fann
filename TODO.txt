@@ -1,15 +1,13 @@
 Generic
 - output redirection (never print to STDOUT) - fann_train_on_data
   - ann->callback needs to be registered otherwise printf is used
-- streams for file and dir checking
-  - check if the directory for fann_save exists and is writable
 - use log error log messages when generic error is reported
   - fann_read_train_from_file
 - check parameters ranges
   - valid contants
   - FANN connection_rate param for create_sparse*
   - check int intervals for fann_train_on_fail
-- compare PHP outputs with C outputs for all examples
+- compare PHP outputs with C outputs in all examples
 
 Functions - implementation
 - fann_print_connections - either rewrite or redirect output
