@@ -242,6 +242,33 @@ ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, train_data)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_input_scaling_params, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, train_data)
+ZEND_ARG_INFO(0, new_input_min)
+ZEND_ARG_INFO(0, new_input_max)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_output_scaling_params, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, train_data)
+ZEND_ARG_INFO(0, new_output_min)
+ZEND_ARG_INFO(0, new_output_max)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_scaling_params, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, train_data)
+ZEND_ARG_INFO(0, new_input_min)
+ZEND_ARG_INFO(0, new_input_max)
+ZEND_ARG_INFO(0, new_output_min)
+ZEND_ARG_INFO(0, new_output_max)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_clear_scaling_params, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_save_train, 0)
 ZEND_ARG_INFO(0, data)
 ZEND_ARG_INFO(0, file_name)
@@ -476,6 +503,10 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_shuffle_train_data,                       arginfo_fann_shuffle_train_data)
 	PHP_FE(fann_scale_train,                              arginfo_fann_scale_train)
 	PHP_FE(fann_descale_train,                            arginfo_fann_descale_train)
+	PHP_FE(fann_set_input_scaling_params,                 arginfo_fann_set_input_scaling_params)
+	PHP_FE(fann_set_output_scaling_params,                arginfo_fann_set_output_scaling_params)
+	PHP_FE(fann_set_scaling_params,                       arginfo_fann_set_scaling_params)
+	PHP_FE(fann_clear_scaling_params,                     arginfo_fann_clear_scaling_params)
 	PHP_FE(fann_save_train,                               arginfo_fann_save_train)
 	PHP_FE(fann_get_learning_rate,                        arginfo_fann_get_learning_rate)
 	PHP_FE(fann_set_learning_rate,                        arginfo_fann_set_learning_rate)
@@ -1713,6 +1744,90 @@ PHP_FUNCTION(fann_descale_train)
 	fann_descale_train(ann, train_data);
 	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto bool fann_set_input_scaling_params(resource ann, resource train_data, int new_input_min, int new_input_max)
+   Calculates input scaling parameters for future use based on training data */
+PHP_FUNCTION(fann_set_input_scaling_params)
+{
+	zval *z_ann, *z_train_data;
+	struct fann *ann;
+	struct fann_train_data *train_data;
+	double new_input_min, new_input_max;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rrdd", &z_ann, &z_train_data,
+							  &new_input_min, &new_input_max) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	PHP_FANN_FETCH_TRAIN_DATA();
+	if (fann_set_input_scaling_params(ann, train_data, (float) new_input_min, (float) new_input_max) == 0) {
+		RETURN_TRUE;
+	}
+	else {
+		PHP_FANN_ERROR_CHECK_TRAIN_DATA();
+		RETURN_FALSE;
+	}
+}
+/* }}} */
+
+/* {{{ proto bool fann_set_output_scaling_params(resource ann, resource train_data, int new_output_min, int new_output_max)
+   Calculates output scaling parameters for future use based on training data */
+PHP_FUNCTION(fann_set_output_scaling_params)
+{
+	zval *z_ann, *z_train_data;
+	struct fann *ann;
+	struct fann_train_data *train_data;
+	double new_output_min, new_output_max;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rrdd", &z_ann, &z_train_data,
+							  &new_output_min, &new_output_max) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	PHP_FANN_FETCH_TRAIN_DATA();
+	if (fann_set_output_scaling_params(ann, train_data, (float) new_output_min, (float) new_output_max) == 0) {
+		RETURN_TRUE;
+	}
+	else {
+		PHP_FANN_ERROR_CHECK_TRAIN_DATA();
+		RETURN_FALSE;
+	}
+}
+/* }}} */
+
+/* {{{ proto bool fann_set_scaling_params(resource ann, resource train_data, int new_input_min, int new_input_max, int new_output_min, int new_output_max)
+   Calculates input and output scaling parameters for future use based on training data */
+PHP_FUNCTION(fann_set_scaling_params)
+{
+	zval *z_ann, *z_train_data;
+	struct fann *ann;
+	struct fann_train_data *train_data;
+	double new_input_min, new_input_max, new_output_min, new_output_max;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rrdddd", &z_ann, &z_train_data,
+							  &new_input_min, &new_input_max, &new_output_min, &new_output_max) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	PHP_FANN_FETCH_TRAIN_DATA();
+	if (fann_set_scaling_params(ann, train_data, (float) new_input_min, (float) new_input_max,
+								(float) new_output_min, (float) new_output_max) == 0) {
+		RETURN_TRUE;
+	}
+	else {
+		PHP_FANN_ERROR_CHECK_TRAIN_DATA();
+		RETURN_FALSE;
+	}
+}
+/* }}} */
+
+/* {{{ proto bool fann_clear_scaling_params(resource ann)
+   Clears scaling parameters */
+PHP_FUNCTION(fann_clear_scaling_params)
+{
+    PHP_FANN_RESET_PARAM(fann_clear_scaling_params);
 }
 /* }}} */
 
