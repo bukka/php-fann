@@ -269,6 +269,26 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_clear_scaling_params, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_scale_input, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, input_vector)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_scale_output, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, output_vector)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_descale_input, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, input_vector)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_descale_output, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, output_vector)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_save_train, 0)
 ZEND_ARG_INFO(0, data)
 ZEND_ARG_INFO(0, file_name)
@@ -507,6 +527,10 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_set_output_scaling_params,                arginfo_fann_set_output_scaling_params)
 	PHP_FE(fann_set_scaling_params,                       arginfo_fann_set_scaling_params)
 	PHP_FE(fann_clear_scaling_params,                     arginfo_fann_clear_scaling_params)
+	PHP_FE(fann_scale_input,                              arginfo_fann_scale_input)
+	PHP_FE(fann_scale_output,                             arginfo_fann_scale_output)
+	PHP_FE(fann_descale_input,                            arginfo_fann_descale_input)
+	PHP_FE(fann_descale_output,                           arginfo_fann_descale_output)
 	PHP_FE(fann_save_train,                               arginfo_fann_save_train)
 	PHP_FE(fann_get_learning_rate,                        arginfo_fann_get_learning_rate)
 	PHP_FE(fann_set_learning_rate,                        arginfo_fann_set_learning_rate)
@@ -1828,6 +1852,94 @@ PHP_FUNCTION(fann_set_scaling_params)
 PHP_FUNCTION(fann_clear_scaling_params)
 {
     PHP_FANN_RESET_PARAM(fann_clear_scaling_params);
+}
+/* }}} */
+
+/* {{{ proto bool fann_scale_input(resource ann, array input_vector)
+   Scales data in input vector before feed it to ann based on previously calculated parameters */
+PHP_FUNCTION(fann_scale_input)
+{
+	struct fann *ann;
+	zval *z_array, *z_ann;
+	fann_type *array;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &z_array) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	if (!php_fann_process_array(ann, z_array, &array, 1 TSRMLS_CC)) {
+		RETURN_FALSE;
+	}
+	fann_scale_input(ann, array);
+	efree(array);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto bool fann_scale_output(resource ann, array output_vector)
+   Scales data in output vector before feed it to ann based on previously calculated parameters */
+PHP_FUNCTION(fann_scale_output)
+{
+	struct fann *ann;
+	zval *z_array, *z_ann;
+	fann_type *array;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &z_array) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	if (!php_fann_process_array(ann, z_array, &array, 0 TSRMLS_CC)) {
+		RETURN_FALSE;
+	}
+	fann_scale_output(ann, array);
+	efree(array);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto bool fann_descale_input(resource ann, array input_vector)
+   Scales data in input vector after feed it to ann based on previously calculated parameters */
+PHP_FUNCTION(fann_descale_input)
+{
+	struct fann *ann;
+	zval *z_array, *z_ann;
+	fann_type *array;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &z_array) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	if (!php_fann_process_array(ann, z_array, &array, 1 TSRMLS_CC)) {
+		RETURN_FALSE;
+	}
+	fann_descale_input(ann, array);
+	efree(array);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto bool fann_descale_output(resource ann, array output_vector)
+   Scales data in output vector after feed it to ann based on previously calculated parameters */
+PHP_FUNCTION(fann_descale_output)
+{
+	struct fann *ann;
+	zval *z_array, *z_ann;
+	fann_type *array;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &z_array) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	if (!php_fann_process_array(ann, z_array, &array, 0 TSRMLS_CC)) {
+		RETURN_FALSE;
+	}
+	fann_descale_output(ann, array);
+	efree(array);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
 }
 /* }}} */
 

@@ -93,6 +93,10 @@ PHP_FUNCTION(fann_set_input_scaling_params);
 PHP_FUNCTION(fann_set_output_scaling_params);
 PHP_FUNCTION(fann_set_scaling_params);
 PHP_FUNCTION(fann_clear_scaling_params);
+PHP_FUNCTION(fann_scale_input);
+PHP_FUNCTION(fann_scale_output);
+PHP_FUNCTION(fann_descale_input);
+PHP_FUNCTION(fann_descale_output);
 PHP_FUNCTION(fann_save_train);
 /* Parameters */
 PHP_FUNCTION(fann_get_training_algorithm);
