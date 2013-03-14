@@ -100,6 +100,9 @@ PHP_FUNCTION(fann_descale_output);
 PHP_FUNCTION(fann_scale_input_train_data);
 PHP_FUNCTION(fann_scale_output_train_data);
 PHP_FUNCTION(fann_scale_train_data);
+PHP_FUNCTION(fann_merge_train_data);
+PHP_FUNCTION(fann_duplicate_train_data);
+PHP_FUNCTION(fann_subset_train_data);
 PHP_FUNCTION(fann_save_train);
 /* Parameters */
 PHP_FUNCTION(fann_get_training_algorithm);
