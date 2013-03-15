@@ -322,6 +322,18 @@ ZEND_ARG_INFO(0, pos)
 ZEND_ARG_INFO(0, length)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_length_train_data, 0)
+ZEND_ARG_INFO(0, data)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_num_input_train_data, 0)
+ZEND_ARG_INFO(0, data)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_num_output_train_data, 0)
+ZEND_ARG_INFO(0, data)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_save_train, 0)
 ZEND_ARG_INFO(0, data)
 ZEND_ARG_INFO(0, file_name)
@@ -570,6 +582,9 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_merge_train_data,                         arginfo_fann_scale_train_data)
 	PHP_FE(fann_duplicate_train_data,                     arginfo_fann_duplicate_train_data)
 	PHP_FE(fann_subset_train_data,                        arginfo_fann_subset_train_data)
+	PHP_FE(fann_length_train_data,                        arginfo_fann_length_train_data)
+	PHP_FE(fann_num_input_train_data,                     arginfo_fann_num_input_train_data)
+	PHP_FE(fann_num_output_train_data,                    arginfo_fann_num_output_train_data)
 	PHP_FE(fann_save_train,                               arginfo_fann_save_train)
 	PHP_FE(fann_get_learning_rate,                        arginfo_fann_get_learning_rate)
 	PHP_FE(fann_set_learning_rate,                        arginfo_fann_set_learning_rate)
@@ -1812,95 +1827,6 @@ PHP_FUNCTION(fann_descale_train)
 	RETURN_TRUE;
 }
 /* }}} */
- 
-#define PHP_FANN_SCALE_TRAIN_DATA(_fce)									\
-	zval *z_train_data;													\
-	struct fann_train_data *train_data;									\
-	double new_min, new_max;											\
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &z_train_data, &new_min, &new_max) == FAILURE) { \
-		return;															\
-	}																	\
-	PHP_FANN_FETCH_TRAIN_DATA();										\
-	_fce(train_data, (fann_type) new_min, (fann_type) new_max);			\
-	PHP_FANN_ERROR_CHECK_TRAIN_DATA();									\
-	RETURN_TRUE
-
-/* {{{ proto bool fann_scale_input_train_data(resource train_data, double new_min, double new_max)
-   Scales the inputs in the training data to the specified range */
-PHP_FUNCTION(fann_scale_input_train_data)
-{
-	PHP_FANN_SCALE_TRAIN_DATA(fann_scale_input_train_data);
-}
-/* }}} */
-
-/* {{{ proto bool fann_scale_output_train_data(resource train_data, double new_min, double new_max)
-   Scales the outputs in the training data to the specified range */
-PHP_FUNCTION(fann_scale_output_train_data)
-{
-	PHP_FANN_SCALE_TRAIN_DATA(fann_scale_output_train_data);
-}
-/* }}} */
-
-/* {{{ proto bool fann_scale_train_data(resource train_data, double new_min, double new_max)
-   Scales the inputs and outputs in the training data to the specified range */
-PHP_FUNCTION(fann_scale_train_data)
-{
-	PHP_FANN_SCALE_TRAIN_DATA(fann_scale_train_data);
-}
-/* }}} */
-
-/* {{{ proto resource fann_merge_train_data(resource data1, resource data2)
-   Merges the data from data1 and data2 into new train data */
-PHP_FUNCTION(fann_merge_train_data)
-{
-	zval *z_data1, *z_data2;
-	struct fann_train_data *data1, *data2, *train_data;
-	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rr", &z_data1, &z_data2) == FAILURE) {
-		return;
-	}
-	PHP_FANN_FETCH_TRAIN_DATA_EX(data1);
-	PHP_FANN_FETCH_TRAIN_DATA_EX(data2);
-	train_data = fann_merge_train_data(data1, data2);
-	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
-	PHP_FANN_RETURN_TRAIN_DATA();
-}
-/* }}} */
-
-/* {{{ proto resource fann_duplicate_train_data(resource train_data)
-   Returns an exact copy of train data */
-PHP_FUNCTION(fann_duplicate_train_data)
-{
-	zval *z_train_data;
-	struct fann_train_data *train_data;
-	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_train_data) == FAILURE) {
-		return;
-	}
-	PHP_FANN_FETCH_TRAIN_DATA();
-	train_data = fann_duplicate_train_data(train_data);
-	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
-	PHP_FANN_RETURN_TRAIN_DATA();
-}
-/* }}} */
-
-/* {{{ proto resource fann_subset_train_data(resource train_data, int pos, int length)
-   Returns an copy of a subset of the train data, starting at position pos and length elements forward */
-PHP_FUNCTION(fann_subset_train_data)
-{
-	zval *z_train_data;
-	struct fann_train_data *train_data;
-	long pos, length;
-	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rll", &z_train_data, &pos, &length) == FAILURE) {
-		return;
-	}
-	PHP_FANN_FETCH_TRAIN_DATA();
-	train_data = fann_subset_train_data(train_data, pos, length);
-	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
-	PHP_FANN_RETURN_TRAIN_DATA();
-}
-/* }}} */
 
 /* {{{ proto bool fann_set_input_scaling_params(resource ann, resource train_data, int new_input_min, int new_input_max)
    Calculates input scaling parameters for future use based on training data */
@@ -2071,6 +1997,140 @@ PHP_FUNCTION(fann_descale_output)
 	efree(array);
 	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
+}
+/* }}} */
+
+#define PHP_FANN_SCALE_TRAIN_DATA(_fce)									\
+	zval *z_train_data;													\
+	struct fann_train_data *train_data;									\
+	double new_min, new_max;											\
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &z_train_data, &new_min, &new_max) == FAILURE) { \
+		return;															\
+	}																	\
+	PHP_FANN_FETCH_TRAIN_DATA();										\
+	_fce(train_data, (fann_type) new_min, (fann_type) new_max);			\
+	PHP_FANN_ERROR_CHECK_TRAIN_DATA();									\
+	RETURN_TRUE
+
+/* {{{ proto bool fann_scale_input_train_data(resource train_data, double new_min, double new_max)
+   Scales the inputs in the training data to the specified range */
+PHP_FUNCTION(fann_scale_input_train_data)
+{
+	PHP_FANN_SCALE_TRAIN_DATA(fann_scale_input_train_data);
+}
+/* }}} */
+
+/* {{{ proto bool fann_scale_output_train_data(resource train_data, double new_min, double new_max)
+   Scales the outputs in the training data to the specified range */
+PHP_FUNCTION(fann_scale_output_train_data)
+{
+	PHP_FANN_SCALE_TRAIN_DATA(fann_scale_output_train_data);
+}
+/* }}} */
+
+/* {{{ proto bool fann_scale_train_data(resource train_data, double new_min, double new_max)
+   Scales the inputs and outputs in the training data to the specified range */
+PHP_FUNCTION(fann_scale_train_data)
+{
+	PHP_FANN_SCALE_TRAIN_DATA(fann_scale_train_data);
+}
+/* }}} */
+
+/* {{{ proto resource fann_merge_train_data(resource data1, resource data2)
+   Merges the data from data1 and data2 into new train data */
+PHP_FUNCTION(fann_merge_train_data)
+{
+	zval *z_data1, *z_data2;
+	struct fann_train_data *data1, *data2, *train_data;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rr", &z_data1, &z_data2) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_TRAIN_DATA_EX(data1);
+	PHP_FANN_FETCH_TRAIN_DATA_EX(data2);
+	train_data = fann_merge_train_data(data1, data2);
+	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
+	PHP_FANN_RETURN_TRAIN_DATA();
+}
+/* }}} */
+
+/* {{{ proto resource fann_duplicate_train_data(resource train_data)
+   Returns an exact copy of train data */
+PHP_FUNCTION(fann_duplicate_train_data)
+{
+	zval *z_train_data;
+	struct fann_train_data *train_data;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_train_data) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_TRAIN_DATA();
+	train_data = fann_duplicate_train_data(train_data);
+	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
+	PHP_FANN_RETURN_TRAIN_DATA();
+}
+/* }}} */
+
+/* {{{ proto resource fann_subset_train_data(resource train_data, int pos, int length)
+   Returns an copy of a subset of the train data, starting at position pos and length elements forward */
+PHP_FUNCTION(fann_subset_train_data)
+{
+	zval *z_train_data;
+	struct fann_train_data *train_data;
+	long pos, length;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rll", &z_train_data, &pos, &length) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_TRAIN_DATA();
+	train_data = fann_subset_train_data(train_data, pos, length);
+	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
+	PHP_FANN_RETURN_TRAIN_DATA();
+}
+/* }}} */
+
+/* {{{ proto int fann_length_train_data(resource train_data)
+   Returns the number of training patterns in train data */
+PHP_FUNCTION(fann_length_train_data)
+{
+	zval *z_train_data;
+	struct fann_train_data *train_data;
+		
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_train_data) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_TRAIN_DATA();
+	RETURN_LONG((long) fann_length_train_data(train_data));
+}
+/* }}} */
+
+/* {{{ proto int fann_num_input_train_data(resource train_data)
+   Returns the number of inputs in each of the training patterns in train data */
+PHP_FUNCTION(fann_num_input_train_data)
+{
+	zval *z_train_data;
+	struct fann_train_data *train_data;
+		
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_train_data) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_TRAIN_DATA();
+	RETURN_LONG((long) fann_num_input_train_data(train_data));
+}
+/* }}} */
+
+/* {{{ proto int fann_num_output_train_data(resource train_data)
+   Returns the number of outputs in each of the training patterns in train data */
+PHP_FUNCTION(fann_num_output_train_data)
+{
+	zval *z_train_data;
+	struct fann_train_data *train_data;
+		
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_train_data) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_TRAIN_DATA();
+	RETURN_LONG((long) fann_num_output_train_data(train_data));
 }
 /* }}} */
 
