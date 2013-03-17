@@ -42,6 +42,14 @@ static int le_fannbuf, le_fanntrainbuf;
 #define le_fannbuf_name "FANN"
 #define le_fanntrainbuf_name "FANN Train Data"
 
+/* fann user data structure */
+typedef struct _php_fann_user_data {
+	zend_fcall_info callback;
+	zend_fcall_info_cache callback_cache;
+	zval *z_ann;
+	zval *z_train_data;
+} php_fann_user_data;
+
 /* {{{ arginfo */
 ZEND_BEGIN_ARG_INFO_EX(arginfo_fann_create_standard, 0, 0, 3)
 ZEND_ARG_INFO(0, num_layers)
@@ -760,7 +768,11 @@ ZEND_GET_MODULE(fann)
    fann resource destructor */
 static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
+	php_fann_user_data *user_data;
 	struct fann *ann = (struct fann *) rsrc->ptr;
+	user_data = (php_fann_user_data *) fann_get_user_data(ann);
+	if (user_data != (php_fann_user_data *) NULL)
+		efree(user_data);
 	fann_destroy(ann);
 }
 /* }}} */
@@ -1040,6 +1052,72 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 }
 /* }}} */
 
+/* php_fann_init_ann() {{{ */
+static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
+							 unsigned int max_epochs,
+							 unsigned int epochs_between_reports,
+							 float desired_error, unsigned int epochs)
+{
+	php_fann_user_data *user_data = fann_get_user_data(ann);
+	if (user_data != (php_fann_user_data *) NULL) {
+		TSRMLS_FETCH();
+		zval *retval, *z_max_epochs, *z_epochs_between_reports, *z_desired_error, *z_epochs, *z_train_data;
+		zval **params[6];
+		long rc;
+		MAKE_STD_ZVAL(z_train_data);
+		MAKE_STD_ZVAL(z_max_epochs);
+		MAKE_STD_ZVAL(z_epochs_between_reports);
+		MAKE_STD_ZVAL(z_desired_error);
+		MAKE_STD_ZVAL(z_epochs);
+		ZVAL_NULL(z_train_data);
+		ZVAL_LONG(z_max_epochs, (long) max_epochs);
+		ZVAL_LONG(z_epochs_between_reports, (long) epochs_between_reports);
+		ZVAL_DOUBLE(z_desired_error, (double) desired_error);
+		ZVAL_LONG(z_epochs, (long) epochs);
+		user_data->callback.retval_ptr_ptr = &retval;
+		user_data->callback.no_separation = 0;
+		user_data->callback.param_count = 6;
+		user_data->callback.params = params;
+		params[0] = &user_data->z_ann;
+		params[1] = &z_train_data;
+		params[2] = &z_max_epochs;
+		params[3] = &z_epochs_between_reports;
+		params[4] = &z_desired_error;
+		params[5] = &z_epochs;
+		if (zend_call_function(&user_data->callback, &user_data->callback_cache TSRMLS_CC) != SUCCESS || !retval) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "An error occurred while invoking the user callback");
+			zval_ptr_dtor(&retval);
+			return -1;
+		}
+		convert_to_boolean(retval);
+		rc = Z_BVAL_P(retval);
+		zval_ptr_dtor(&retval);
+		if (!rc)
+			return -1;
+	}
+	return 0;
+}
+/* }}} */
+
+/* php_fann_update_user_data() {{{ */
+static void php_fann_update_user_data(struct fann *ann, zval *z_ann, zval *z_train_data)
+{
+	php_fann_user_data *user_data = fann_get_user_data(ann);
+	if (user_data != (php_fann_user_data *) NULL) {
+		user_data->z_ann = z_ann;
+		user_data->z_train_data = z_train_data;
+	}
+}
+/* }}} */
+
+/* php_fann_init_ann() {{{ */
+static void php_fann_init_ann(struct fann *ann)
+{
+	/* set callback for reporting - don't print anything during fann_train_on_(data|file) */
+	fann_set_callback(ann, php_fann_callback);
+}
+/* }}} */
+
 /* {{{ proto resource fann_create_standard(int num_layers, int num_neurons1, int num_neurons2, [, int ... ])
    Creates a standard fully connected backpropagation neural network */
 PHP_FUNCTION(fann_create_standard)
@@ -1054,6 +1132,7 @@ PHP_FUNCTION(fann_create_standard)
 	ann = fann_create_standard_array(num_layers, layers);
 	efree(layers);
 	PHP_FANN_ERROR_CHECK_ANN();
+	php_fann_init_ann(ann);
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -1072,6 +1151,7 @@ PHP_FUNCTION(fann_create_standard_array)
 	ann = fann_create_standard_array(num_layers, layers);
 	efree(layers);
 	PHP_FANN_ERROR_CHECK_ANN();
+	php_fann_init_ann(ann);
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -1091,6 +1171,7 @@ PHP_FUNCTION(fann_create_sparse)
 	ann = fann_create_sparse_array(connection_rate, num_layers, layers);
 	efree(layers);
 	PHP_FANN_ERROR_CHECK_ANN();
+	php_fann_init_ann(ann);
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -1111,6 +1192,7 @@ PHP_FUNCTION(fann_create_sparse_array)
 	ann = fann_create_sparse_array(connection_rate, num_layers, layers);
 	efree(layers);
 	PHP_FANN_ERROR_CHECK_ANN();
+	php_fann_init_ann(ann);
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -1130,6 +1212,7 @@ PHP_FUNCTION(fann_create_shortcut)
 	ann = fann_create_shortcut_array(num_layers, layers);
 	efree(layers);
 	PHP_FANN_ERROR_CHECK_ANN();
+	php_fann_init_ann(ann);
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -1149,6 +1232,7 @@ PHP_FUNCTION(fann_create_shortcut_array)
 	ann = fann_create_shortcut_array(num_layers, layers);
 	efree(layers);
 	PHP_FANN_ERROR_CHECK_ANN();
+	php_fann_init_ann(ann);
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
@@ -1563,6 +1647,7 @@ PHP_FUNCTION(fann_train_on_file)
 	if (!filename) {
 		RETURN_FALSE;
 	}
+	php_fann_update_user_data(ann, z_ann, (zval *) NULL);
 	fann_train_on_file(ann, filename, max_epochs, epochs_between_reports, desired_error);
 	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
@@ -1586,6 +1671,7 @@ PHP_FUNCTION(fann_train_on_data)
 	}
 	PHP_FANN_FETCH_ANN();
 	PHP_FANN_FETCH_TRAIN_DATA();
+	php_fann_update_user_data(ann, z_ann, z_train_data);
 	fann_train_on_data(ann, train_data, max_epochs, epochs_between_reports, desired_error);
 	PHP_FANN_ERROR_CHECK_ANN();
 	RETURN_TRUE;
@@ -2290,7 +2376,23 @@ PHP_FUNCTION(fann_set_bit_fail_limit)
    Sets the callback function for use during training */
 PHP_FUNCTION(fann_set_callback)
 {
-    /* TODO: callback fce: fann_callback_type */
+	zval *z_ann;
+	struct fann *ann;
+	php_fann_user_data *user_data;
+	zend_fcall_info fci;
+	zend_fcall_info_cache fci_cache = empty_fcall_info_cache;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rf", &z_ann, &fci, &fci_cache) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	user_data = (php_fann_user_data *) fann_get_user_data(ann);
+	if (user_data == (php_fann_user_data *) NULL)
+		user_data = (php_fann_user_data *) emalloc(sizeof (php_fann_user_data));
+	user_data->callback = fci;
+	user_data->callback_cache = fci_cache;
+	fann_set_user_data(ann, user_data);
+	RETURN_TRUE;
 }
 /* }}} */
 
@@ -2479,6 +2581,7 @@ PHP_FUNCTION(fann_create_from_file)
 	}
 	ann = fann_create_from_file(cf_name);
 	PHP_FANN_ERROR_CHECK_ANN();
+	php_fann_init_ann(ann);
 	PHP_FANN_RETURN_ANN();
 }
 /* }}} */
