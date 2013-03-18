@@ -1,6 +1,7 @@
 Generic
-- output redirection (never print to STDOUT) - fann_train_on_data
-  - ann->callback needs to be registered otherwise printf is used
+- reporting callback
+  - provide train_data (currently always NULL)
+  - proper testing
 - use log error log messages when generic error is reported
   - fann_read_train_from_file
 - check parameters ranges

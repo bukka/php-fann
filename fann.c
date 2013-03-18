@@ -44,8 +44,7 @@ static int le_fannbuf, le_fanntrainbuf;
 
 /* fann user data structure */
 typedef struct _php_fann_user_data {
-	zend_fcall_info callback;
-	zend_fcall_info_cache callback_cache;
+	zval *callback;
 	zval *z_ann;
 	zval *z_train_data;
 } php_fann_user_data;
@@ -771,8 +770,11 @@ static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 	php_fann_user_data *user_data;
 	struct fann *ann = (struct fann *) rsrc->ptr;
 	user_data = (php_fann_user_data *) fann_get_user_data(ann);
-	if (user_data != (php_fann_user_data *) NULL)
+	if (user_data != (php_fann_user_data *) NULL) {
+		zval_dtor(user_data->callback);
+		FREE_ZVAL(user_data->callback);
 		efree(user_data);
+	}
 	fann_destroy(ann);
 }
 /* }}} */
@@ -1061,9 +1063,26 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 	php_fann_user_data *user_data = fann_get_user_data(ann);
 	if (user_data != (php_fann_user_data *) NULL) {
 		TSRMLS_FETCH();
+		zend_fcall_info fci;
+		zend_fcall_info_cache fci_cache;
 		zval *retval, *z_max_epochs, *z_epochs_between_reports, *z_desired_error, *z_epochs, *z_train_data;
 		zval **params[6];
 		long rc;
+		char *is_callable_error = NULL;
+		
+		if (zend_fcall_info_init(user_data->callback, 0, &fci, &fci_cache, NULL, &is_callable_error TSRMLS_CC)
+			!= SUCCESS || is_callable_error) {
+			if (is_callable_error) {
+				php_error_docref(NULL TSRMLS_CC, E_WARNING, "User callback is not a valie callback, %s",
+								 is_callable_error);
+				efree(is_callable_error);
+			}
+			else {
+				php_error_docref(NULL TSRMLS_CC, E_WARNING, "User callback is not a valie callback");
+			}
+			return -1;
+		}
+		
 		MAKE_STD_ZVAL(z_train_data);
 		MAKE_STD_ZVAL(z_max_epochs);
 		MAKE_STD_ZVAL(z_epochs_between_reports);
@@ -1074,17 +1093,17 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 		ZVAL_LONG(z_epochs_between_reports, (long) epochs_between_reports);
 		ZVAL_DOUBLE(z_desired_error, (double) desired_error);
 		ZVAL_LONG(z_epochs, (long) epochs);
-		user_data->callback.retval_ptr_ptr = &retval;
-		user_data->callback.no_separation = 0;
-		user_data->callback.param_count = 6;
-		user_data->callback.params = params;
+		fci.retval_ptr_ptr = &retval;
+		fci.no_separation = 0;
+		fci.param_count = 6;
+		fci.params = params;
 		params[0] = &user_data->z_ann;
 		params[1] = &z_train_data;
 		params[2] = &z_max_epochs;
 		params[3] = &z_epochs_between_reports;
 		params[4] = &z_desired_error;
 		params[5] = &z_epochs;
-		if (zend_call_function(&user_data->callback, &user_data->callback_cache TSRMLS_CC) != SUCCESS || !retval) {
+		if (zend_call_function(&fci, &fci_cache TSRMLS_CC) != SUCCESS || !retval) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "An error occurred while invoking the user callback");
 			zval_ptr_dtor(&retval);
 			return -1;
@@ -1092,6 +1111,11 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 		convert_to_boolean(retval);
 		rc = Z_BVAL_P(retval);
 		zval_ptr_dtor(&retval);
+		FREE_ZVAL(z_train_data);
+		FREE_ZVAL(z_max_epochs);
+		FREE_ZVAL(z_epochs_between_reports);
+		FREE_ZVAL(z_desired_error);
+		FREE_ZVAL(z_epochs);
 		if (!rc)
 			return -1;
 	}
@@ -2376,21 +2400,20 @@ PHP_FUNCTION(fann_set_bit_fail_limit)
    Sets the callback function for use during training */
 PHP_FUNCTION(fann_set_callback)
 {
-	zval *z_ann;
+	zval *z_ann, *callback;
 	struct fann *ann;
 	php_fann_user_data *user_data;
-	zend_fcall_info fci;
-	zend_fcall_info_cache fci_cache = empty_fcall_info_cache;
-	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rf", &z_ann, &fci, &fci_cache) == FAILURE) {
+		
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rz", &z_ann, &callback) == FAILURE) {
 		return;
 	}
 	PHP_FANN_FETCH_ANN();
 	user_data = (php_fann_user_data *) fann_get_user_data(ann);
-	if (user_data == (php_fann_user_data *) NULL)
+	if (user_data == (php_fann_user_data *) NULL) {
 		user_data = (php_fann_user_data *) emalloc(sizeof (php_fann_user_data));
-	user_data->callback = fci;
-	user_data->callback_cache = fci_cache;
+		MAKE_STD_ZVAL(user_data->callback);
+	}
+	ZVAL_ZVAL(user_data->callback, callback, 1, 0);
 	fann_set_user_data(ann, user_data);
 	RETURN_TRUE;
 }
