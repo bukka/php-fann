@@ -1,7 +1,8 @@
 Generic
 - reporting callback
-  - provide train_data (currently always NULL)
-  - proper testing
+  - provide train_data for train_on_file (currently always null)
+  - proper testing (more iterations)
+  - check multithreding - FETCH_TSRMLS
 - use log error log messages when generic error is reported
   - fann_read_train_from_file
 - check parameters ranges

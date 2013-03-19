@@ -1082,13 +1082,10 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 			}
 			return -1;
 		}
-		
-		MAKE_STD_ZVAL(z_train_data);
 		MAKE_STD_ZVAL(z_max_epochs);
 		MAKE_STD_ZVAL(z_epochs_between_reports);
 		MAKE_STD_ZVAL(z_desired_error);
 		MAKE_STD_ZVAL(z_epochs);
-		ZVAL_NULL(z_train_data);
 		ZVAL_LONG(z_max_epochs, (long) max_epochs);
 		ZVAL_LONG(z_epochs_between_reports, (long) epochs_between_reports);
 		ZVAL_DOUBLE(z_desired_error, (double) desired_error);
@@ -1098,7 +1095,14 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 		fci.param_count = 6;
 		fci.params = params;
 		params[0] = &user_data->z_ann;
-		params[1] = &z_train_data;
+		if (user_data->z_train_data) {
+			params[1] = &user_data->z_train_data;
+		}
+		else {
+			MAKE_STD_ZVAL(z_train_data);
+			ZVAL_NULL(z_train_data);
+			params[1] = &z_train_data;
+		}
 		params[2] = &z_max_epochs;
 		params[3] = &z_epochs_between_reports;
 		params[4] = &z_desired_error;
@@ -1111,7 +1115,8 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 		convert_to_boolean(retval);
 		rc = Z_BVAL_P(retval);
 		zval_ptr_dtor(&retval);
-		FREE_ZVAL(z_train_data);
+		if (!user_data->z_train_data)
+			FREE_ZVAL(z_train_data);
 		FREE_ZVAL(z_max_epochs);
 		FREE_ZVAL(z_epochs_between_reports);
 		FREE_ZVAL(z_desired_error);

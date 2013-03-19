@@ -5,7 +5,11 @@ Test function fann_set_callback() by calling it with its expected arguments
 
 function ann_callback( $ann, $train_data, $max_epochs, $epochs_between_reports, $desired_error, $epochs ) {
 	var_dump($ann);
-	return false;
+	var_dump($train_data);
+	var_dump($max_epochs);
+	var_dump($epochs_between_reports);
+	var_dump($desired_error);
+	var_dump($epochs);
 }
 
 $num_input = 2;
@@ -46,4 +50,9 @@ if ( file_exists( $filename ) )
 ?>
 --EXPECTF--
 resource(%d) of type (FANN)
+resource(%d) of type (FANN Train Data)
+int(%d)
+int(%d)
+float(%f)
+int(%d)
 bool(true)
