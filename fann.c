@@ -524,6 +524,22 @@ ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, steepness)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_cascadetrain_on_data, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, data)
+ZEND_ARG_INFO(0, max_neurons)
+ZEND_ARG_INFO(0, neurons_between_reports)
+ZEND_ARG_INFO(0, desired_error)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_cascadetrain_on_file, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, filename)
+ZEND_ARG_INFO(0, max_neurons)
+ZEND_ARG_INFO(0, neurons_between_reports)
+ZEND_ARG_INFO(0, desired_error)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_create_from_file, 0)
 ZEND_ARG_INFO(0, configuration_file)
 ZEND_END_ARG_INFO()
@@ -632,6 +648,8 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_set_activation_function_output,           arginfo_fann_set_activation_function_output)
 	PHP_FE(fann_set_activation_steepness_hidden,          arginfo_fann_set_activation_steepness_hidden)
 	PHP_FE(fann_set_activation_steepness_output,          arginfo_fann_set_activation_steepness_output)
+	PHP_FE(fann_cascadetrain_on_data,                     arginfo_fann_cascadetrain_on_data)
+	PHP_FE(fann_cascadetrain_on_file,                     arginfo_fann_cascadetrain_on_file)
 	PHP_FE(fann_create_from_file,                         arginfo_fann_create_from_file)
 	PHP_FE(fann_save,                                     arginfo_fann_save)
 	PHP_FE_END
@@ -2589,6 +2607,56 @@ PHP_FUNCTION(fann_get_sarprop_temperature)
 PHP_FUNCTION(fann_set_sarprop_temperature)
 {
     PHP_FANN_SET_PARAM(fann_set_sarprop_temperature, d, double);
+}
+/* }}} */
+
+/* {{{ proto bool fann_cascadetrain_on_data(resource ann, resource data, int max_neurons, int neurons_between_reports, float desired_error)
+   Trains on an entire dataset for a period of time using the Cascade2 training algorithm */
+PHP_FUNCTION(fann_cascadetrain_on_data)
+{
+	zval *z_ann, *z_train_data;
+	long max_neurons, neurons_between_reports;
+	double desired_error;
+	struct fann *ann;
+	struct fann_train_data *train_data;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rrlld", &z_ann, &z_train_data,
+							  &max_neurons, &neurons_between_reports, &desired_error) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	PHP_FANN_FETCH_TRAIN_DATA();
+	php_fann_update_user_data(ann, z_ann, z_train_data);
+	fann_cascadetrain_on_data(ann, train_data, max_neurons, neurons_between_reports, desired_error);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto bool fann_cascadetrain_on_file(resource ann, string filename, int max_neurons, int neurons_between_reports, float desired_error)
+   Trains on an entire dataset in file for a period of time using the Cascade2 training algorithm */
+PHP_FUNCTION(fann_cascadetrain_on_file)
+{
+	zval *z_ann;
+	char *filename;
+	int filename_len;
+	long max_neurons, neurons_between_reports;
+	double desired_error;
+	struct fann *ann;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rplld", &z_ann, &filename, &filename_len,
+							  &max_neurons, &neurons_between_reports, &desired_error) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	filename = php_fann_get_path_for_open(filename, filename_len, 1 TSRMLS_CC);
+	if (!filename) {
+		RETURN_FALSE;
+	}
+	php_fann_update_user_data(ann, z_ann, (zval *) NULL);
+	fann_cascadetrain_on_file(ann, filename, max_neurons, neurons_between_reports, desired_error);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
 }
 /* }}} */
 

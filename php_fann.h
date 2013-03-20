@@ -148,6 +148,11 @@ PHP_FUNCTION(fann_set_sarprop_step_error_shift);
 PHP_FUNCTION(fann_get_sarprop_temperature);
 PHP_FUNCTION(fann_set_sarprop_temperature);
 
+/* FANN Cascade Training */
+/* Cascade Training */
+PHP_FUNCTION(fann_cascadetrain_on_data);
+PHP_FUNCTION(fann_cascadetrain_on_file);
+
 /* FANN File Input/Output */
 /* File Input and Output  */
 PHP_FUNCTION(fann_create_from_file);
