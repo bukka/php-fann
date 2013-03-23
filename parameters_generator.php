@@ -16,21 +16,42 @@ $cascade_params = array(
 
 $fpg_stream = STDOUT;
 
-function fpg_printf($format) {
+function fpg_printf($format = "") {
 	global $fpg_stream;
 	$args = func_get_args();
-	vfprintf($fpg_stream, $format, array_splice($args, 1));
+	vfprintf($fpg_stream, $format . PHP_EOL, array_splice($args, 1));
 }
 
-/* function parameters generate data headers */
+/* print function headers */
 function fpgd_headers($name, $params) {
-	fpg_printf('PHP_FUNCTION(fann_get_%s);' . PHP_EOL, $name);
+	fpg_printf('PHP_FUNCTION(fann_get_%s);', $name);
 	if ($params['has_setter']) {
-		fpg_printf('PHP_FUNCTION(fann_set_%s);' . PHP_EOL, $name);
+		fpg_printf('PHP_FUNCTION(fann_set_%s);', $name);
 	}
 }
 
+/* print function params definitions for reflection */
+function fpgd_reflection($name, $params) {
+	$begin = "ZEND_BEGIN_ARG_INFO(arginfo_fann_%s_$name, 0)";
+	$arg = "ZEND_ARG_INFO(0, %s)";
+	$end = "ZEND_END_ARG_INFO()";
+	// getter
+	fpg_printf($begin, 'get');
+	fpg_printf($arg, 'ann');
+	fpg_printf($end);
+	fpg_printf(); // EOL
+	// setter
+	if ($params['has_setter']) {
+		fpg_printf($begin, 'set');
+		fpg_printf($arg, 'ann');
+		foreach ($params['params'] as $param_name => $param_type)
+			fpg_printf($arg, $param_name);
+		fpg_printf($end);
+		fpg_printf();
+	}
+}
 
+/* process parameters array */
 function fpg_process_array($action, $params_list) {
 	$fce_name = "fpgd_$action";
 	if (function_exists($fce_name)) {
