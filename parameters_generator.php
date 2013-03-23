@@ -4,14 +4,68 @@
 $cascade_params = array(
 	'cascade_output_change_fraction' => array(
 		'params' => array( 'cascade_output_change_fraction' => 'float' ),
-		'comment' => 'the cascade output change fraction'
+		'comment' => 'the cascade output change fraction',
 		),
 	'cascade_output_stagnation_epochs' => array(
 		'params' => array( 'cascade_output_stagnation_epochs' => 'float' ),
-		'comment' => 'the number of cascade output stagnation epochs'
+		'comment' => 'the number of cascade output stagnation epochs',
 		),
-		
-		
+	'cascade_candidate_change_fraction' => array(
+		'params' => array( 'cascade_candidate_change_fraction' => 'float' ),
+		'comment' => 'the cascade candidate change fraction',
+		),
+	'cascade_candidate_stagnation_epochs' => array(
+		'params' => array( 'cascade_candidate_stagnation_epochs' => 'int' ),
+		'comment' => 'the number of cascade candidate stagnation epochs',
+		),
+	'cascade_weight_multiplier' => array(
+		'params' => array( 'cascade_weight_multiplier' => 'fann_type' ),
+		'comment' => 'the weight multiplier',
+		),
+	'cascade_candidate_limit' => array(
+		'params' => array( 'cascade_candidate_limit' => 'fann_type' ),
+		'comment' => 'the candidate limit',
+		),
+	'cascade_max_out_epochs' => array(
+		'params' => array( 'cascade_max_out_epochs' => 'int' ),
+		'comment' => 'the maximum out epochs',
+		),
+	'cascade_min_out_epochs' => array(
+		'params' => array( 'cascade_min_out_epochs' => 'int' ),
+		'comment' => 'the minimum out epochs',
+		),
+	'cascade_max_cand_epochs' => array(
+		'params' => array( 'cascade_max_cand_epochs' => 'int' ),
+		'comment' => 'the max candidate epochs',
+		),
+	'cascade_min_cand_epochs' => array(
+		'params' => array( 'cascade_min_cand_epochs' => 'float' ),
+		'comment' => 'the min candidate epochs',
+		),
+	'cascade_num_candidates' => array(
+		'params' => array( 'cascade_num_candidates' => 'int' ),
+		'comment' => 'the number of candidates used during training',
+		'only_getter' => true
+		),
+	'cascade_activation_functions_count' => array(
+		'params' => array( 'cascade_activation_functions_count' => 'int' ),
+		'comment' => 'the number of activation functions',
+		'only_getter' => true
+		),
+    // get_cascade_activation_functions (returns array)
+	// set_cascade_activation_functions
+	'cascade_activation_steepnesses_count' => array(
+		'params' => array( 'cascade_activation_steepnesses_count' => 'int' ),
+		'comment' => 'the number of activation steepnesses',
+		'only_getter' => true
+		),
+	// get_cascade_activation_steepnesses
+	// set_cascade_activation_steepnesses
+	'cascade_num_candidate_groups' => array(
+		'params' => array( 'cascade_num_candidate_groups' => 'int' ),
+		'comment' => 'the number of candidate groups',
+		),
+	
 );
 
 $fpg_stream = STDOUT;
