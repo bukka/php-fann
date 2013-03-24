@@ -158,6 +158,9 @@ PHP_FUNCTION(fann_cascadetrain_on_file);
 PHP_FUNCTION(fann_create_from_file);
 PHP_FUNCTION(fann_save);
 
+/* FANN Error Handling */
+/* Error Handling */
+PHP_FUNCTION(fann_set_error_log);
 
 /* FANNConnection class */
 void php_fannconnection_register_class(TSRMLS_D);

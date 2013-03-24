@@ -548,6 +548,11 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_save, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, configuration_file)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_error_log, 0)
+ZEND_ARG_INFO(0, errdat)
+ZEND_ARG_INFO(0, log_file)
+ZEND_END_ARG_INFO()
 /* }}} */
 
 /* {{{ fann_functions[] */
@@ -652,6 +657,7 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_cascadetrain_on_file,                     arginfo_fann_cascadetrain_on_file)
 	PHP_FE(fann_create_from_file,                         arginfo_fann_create_from_file)
 	PHP_FE(fann_save,                                     arginfo_fann_save)
+	PHP_FE(fann_set_error_log,                            arginfo_fann_set_error_log)
 	PHP_FE_END
 };
 /* }}} */
@@ -712,6 +718,10 @@ ZEND_GET_MODULE(fann)
 
 /* macro for fetching train data resource using train_data variable */
 #define PHP_FANN_FETCH_TRAIN_DATA() PHP_FANN_FETCH_TRAIN_DATA_EX(train_data)
+
+/* fetch error data */
+#define PHP_FANN_FETCH_ERRDAT() \
+	ZEND_FETCH_RESOURCE2(errdat, struct fann_error *, &z_errdat, -1, NULL, le_fannbuf, le_fanntrainbuf)
 
 /* macro for getting ann param identified by 0 args */
 #define PHP_FANN_GET_PARAM0(__fce, __return)							\
@@ -793,6 +803,8 @@ static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 		FREE_ZVAL(user_data->callback);
 		efree(user_data);
 	}
+	if (ann->error_log)
+		fclose(ann->error_log);
 	fann_destroy(ann);
 }
 /* }}} */
@@ -802,6 +814,8 @@ static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 static void fann_destructor_fanntrainbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
 	struct fann_train_data *train_data = (struct fann_train_data *) rsrc->ptr;
+	if (train_data->error_log)
+		fclose(train_data->error_log);
 	fann_destroy_train(train_data);
 }
 /* }}} */
@@ -854,6 +868,28 @@ PHP_MINIT_FUNCTION(fann)
 	/* Network type constants */
 	REGISTER_FANN_CONSTANT(FANN_NETTYPE_LAYER);
 	REGISTER_FANN_CONSTANT(FANN_NETTYPE_SHORTCUT);
+	/* FANN Error Codes */
+	REGISTER_FANN_CONSTANT(FANN_E_NO_ERROR);
+	REGISTER_FANN_CONSTANT(FANN_E_CANT_OPEN_CONFIG_R);
+	REGISTER_FANN_CONSTANT(FANN_E_CANT_OPEN_CONFIG_W);
+	REGISTER_FANN_CONSTANT(FANN_E_WRONG_CONFIG_VERSION);
+	REGISTER_FANN_CONSTANT(FANN_E_CANT_READ_CONFIG);
+	REGISTER_FANN_CONSTANT(FANN_E_CANT_READ_NEURON);
+	REGISTER_FANN_CONSTANT(FANN_E_CANT_READ_CONNECTIONS);
+	REGISTER_FANN_CONSTANT(FANN_E_WRONG_NUM_CONNECTIONS);
+	REGISTER_FANN_CONSTANT(FANN_E_CANT_OPEN_TD_W);
+	REGISTER_FANN_CONSTANT(FANN_E_CANT_OPEN_TD_R);
+	REGISTER_FANN_CONSTANT(FANN_E_CANT_READ_TD);
+	REGISTER_FANN_CONSTANT(FANN_E_CANT_ALLOCATE_MEM);
+	REGISTER_FANN_CONSTANT(FANN_E_CANT_TRAIN_ACTIVATION);
+	REGISTER_FANN_CONSTANT(FANN_E_CANT_USE_ACTIVATION);
+	REGISTER_FANN_CONSTANT(FANN_E_TRAIN_DATA_MISMATCH);
+	REGISTER_FANN_CONSTANT(FANN_E_CANT_USE_TRAIN_ALG);
+	REGISTER_FANN_CONSTANT(FANN_E_TRAIN_DATA_SUBSET);
+	REGISTER_FANN_CONSTANT(FANN_E_INDEX_OUT_OF_BOUND);
+	REGISTER_FANN_CONSTANT(FANN_E_SCALE_NOT_PRESENT);
+	REGISTER_FANN_CONSTANT(FANN_E_INPUT_NO_MATCH);
+	REGISTER_FANN_CONSTANT(FANN_E_OUTPUT_NO_MATCH);
 
 	/* Init FANNConnection class */
 	php_fannconnection_register_class(TSRMLS_C);
@@ -2708,6 +2744,31 @@ PHP_FUNCTION(fann_save)
 }
 /* }}} */
 
+/* {{{ proto bool fann_set_error_log(resource errdat, string log_file)
+   Changes where errors are logged to */
+PHP_FUNCTION(fann_set_error_log)
+{
+	zval *z_errdat;
+	char *log_name = NULL;
+	FILE *log_file;
+	int log_name_len;
+	struct fann_error *errdat;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rp", &z_errdat, &log_name, &log_name_len) == FAILURE) {
+		return;
+	}
+	log_name = php_fann_get_path_for_open(log_name, log_name_len, 0 TSRMLS_CC);
+	if (!log_name) {
+		RETURN_FALSE;
+	}
+	PHP_FANN_FETCH_ERRDAT();
+	if (errdat->error_log)
+		fclose(errdat->error_log);
+	log_file = fopen(log_name, "w");
+	fann_set_error_log(errdat, log_file);
+	RETURN_TRUE;
+}
+/* }}} */
 
 /*
  * Local variables:
