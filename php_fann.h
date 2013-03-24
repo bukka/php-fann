@@ -161,6 +161,11 @@ PHP_FUNCTION(fann_save);
 /* FANN Error Handling */
 /* Error Handling */
 PHP_FUNCTION(fann_set_error_log);
+PHP_FUNCTION(fann_get_errno);
+PHP_FUNCTION(fann_reset_errno);
+PHP_FUNCTION(fann_reset_errstr);
+PHP_FUNCTION(fann_get_errstr);
+PHP_FUNCTION(fann_print_error);
 
 /* FANNConnection class */
 void php_fannconnection_register_class(TSRMLS_D);

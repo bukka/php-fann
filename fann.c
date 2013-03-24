@@ -553,6 +553,26 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_set_error_log, 0)
 ZEND_ARG_INFO(0, errdat)
 ZEND_ARG_INFO(0, log_file)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_errno, 0)
+ZEND_ARG_INFO(0, errdat)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_reset_errno, 0)
+ZEND_ARG_INFO(0, errdat)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_reset_errstr, 0)
+ZEND_ARG_INFO(0, errdat)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_errstr, 0)
+ZEND_ARG_INFO(0, errdat)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_print_error, 0)
+ZEND_ARG_INFO(0, errdat)
+ZEND_END_ARG_INFO()
 /* }}} */
 
 /* {{{ fann_functions[] */
@@ -658,6 +678,11 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_create_from_file,                         arginfo_fann_create_from_file)
 	PHP_FE(fann_save,                                     arginfo_fann_save)
 	PHP_FE(fann_set_error_log,                            arginfo_fann_set_error_log)
+	PHP_FE(fann_get_errno,                                arginfo_fann_get_errno)
+	PHP_FE(fann_reset_errno,                              arginfo_fann_reset_errno)
+	PHP_FE(fann_reset_errstr,                             arginfo_fann_reset_errstr)
+	PHP_FE(fann_get_errstr,                               arginfo_fann_get_errstr)
+	PHP_FE(fann_print_error,                              arginfo_fann_print_error)
 	PHP_FE_END
 };
 /* }}} */
@@ -2767,6 +2792,81 @@ PHP_FUNCTION(fann_set_error_log)
 	log_file = fopen(log_name, "w");
 	fann_set_error_log(errdat, log_file);
 	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto int fann_get_errno(resource errdat)
+   Returns the last error number */
+PHP_FUNCTION(fann_get_errno)
+{
+	zval *z_errdat;
+	struct fann_error *errdat;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_errdat) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ERRDAT();
+	RETURN_LONG(fann_get_errno(errdat));
+}
+/* }}} */
+
+/* {{{ proto void fann_reset_errno(resource errdat)
+   Resets the last error number */
+PHP_FUNCTION(fann_reset_errno)
+{
+	zval *z_errdat;
+	struct fann_error *errdat;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_errdat) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ERRDAT();
+	fann_reset_errno(errdat);
+}
+/* }}} */
+
+/* {{{ proto void fann_reset_errstr(resource errdat)
+   Resets the last error string */
+PHP_FUNCTION(fann_reset_errstr)
+{
+	zval *z_errdat;
+	struct fann_error *errdat;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_errdat) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ERRDAT();
+	fann_reset_errstr(errdat);
+}
+/* }}} */
+
+/* {{{ proto string fann_get_errstr(resource errdat)
+   Returns the last error string */
+PHP_FUNCTION(fann_get_errstr)
+{
+	zval *z_errdat;
+	struct fann_error *errdat;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_errdat) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ERRDAT();
+	RETURN_STRING(errdat->errstr, 1);
+}
+/* }}} */
+
+/* {{{ proto string fann_print_error(resource errdat)
+   Prints the last error string */
+PHP_FUNCTION(fann_print_error)
+{
+	zval *z_errdat;
+	struct fann_error *errdat;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_errdat) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ERRDAT();
+	php_printf("%s", errdat->errstr);
 }
 /* }}} */
 
