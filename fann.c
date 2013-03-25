@@ -3060,7 +3060,23 @@ PHP_FUNCTION(fann_get_cascade_activation_functions_count)
    Returns the array of cascade candidate activation functions */
 PHP_FUNCTION(fann_get_cascade_activation_functions)
 {
+	zval *z_ann;
+	struct fann *ann;
+	uint num_functions, i;
+	enum fann_activationfunc_enum *functions;
 	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	num_functions = fann_get_cascade_activation_functions_count(ann);
+	PHP_FANN_ERROR_CHECK_ANN();
+	functions = fann_get_cascade_activation_functions(ann);
+	PHP_FANN_ERROR_CHECK_ANN();
+	array_init_size(return_value, num_functions);
+	for (i = 0; i < num_functions; i++) {
+		add_index_long(return_value, i, (long) functions[i]);
+	}
 }
 /* }}} */
 
@@ -3084,7 +3100,23 @@ PHP_FUNCTION(fann_get_cascade_activation_steepnesses_count)
    Returns the cascade activation steepnesses array is an array of the different activation functions used by the candidates */
 PHP_FUNCTION(fann_get_cascade_activation_steepnesses)
 {
+	zval *z_ann;
+	struct fann *ann;
+	uint num_steepnesses, i;
+	fann_type *steepnesses;
 	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	num_steepnesses = fann_get_cascade_activation_steepnesses_count(ann);
+	PHP_FANN_ERROR_CHECK_ANN();
+	steepnesses = fann_get_cascade_activation_steepnesses(ann);
+	PHP_FANN_ERROR_CHECK_ANN();
+	array_init_size(return_value, num_steepnesses);
+	for (i = 0; i < num_steepnesses; i++) {
+		add_index_long(return_value, i, (long) steepnesses[i]);
+	}
 }
 /* }}} */
 
