@@ -152,6 +152,36 @@ PHP_FUNCTION(fann_set_sarprop_temperature);
 /* Cascade Training */
 PHP_FUNCTION(fann_cascadetrain_on_data);
 PHP_FUNCTION(fann_cascadetrain_on_file);
+/* Parameters */
+PHP_FUNCTION(fann_get_cascade_output_change_fraction);
+PHP_FUNCTION(fann_set_cascade_output_change_fraction);
+PHP_FUNCTION(fann_get_cascade_output_stagnation_epochs);
+PHP_FUNCTION(fann_set_cascade_output_stagnation_epochs);
+PHP_FUNCTION(fann_get_cascade_candidate_change_fraction);
+PHP_FUNCTION(fann_set_cascade_candidate_change_fraction);
+PHP_FUNCTION(fann_get_cascade_candidate_stagnation_epochs);
+PHP_FUNCTION(fann_set_cascade_candidate_stagnation_epochs);
+PHP_FUNCTION(fann_get_cascade_weight_multiplier);
+PHP_FUNCTION(fann_set_cascade_weight_multiplier);
+PHP_FUNCTION(fann_get_cascade_candidate_limit);
+PHP_FUNCTION(fann_set_cascade_candidate_limit);
+PHP_FUNCTION(fann_get_cascade_max_out_epochs);
+PHP_FUNCTION(fann_set_cascade_max_out_epochs);
+PHP_FUNCTION(fann_get_cascade_min_out_epochs);
+PHP_FUNCTION(fann_set_cascade_min_out_epochs);
+PHP_FUNCTION(fann_get_cascade_max_cand_epochs);
+PHP_FUNCTION(fann_set_cascade_max_cand_epochs);
+PHP_FUNCTION(fann_get_cascade_min_cand_epochs);
+PHP_FUNCTION(fann_set_cascade_min_cand_epochs);
+PHP_FUNCTION(fann_get_cascade_num_candidates);
+PHP_FUNCTION(fann_get_cascade_activation_functions_count);
+PHP_FUNCTION(fann_get_cascade_activation_functions);
+PHP_FUNCTION(fann_set_cascade_activation_functions);
+PHP_FUNCTION(fann_get_cascade_activation_steepnesses_count);
+PHP_FUNCTION(fann_get_cascade_activation_steepnesses);
+PHP_FUNCTION(fann_set_cascade_activation_steepnesses);
+PHP_FUNCTION(fann_get_cascade_num_candidate_groups);
+PHP_FUNCTION(fann_set_cascade_num_candidate_groups);
 
 /* FANN File Input/Output */
 /* File Input and Output  */
