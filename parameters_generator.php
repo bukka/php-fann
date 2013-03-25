@@ -52,15 +52,21 @@ $cascade_params = array(
 		'comment' => 'the number of activation functions',
 		'only_getter' => true
 		),
-    // get_cascade_activation_functions (returns array)
-	// set_cascade_activation_functions
+    'cascade_activation_functions' => array(
+		'params' => array( 'cascade_activation_functions' => 'array' ),
+		'comment' => 'the array of cascade candidate activation functions',
+		'empty_function' => true
+		),
 	'cascade_activation_steepnesses_count' => array(
 		'params' => array( 'cascade_activation_steepnesses_count' => 'int' ),
 		'comment' => 'the number of activation steepnesses',
 		'only_getter' => true
 		),
-	// get_cascade_activation_steepnesses
-	// set_cascade_activation_steepnesses
+    'cascade_activation_steepnesses' => array(
+		'params' => array( 'cascade_activation_steepnesses_count' => 'int' ),
+		'comment' => 'the cascade activation steepnesses array is an array of the different activation functions used by the candidates',
+		'empty_function' => true
+		),
 	'cascade_num_candidate_groups' => array(
 		'params' => array( 'cascade_num_candidate_groups' => 'int' ),
 		'comment' => 'the number of candidate groups',
@@ -127,12 +133,13 @@ function fpg_functions($name, $params) {
 		$return_cmd .= 'LONG';
 		break;
 	}
+	$body = $params['empty_function'] ? "": "PHP_FANN_GET_PARAM(fann_get_$name, $return_cmd);";
 	$getter = "
 /* {{{ proto bool fann_get_$name(resource ann)
    Returns {$params['comment']} */
 PHP_FUNCTION(fann_get_$name)
 {
-	PHP_FANN_GET_PARAM(fann_get_$name, $return_cmd);
+	$body
 }
 /* }}} */";
 	fpg_printf($getter);
@@ -143,12 +150,13 @@ PHP_FUNCTION(fann_get_$name)
 			$comment_args .= sprintf(", %s %s", $param_type == 'fann_type' ? 'double' : $param_type, $param_name);
 			$set_args .= sprintf(", %s", $param_type == 'int' ? 'l, long' : 'd, double');
 		}
+		$body = $params['empty_function'] ? "": "PHP_FANN_SET_PARAM($set_args);";
 		$setter = "
 /* {{{ proto bool fann_set_$name($comment_args)
    Sets {$params['comment']}*/
 PHP_FUNCTION(fann_set_$name)
 {
-    PHP_FANN_SET_PARAM($set_args);
+    $body
 }
 /* }}} */";
 		fpg_printf($setter);
@@ -160,6 +168,7 @@ function fpg_process_array($action, $params_list) {
 	$fce_name = "fpg_$action";
 	if (function_exists($fce_name)) {
 		foreach ($params_list as $name => $params) {
+			$params['empty_function'] = isset($params['empty_function']) && $params['empty_function'];
 			$params['has_setter'] = !isset($params['only_getter']) || !$params['only_getter'];
 			$fce_name($name, $params);
 		}
