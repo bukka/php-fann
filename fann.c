@@ -1258,6 +1258,7 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 								 uint *num_layers, uint **layers TSRMLS_DC)
 {
 	zval *array, **ppdata;
+	HashPosition pos;
 	int i = 0;
 
 	if (conn_rate) {
@@ -1277,9 +1278,9 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 	}
 
 	*layers = (uint *) emalloc(*num_layers * sizeof(uint));
-	for (zend_hash_internal_pointer_reset(Z_ARRVAL_P(array));
-		 zend_hash_get_current_data(Z_ARRVAL_P(array), (void **) &ppdata) == SUCCESS;
-		 zend_hash_move_forward(Z_ARRVAL_P(array))) {
+	for (zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(array), &pos);
+		 zend_hash_get_current_data_ex(Z_ARRVAL_P(array), (void **) &ppdata, &pos) == SUCCESS;
+		 zend_hash_move_forward_ex(Z_ARRVAL_P(array), &pos)) {
 		convert_to_long_ex(ppdata);
 		if (php_fann_check_num_neurons(Z_LVAL_PP(ppdata) TSRMLS_CC) == FAILURE) {
 			efree(*layers);
@@ -1752,6 +1753,7 @@ PHP_FUNCTION(fann_get_connection_array)
 PHP_FUNCTION(fann_set_weight_array)
 {
 	zval *z_ann, *array, **current;
+	HashPosition pos;
 	struct fann *ann;
 	struct fann_connection *connections;
 	uint num_connections, i = 0;
@@ -1763,9 +1765,9 @@ PHP_FUNCTION(fann_set_weight_array)
 	PHP_FANN_FETCH_ANN();
 	num_connections = zend_hash_num_elements(Z_ARRVAL_P(array));
 	connections = (struct fann_connection *) emalloc(num_connections * sizeof(struct fann_connection));
-	for (zend_hash_internal_pointer_reset(Z_ARRVAL_P(array));
-		 zend_hash_get_current_data(Z_ARRVAL_P(array), (void **) &current) == SUCCESS;
-		 zend_hash_move_forward(Z_ARRVAL_P(array))) {
+	for (zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(array), &pos);
+		 zend_hash_get_current_data_ex(Z_ARRVAL_P(array), (void **) &current, &pos) == SUCCESS;
+		 zend_hash_move_forward_ex(Z_ARRVAL_P(array), &pos)) {
 		if (Z_TYPE_PP(current) == IS_OBJECT && instanceof_function(
 				Z_OBJCE_PP(current), php_fann_FANNConnection_class TSRMLS_CC)) {
 			connections[i].from_neuron = Z_LVAL_P(PHP_FANN_CONN_PROP_READ(*current, "from_neuron"));
@@ -3084,7 +3086,28 @@ PHP_FUNCTION(fann_get_cascade_activation_functions)
    Sets the array of cascade candidate activation functions*/
 PHP_FUNCTION(fann_set_cascade_activation_functions)
 {
-    
+	zval *z_ann, *array, **current;
+	HashPosition pos;
+	struct fann *ann;
+	enum fann_activationfunc_enum *functions;
+	uint num_functions, i = 0;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &array) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	num_functions = zend_hash_num_elements(Z_ARRVAL_P(array));
+	functions = (enum fann_activationfunc_enum *) emalloc(num_functions * sizeof(enum fann_activationfunc_enum));
+	for (zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(array), &pos);
+		 zend_hash_get_current_data_ex(Z_ARRVAL_P(array), (void **) &current, &pos) == SUCCESS;
+		 zend_hash_move_forward_ex(Z_ARRVAL_P(array), &pos)) {
+		convert_to_long_ex(current);
+		functions[i++] = (enum fann_activationfunc_enum) Z_LVAL_PP(current);
+	}
+	fann_set_cascade_activation_functions(ann, functions, i);
+	efree(functions);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
 }
 /* }}} */
 
@@ -3115,16 +3138,37 @@ PHP_FUNCTION(fann_get_cascade_activation_steepnesses)
 	PHP_FANN_ERROR_CHECK_ANN();
 	array_init_size(return_value, num_steepnesses);
 	for (i = 0; i < num_steepnesses; i++) {
-		add_index_long(return_value, i, (long) steepnesses[i]);
+		add_index_long(return_value, i, (fann_type) steepnesses[i]);
 	}
 }
 /* }}} */
 
-/* {{{ proto bool fann_set_cascade_activation_steepnesses(resource ann, int cascade_activation_steepnesses_count)
+/* {{{ proto bool fann_set_cascade_activation_steepnesses(resource ann, array cascade_activation_steepnesses)
    Sets the cascade activation steepnesses array is an array of the different activation functions used by the candidates*/
 PHP_FUNCTION(fann_set_cascade_activation_steepnesses)
 {
-    
+	zval *z_ann, *array, **current;
+	HashPosition pos;
+	struct fann *ann;
+	fann_type *steepnesses;
+	uint num_steepnesses, i = 0;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &array) == FAILURE) {
+		return;
+	}
+	PHP_FANN_FETCH_ANN();
+	num_steepnesses = zend_hash_num_elements(Z_ARRVAL_P(array));
+	steepnesses = (fann_type *) emalloc(num_steepnesses * sizeof(fann_type));
+	for (zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(array), &pos);
+		 zend_hash_get_current_data_ex(Z_ARRVAL_P(array), (void **) &current, &pos) == SUCCESS;
+		 zend_hash_move_forward_ex(Z_ARRVAL_P(array), &pos)) {
+		convert_to_double_ex(current);
+		steepnesses[i++] = (fann_type) Z_DVAL_PP(current);
+	}
+	fann_set_cascade_activation_steepnesses(ann, steepnesses, i);
+	efree(steepnesses);
+	PHP_FANN_ERROR_CHECK_ANN();
+	RETURN_TRUE;
 }
 /* }}} */
 

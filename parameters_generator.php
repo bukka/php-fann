@@ -63,7 +63,7 @@ $cascade_params = array(
 		'only_getter' => true
 		),
     'cascade_activation_steepnesses' => array(
-		'params' => array( 'cascade_activation_steepnesses_count' => 'int' ),
+		'params' => array( 'cascade_activation_steepnesses' => 'array' ),
 		'comment' => 'the cascade activation steepnesses array is an array of the different activation functions used by the candidates',
 		'empty_function' => true
 		),
