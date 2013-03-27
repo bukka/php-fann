@@ -6,7 +6,7 @@ This is a PHP binding for [FANN (Fast Artificial Neural Network) library](http:/
 
 The API is very similar to the official [FANN C API](http://leenissen.dk/fann/html/files/fann-h.html). Just functions for fixed `fann_type` have not been mapped because PHP always support `float`. In addition unnecessary arguments for some functions have been left out (for example array length that is not necessary for PHP arrays).
 
-## Example
+## Examples
 
 These are just two basic examples for simple training and running supplied data on the trained network.
 
