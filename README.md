@@ -9,24 +9,24 @@ The API is very similar to the official [FANN C API](http://leenissen.dk/fann/ht
 ## Installation
 
 First download the source
-```bash
-$ git clone https://github.com/bukka/php-fann.git
+```
+git clone https://github.com/bukka/php-fann.git
 ```
 
 Before you start installation make sure that libfann is installed on your system. It's part of the main repository for the most distros (search for `fann`). If not you need to install it first. Either download it from the [official site](http://leenissen.dk/fann/wp/) or get it from your distro repository. For example in Fedora:
-```bash
-# yum install fann-devel
+```
+sudo yum install fann-devel
 ```
 Then go to created source directory and compile the extension. You need to have php development package installed (the `phize` must be available).
-```bash
-$ cd php-fann
-$ phpize
-$ ./configure --with-fann
-$ make
-$ sudo make install
+```
+cd php-fann
+phpize
+./configure --with-fann
+make
+sudo make install
 ```
 
-The last thing that you need to do is to add
+Finally you need to add =
 ```
 extension=fann
 ```
