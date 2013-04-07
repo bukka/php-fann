@@ -13,11 +13,11 @@ First download the source
 git clone https://github.com/bukka/php-fann.git
 ```
 
-Before you start installation make sure that libfann is installed on your system. It's part of the main repository for the most distros (search for `fann`). If not you need to install it first. Either download it from the [official site](http://leenissen.dk/fann/wp/) or get it from your distro repository. For example in Fedora:
+Before you start installation make sure that `libfann` is installed on your system. It's part of the main repository in the most Linux distributions (search for `fann`). If not you need to install it first. Either download it from the [official site](http://leenissen.dk/fann/wp/) or get it from your distro repository. For example in Fedora:
 ```
 sudo yum install fann-devel
 ```
-Then go to created source directory and compile the extension. You need to have php development package installed (the `phize` must be available).
+Then go to the created source directory and compile the extension. You need to have a php development package installed (command `phpize` must be available).
 ```
 cd php-fann
 phpize
@@ -26,7 +26,7 @@ make
 sudo make install
 ```
 
-Finally you need to add =
+Finally you need to add
 ```
 extension=fann
 ```
