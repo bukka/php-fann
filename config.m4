@@ -33,18 +33,18 @@ if test "$PHP_FANN" != "no"; then
   PHP_ADD_INCLUDE($FANN_DIR/include)
 
   LIBNAME=fann
-  LIBSYMBOL=fann_create_standard
+  LIBSYMBOL=fann_copy
 
   PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
   [
     PHP_ADD_LIBRARY_WITH_PATH($LIBNAME, $FANN_DIR/$PHP_LIBDIR, FANN_SHARED_LIBADD)
     AC_DEFINE(HAVE_FANN,1,[ ])
   ],[
-    AC_MSG_ERROR([wrong libfann version or lib not found])
+    AC_MSG_ERROR([wrong libfann version (you need version 2.2) or lib not found])
   ],[
     -L$FANN_DIR/$PHP_LIBDIR -lm
   ])
-  
+
   PHP_SUBST(FANN_SHARED_LIBADD)
 
   PHP_NEW_EXTENSION(fann, fann.c fann_connection.c, $ext_shared)
