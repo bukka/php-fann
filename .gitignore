@@ -9,8 +9,11 @@ aclocal.m4
 autom4te.cache/
 build/
 config.guess
-config.h.in
+config.h*
 config.sub
+config.log
+config.nice
+config.status
 configure
 configure.in
 install-sh
