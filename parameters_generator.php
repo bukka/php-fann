@@ -5,42 +5,52 @@ $cascade_params = array(
 	'cascade_output_change_fraction' => array(
 		'params' => array( 'cascade_output_change_fraction' => 'float' ),
 		'comment' => 'the cascade output change fraction',
+		'test_param' => 0.02,
 	),
 	'cascade_output_stagnation_epochs' => array(
 		'params' => array( 'cascade_output_stagnation_epochs' => 'float' ),
 		'comment' => 'the number of cascade output stagnation epochs',
+		'test_param' => 10,
 	),
 	'cascade_candidate_change_fraction' => array(
 		'params' => array( 'cascade_candidate_change_fraction' => 'float' ),
 		'comment' => 'the cascade candidate change fraction',
+		'test_param' => 0.02,
 	),
 	'cascade_candidate_stagnation_epochs' => array(
 		'params' => array( 'cascade_candidate_stagnation_epochs' => 'int' ),
 		'comment' => 'the number of cascade candidate stagnation epochs',
+		'test_param' => 10,
 	),
 	'cascade_weight_multiplier' => array(
 		'params' => array( 'cascade_weight_multiplier' => 'fann_type' ),
 		'comment' => 'the weight multiplier',
+		'test_param' => 0.5,
 	),
 	'cascade_candidate_limit' => array(
 		'params' => array( 'cascade_candidate_limit' => 'fann_type' ),
 		'comment' => 'the candidate limit',
+		'test_param' => 950.0,
 	),
 	'cascade_max_out_epochs' => array(
 		'params' => array( 'cascade_max_out_epochs' => 'int' ),
 		'comment' => 'the maximum out epochs',
+		'test_param' => 140,
 	),
 	'cascade_min_out_epochs' => array(
 		'params' => array( 'cascade_min_out_epochs' => 'int' ),
 		'comment' => 'the minimum out epochs',
+		'test_param' => 60,
 	),
 	'cascade_max_cand_epochs' => array(
 		'params' => array( 'cascade_max_cand_epochs' => 'int' ),
 		'comment' => 'the max candidate epochs',
+		'test_param' => 140,
 	),
 	'cascade_min_cand_epochs' => array(
 		'params' => array( 'cascade_min_cand_epochs' => 'float' ),
 		'comment' => 'the min candidate epochs',
+		'test_param' => 60,
 	),
 	'cascade_num_candidates' => array(
 		'params' => array( 'cascade_num_candidates' => 'int' ),
@@ -70,6 +80,7 @@ $cascade_params = array(
 	'cascade_num_candidate_groups' => array(
 		'params' => array( 'cascade_num_candidate_groups' => 'int' ),
 		'comment' => 'the number of candidate groups',
+		'test_param' => 3,
 	),
 	
 );
@@ -189,6 +200,10 @@ var_dump( fann_get_' . $name . '( $ann ) );
 	// setter
 	if ($params['has_setter'] && isset($params['test_param'])) {
 		$setter_test_file = sprintf($file_path, 'set');
+		if (in_array($params['return'], array('float', 'double', 'fann_type')))
+			$setter_cmp_cond = 'round( fann_get_'  .$name . '( $ann ), 2 ) == round( ' . $params['test_param'] . ', 2 )';
+		else
+			$setter_cmp_cond = 'fann_get_'  .$name . '( $ann ) == ' . $params['test_param'];
 		$setter_test_content = '--TEST--
 Test function fann_set_' . $name . '() by calling it with its expected arguments
 --FILE--
@@ -197,7 +212,7 @@ Test function fann_set_' . $name . '() by calling it with its expected arguments
 $ann = fann_create_standard( 3, 3, 2, 1 );
 
 var_dump( fann_set_' . $name . '( $ann, ' . $params['test_param'] . ' ) );
-var_dump( fann_get_'  .$name . '( $ann ) == ' . $params['test_param'] . ' );
+var_dump( ' . $setter_cmp_cond . ' );
 
 ?>
 --EXPECT--
