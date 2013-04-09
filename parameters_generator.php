@@ -1,6 +1,104 @@
 #!/usr/bin/env php
 <?php
 
+$training_params = array(
+	'training_algorithm' => array(
+        'params' => array('training_algorithm' => ''),
+        'comment' => 'the training algorithm as described by fann_train_enum',
+        'test_param' => '',
+	),
+	'learning_rate' => array(
+        'params' => array('learning_rate' => ''),
+        'comment' => 'the learning rate',
+        'test_param' => '',
+	),
+	'learning_momentum' => array(
+        'params' => array('learning_momentum' => ''),
+        'comment' => 'the learning momentum',
+        'test_param' => '',
+	),
+	'activation_function' => array(
+        'params' => array('activation_function' => ''),
+        'comment' => 'the activation function for neuron number neuron in layer number layer, counting the input layer as layer 0',
+        'test_param' => '',
+	),
+	'activation_steepness' => array(
+        'params' => array('activation_steepness' => ''),
+        'comment' => 'the activation steepness for neuron number neuron in layer number layer, counting the input layer as layer 0',
+        'test_param' => '',
+	),
+	'train_error_function' => array(
+        'params' => array('train_error_function' => ''),
+        'comment' => 'the error function used during training',
+        'test_param' => '',
+	),
+	'train_stop_function' => array(
+        'params' => array('train_stop_function' => ''),
+        'comment' => 'the the stop function used during training',
+        'test_param' => '',
+	),
+	'bit_fail_limit' => array(
+        'params' => array('bit_fail_limit' => ''),
+        'comment' => 'the bit fail limit used during training',
+        'test_param' => '',
+	),
+	'quickprop_decay' => array(
+        'params' => array('quickprop_decay' => ''),
+        'comment' => 'the decay is a small negative valued number which is the factor that the weights should become smaller in each iteration during quickprop training',
+        'test_param' => '',
+	),
+	'quickprop_mu' => array(
+        'params' => array('quickprop_mu' => ''),
+        'comment' => 'the mu factor is used to increase and decrease the step-size during quickprop training',
+        'test_param' => '',
+	),
+	'rprop_increase_factor' => array(
+        'params' => array('rprop_increase_factor' => ''),
+        'comment' => 'the increase factor is a value larger than 1, which is used to increase the step-size during RPROP training',
+        'test_param' => '',
+	),
+	'rprop_decrease_factor' => array(
+        'params' => array('rprop_decrease_factor' => ''),
+        'comment' => 'the decrease factor is a value smaller than 1, which is used to decrease the step-size during RPROP training',
+        'test_param' => '',
+	),
+	'rprop_delta_min' => array(
+        'params' => array('rprop_delta_min' => ''),
+        'comment' => 'the minimum step-size is a small positive number determining how small the minimum step-size may be',
+        'test_param' => '',
+	),
+	'rprop_delta_max' => array(
+        'params' => array('rprop_delta_max' => ''),
+        'comment' => 'the maximum step-size is a positive number determining how large the maximum step-size may be',
+        'test_param' => '',
+	),
+	'rprop_delta_zero' => array(
+        'params' => array('rprop_delta_zero' => ''),
+        'comment' => 'the initial step-size is a positive number determining the initial step size',
+        'test_param' => '',
+	),
+	'sarprop_weight_decay_shift' => array(
+        'params' => array('sarprop_weight_decay_shift' => ''),
+        'comment' => 'the sarprop weight decay shift',
+        'test_param' => '',
+	),
+	'sarprop_step_error_threshold_factor' => array(
+        'params' => array('sarprop_step_error_threshold_factor' => ''),
+        'comment' => 'the sarprop step error threshold factor',
+        'test_param' => '',
+	),
+	'sarprop_step_error_shift' => array(
+        'params' => array('sarprop_step_error_shift' => ''),
+        'comment' => 'the get sarprop step error shift',
+        'test_param' => '',
+	),
+	'sarprop_temperature' => array(
+        'params' => array('sarprop_temperature' => ''),
+        'comment' => 'the sarprop weight decay shift',
+        'test_param' => '',
+	),
+);
+
 $cascade_params = array(
 	'cascade_output_change_fraction' => array(
 		'params' => array( 'cascade_output_change_fraction' => 'float' ),
