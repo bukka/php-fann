@@ -504,6 +504,25 @@ ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, sarprop_temperature)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_activation_function, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, layer)
+ZEND_ARG_INFO(0, neuron)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_function, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, activation_function)
+ZEND_ARG_INFO(0, layer)
+ZEND_ARG_INFO(0, neuron)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_function_layer, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, activation_function)
+ZEND_ARG_INFO(0, layer)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_function_hidden, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, activation_function)
@@ -514,14 +533,33 @@ ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, activation_function)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_fann_get_activation_steepness, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, layer)
+ZEND_ARG_INFO(0, neuron)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_steepness, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, activation_steepness)
+ZEND_ARG_INFO(0, layer)
+ZEND_ARG_INFO(0, neuron)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_steepness_layer, 0)
+ZEND_ARG_INFO(0, ann)
+ZEND_ARG_INFO(0, activation_steepness)
+ZEND_ARG_INFO(0, layer)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_steepness_hidden, 0)
 ZEND_ARG_INFO(0, ann)
-ZEND_ARG_INFO(0, steepness)
+ZEND_ARG_INFO(0, activation_steepness)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_fann_set_activation_steepness_output, 0)
 ZEND_ARG_INFO(0, ann)
-ZEND_ARG_INFO(0, steepness)
+ZEND_ARG_INFO(0, activation_steepness)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_fann_cascadetrain_on_data, 0)
@@ -799,8 +837,14 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_set_sarprop_temperature,                  arginfo_fann_set_sarprop_temperature)
 	PHP_FE(fann_get_training_algorithm,                   arginfo_fann_get_training_algorithm)
 	PHP_FE(fann_set_training_algorithm,                   arginfo_fann_set_training_algorithm)
+	PHP_FE(fann_get_activation_function,                  arginfo_fann_get_activation_function)
+	PHP_FE(fann_set_activation_function,                  arginfo_fann_set_activation_function)
+	PHP_FE(fann_set_activation_function_layer,            arginfo_fann_set_activation_function_layer)
 	PHP_FE(fann_set_activation_function_hidden,           arginfo_fann_set_activation_function_hidden)
 	PHP_FE(fann_set_activation_function_output,           arginfo_fann_set_activation_function_output)
+	PHP_FE(fann_get_activation_steepness,                 arginfo_fann_get_activation_steepness)
+	PHP_FE(fann_set_activation_steepness,                 arginfo_fann_set_activation_steepness)
+	PHP_FE(fann_set_activation_steepness_layer,           arginfo_fann_set_activation_steepness_layer)
 	PHP_FE(fann_set_activation_steepness_hidden,          arginfo_fann_set_activation_steepness_hidden)
 	PHP_FE(fann_set_activation_steepness_output,          arginfo_fann_set_activation_steepness_output)
 	PHP_FE(fann_cascadetrain_on_data,                     arginfo_fann_cascadetrain_on_data)
@@ -2562,6 +2606,30 @@ PHP_FUNCTION(fann_set_learning_momentum)
 }
 /* }}} */
 
+/* {{{ proto bool fann_get_activation_function(resource ann, int layer, int neuron)
+   Returns the activation function for neuron number neuron in layer number layer, counting the input layer as layer 0 */
+PHP_FUNCTION(fann_get_activation_function)
+{
+	PHP_FANN_GET_PARAM2(fann_get_activation_function, RETURN_LONG, ll, long, long);
+}
+/* }}} */
+
+/* {{{ proto bool fann_set_activation_function(resource ann, int activation_function, int layer, int neuron)
+   Sets the activation function for neuron number neuron in layer number layer, counting the input layer as layer 0 */
+PHP_FUNCTION(fann_set_activation_function)
+{
+	PHP_FANN_SET_PARAM3(fann_set_activation_function, lll, long, long, long);
+}
+/* }}} */
+
+/* {{{ proto bool fann_set_activation_function_layer(resource ann, int activation_function, int layer)
+   Sets the activation function for all the neurons in the layer number layer, counting the input layer as layer 0 */
+PHP_FUNCTION(fann_set_activation_function_layer)
+{
+	PHP_FANN_SET_PARAM2(fann_set_activation_function_layer, ll, long, long);
+}
+/* }}} */
+
 /* {{{ proto bool fann_set_activation_function_hidden(resource ann, int activation_function)
    Sets the activation function for all of the hidden layers */
 PHP_FUNCTION(fann_set_activation_function_hidden)
@@ -2576,6 +2644,30 @@ PHP_FUNCTION(fann_set_activation_function_hidden)
 PHP_FUNCTION(fann_set_activation_function_output)
 {
 	PHP_FANN_SET_PARAM(fann_set_activation_function_output, l, long);
+}
+/* }}} */
+
+/* {{{ proto bool fann_get_activation_steepness(resource ann, int layer, int neuron)
+   Returns the activation steepness for neuron number neuron in layer number layer, counting the input layer as layer 0 */
+PHP_FUNCTION(fann_get_activation_steepness)
+{
+	PHP_FANN_GET_PARAM2(fann_get_activation_steepness, RETURN_LONG, ll, long, long);
+}
+/* }}} */
+
+/* {{{ proto bool fann_set_activation_steepness(resource ann, int activation_steepness, int layer, int neuron)
+   Sets the activation steepness for neuron number neuron in layer number layer, counting the input layer as layer 0 */
+PHP_FUNCTION(fann_set_activation_steepness)
+{
+	PHP_FANN_SET_PARAM3(fann_set_activation_steepness, lll, long, long, long);
+}
+/* }}} */
+
+/* {{{ proto bool fann_set_activation_steepness_layer(resource ann, int activation_steepness, int layer)
+   Sets the activation steepness for all the neurons in the layer number layer, counting the input layer as layer 0 */
+PHP_FUNCTION(fann_set_activation_steepness_layer)
+{
+	PHP_FANN_SET_PARAM2(fann_set_activation_steepness_layer, ll, long, long);
 }
 /* }}} */
 
