@@ -40,24 +40,24 @@ $training_params = array(
 		'only_setter' => true,
 	),
 	'activation_steepness' => array(
-        'params' => array('activation_steepness' => 'fann_type', 'layer' => 'int', 'neuron' => 'int'),
+        'params' => array('steepness' => 'fann_type', 'layer' => 'int', 'neuron' => 'int'),
         'comment' => 'the activation steepness for neuron number neuron in layer number layer, counting the input layer as layer 0',
 		'test_param' => array('0.5', '1', '1'),
 		'empty_function' => true,
 	),
 	'activation_steepness_layer' => array(
-        'params' => array('activation_steepness' => 'int', 'layer' => 'int'),
+        'params' => array('steepness' => 'fann_type', 'layer' => 'int'),
         'comment' => 'the activation steepness for all the neurons in the layer number layer, counting the input layer as layer 0',
 		'only_setter' => true,
 		'empty_function' => true,
 	),
 	'activation_steepness_hidden' => array(
-        'params' => array('activation_steepness' => 'int'),
+        'params' => array('steepness' => 'fann_type'),
         'comment' => 'the activation steepness for all of the hidden layers',
 		'only_setter' => true,
 	),
 	'activation_steepness_output' => array(
-        'params' => array('activation_steepness' => 'int'),
+        'params' => array('steepness' => 'fann_type'),
         'comment' => 'the activation steepness for the output layer',
 		'only_setter' => true,
 	),
@@ -324,7 +324,8 @@ PHP_FUNCTION(fann_set_$name)
 /* generate testes */
 function fpg_tests($name, $params) {
 	$file_path = (dirname(__FILE__) . "/tests/fann_%s_{$name}_basic.phpt");
-	// getter
+	if (is_file($file_path) && $params['empty_test'])
+		return;
 	$test_params = isset($params['test_param']) ? $params['test_param'] : '';
 	if (is_array($test_params)) {
 		$setter_test_param = implode(', ', $test_params);
@@ -334,8 +335,10 @@ function fpg_tests($name, $params) {
 		$setter_test_param = $setter_first_param = $test_params;
 		$getter_test_param = '';
 	}
+    // getter
 	$getter_test_file = sprintf($file_path, 'get');
-	$getter_test_content = '--TEST--
+	if ((true || !is_file($file_path) || !$params['empty_test']) && $params['has_getter']) {
+		$getter_test_content = '--TEST--
 Test function fann_get_' . $name . '() by calling it with its expected arguments
 --FILE--
 <?php
@@ -347,14 +350,16 @@ var_dump( fann_get_' . $name . '( $ann' . $getter_test_param . ' ) );
 ?>
 --EXPECTF--
 ' . ($params['return'] == 'int' ? 'int(%d)' : ($params['return'] == 'array' ? 'array(%d) {%A}' : 'float(%f)'));
-	if ($params['empty_test']) {
-		$getter_test_content = (substr($getter_test_content, 0, strpos($getter_test_content, '<?php') + 6) .
-								substr($getter_test_content, strpos($getter_test_content, '?>') - 1));
+		if ($params['empty_test']) {
+			$getter_test_content = (substr($getter_test_content, 0, strpos($getter_test_content, '<?php') + 6) .
+									substr($getter_test_content, strpos($getter_test_content, '?>') - 1));
+		}
+		file_put_contents($getter_test_file, $getter_test_content);
 	}
-	file_put_contents($getter_test_file, $getter_test_content);
 	// setter
-	if ($params['has_setter'] && $setter_test_param) {
-		$setter_test_file = sprintf($file_path, 'set');
+	$setter_test_file = sprintf($file_path, 'set');
+	if ((true || !is_file($file_path) || !$params['empty_test']) && $params['has_setter'] && $setter_test_param) {
+		
 		if (in_array($params['return'], array('float', 'double', 'fann_type')))
 			$setter_cmp_cond = 'round( fann_get_'  .$name . '( $ann' . $getter_test_param . ' ), 2 ) == round( ' . $setter_first_param . ', 2 )';
 		else
