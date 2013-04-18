@@ -2591,11 +2591,11 @@ PHP_FUNCTION(fann_set_learning_rate)
 }
 /* }}} */
 
-/* {{{ proto int fann_get_learning_momentum(resource ann)
+/* {{{ proto double fann_get_learning_momentum(resource ann)
    Returns the learning momentum */
 PHP_FUNCTION(fann_get_learning_momentum)
 {
-	PHP_FANN_GET_PARAM(fann_get_learning_momentum, RETURN_LONG);
+	PHP_FANN_GET_PARAM(fann_get_learning_momentum, RETURN_DOUBLE);
 }
 
 /* {{{ proto bool fann_set_learning_momentum(resource ann, double learning_momentum)
@@ -2647,27 +2647,27 @@ PHP_FUNCTION(fann_set_activation_function_output)
 }
 /* }}} */
 
-/* {{{ proto bool fann_get_activation_steepness(resource ann, int layer, int neuron)
+/* {{{ proto double fann_get_activation_steepness(resource ann, int layer, int neuron)
    Returns the activation steepness for neuron number neuron in layer number layer, counting the input layer as layer 0 */
 PHP_FUNCTION(fann_get_activation_steepness)
 {
-	PHP_FANN_GET_PARAM2(fann_get_activation_steepness, RETURN_LONG, ll, long, long);
+	PHP_FANN_GET_PARAM2(fann_get_activation_steepness, RETURN_DOUBLE, ll, long, long);
 }
 /* }}} */
 
-/* {{{ proto bool fann_set_activation_steepness(resource ann, int activation_steepness, int layer, int neuron)
+/* {{{ proto bool fann_set_activation_steepness(resource ann, double steepness, int layer, int neuron)
    Sets the activation steepness for neuron number neuron in layer number layer, counting the input layer as layer 0 */
 PHP_FUNCTION(fann_set_activation_steepness)
 {
-	PHP_FANN_SET_PARAM3(fann_set_activation_steepness, lll, long, long, long);
+	PHP_FANN_SET_PARAM3(fann_set_activation_steepness, dll, double, long, long);
 }
 /* }}} */
 
-/* {{{ proto bool fann_set_activation_steepness_layer(resource ann, int activation_steepness, int layer)
+/* {{{ proto bool fann_set_activation_steepness_layer(resource ann, double steepness, int layer)
    Sets the activation steepness for all the neurons in the layer number layer, counting the input layer as layer 0 */
 PHP_FUNCTION(fann_set_activation_steepness_layer)
 {
-	PHP_FANN_SET_PARAM2(fann_set_activation_steepness_layer, ll, long, long);
+	PHP_FANN_SET_PARAM2(fann_set_activation_steepness_layer, dl, double, long);
 }
 /* }}} */
 
