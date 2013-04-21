@@ -9,4 +9,4 @@ var_dump( fann_get_cascade_output_stagnation_epochs( $ann ) );
 
 ?>
 --EXPECTF--
-float(%f)
+int(%d)

@@ -2983,7 +2983,7 @@ PHP_FUNCTION(fann_get_cascade_output_change_fraction)
 /* }}} */
 
 /* {{{ proto bool fann_set_cascade_output_change_fraction(resource ann, float cascade_output_change_fraction)
-   Sets the cascade output change fraction*/
+   Sets the cascade output change fraction */
 PHP_FUNCTION(fann_set_cascade_output_change_fraction)
 {
     PHP_FANN_SET_PARAM(fann_set_cascade_output_change_fraction, d, double);
@@ -2994,15 +2994,15 @@ PHP_FUNCTION(fann_set_cascade_output_change_fraction)
    Returns the number of cascade output stagnation epochs */
 PHP_FUNCTION(fann_get_cascade_output_stagnation_epochs)
 {
-	PHP_FANN_GET_PARAM(fann_get_cascade_output_stagnation_epochs, RETURN_DOUBLE);
+	PHP_FANN_GET_PARAM(fann_get_cascade_output_stagnation_epochs, RETURN_LONG);
 }
 /* }}} */
 
-/* {{{ proto bool fann_set_cascade_output_stagnation_epochs(resource ann, float cascade_output_stagnation_epochs)
-   Sets the number of cascade output stagnation epochs*/
+/* {{{ proto bool fann_set_cascade_output_stagnation_epochs(resource ann, int cascade_output_stagnation_epochs)
+   Sets the number of cascade output stagnation epochs */
 PHP_FUNCTION(fann_set_cascade_output_stagnation_epochs)
 {
-    PHP_FANN_SET_PARAM(fann_set_cascade_output_stagnation_epochs, d, double);
+    PHP_FANN_SET_PARAM(fann_set_cascade_output_stagnation_epochs, l, long);
 }
 /* }}} */
 
@@ -3015,7 +3015,7 @@ PHP_FUNCTION(fann_get_cascade_candidate_change_fraction)
 /* }}} */
 
 /* {{{ proto bool fann_set_cascade_candidate_change_fraction(resource ann, float cascade_candidate_change_fraction)
-   Sets the cascade candidate change fraction*/
+   Sets the cascade candidate change fraction */
 PHP_FUNCTION(fann_set_cascade_candidate_change_fraction)
 {
     PHP_FANN_SET_PARAM(fann_set_cascade_candidate_change_fraction, d, double);
@@ -3031,7 +3031,7 @@ PHP_FUNCTION(fann_get_cascade_candidate_stagnation_epochs)
 /* }}} */
 
 /* {{{ proto bool fann_set_cascade_candidate_stagnation_epochs(resource ann, int cascade_candidate_stagnation_epochs)
-   Sets the number of cascade candidate stagnation epochs*/
+   Sets the number of cascade candidate stagnation epochs */
 PHP_FUNCTION(fann_set_cascade_candidate_stagnation_epochs)
 {
     PHP_FANN_SET_PARAM(fann_set_cascade_candidate_stagnation_epochs, l, long);
@@ -3047,7 +3047,7 @@ PHP_FUNCTION(fann_get_cascade_weight_multiplier)
 /* }}} */
 
 /* {{{ proto bool fann_set_cascade_weight_multiplier(resource ann, double cascade_weight_multiplier)
-   Sets the weight multiplier*/
+   Sets the weight multiplier */
 PHP_FUNCTION(fann_set_cascade_weight_multiplier)
 {
     PHP_FANN_SET_PARAM(fann_set_cascade_weight_multiplier, d, double);
@@ -3079,7 +3079,7 @@ PHP_FUNCTION(fann_get_cascade_max_out_epochs)
 /* }}} */
 
 /* {{{ proto bool fann_set_cascade_max_out_epochs(resource ann, int cascade_max_out_epochs)
-   Sets the maximum out epochs*/
+   Sets the maximum out epochs */
 PHP_FUNCTION(fann_set_cascade_max_out_epochs)
 {
     PHP_FANN_SET_PARAM(fann_set_cascade_max_out_epochs, l, long);
@@ -3095,7 +3095,7 @@ PHP_FUNCTION(fann_get_cascade_min_out_epochs)
 /* }}} */
 
 /* {{{ proto bool fann_set_cascade_min_out_epochs(resource ann, int cascade_min_out_epochs)
-   Sets the minimum out epochs*/
+   Sets the minimum out epochs */
 PHP_FUNCTION(fann_set_cascade_min_out_epochs)
 {
     PHP_FANN_SET_PARAM(fann_set_cascade_min_out_epochs, l, long);
@@ -3111,7 +3111,7 @@ PHP_FUNCTION(fann_get_cascade_max_cand_epochs)
 /* }}} */
 
 /* {{{ proto bool fann_set_cascade_max_cand_epochs(resource ann, int cascade_max_cand_epochs)
-   Sets the max candidate epochs*/
+   Sets the max candidate epochs */
 PHP_FUNCTION(fann_set_cascade_max_cand_epochs)
 {
     PHP_FANN_SET_PARAM(fann_set_cascade_max_cand_epochs, l, long);
@@ -3122,15 +3122,15 @@ PHP_FUNCTION(fann_set_cascade_max_cand_epochs)
    Returns the min candidate epochs */
 PHP_FUNCTION(fann_get_cascade_min_cand_epochs)
 {
-	PHP_FANN_GET_PARAM(fann_get_cascade_min_cand_epochs, RETURN_DOUBLE);
+	PHP_FANN_GET_PARAM(fann_get_cascade_min_cand_epochs, RETURN_LONG);
 }
 /* }}} */
 
-/* {{{ proto bool fann_set_cascade_min_cand_epochs(resource ann, float cascade_min_cand_epochs)
-   Sets the min candidate epochs*/
+/* {{{ proto bool fann_set_cascade_min_cand_epochs(resource ann, int cascade_min_cand_epochs)
+   Sets the min candidate epochs */
 PHP_FUNCTION(fann_set_cascade_min_cand_epochs)
 {
-    PHP_FANN_SET_PARAM(fann_set_cascade_min_cand_epochs, d, double);
+    PHP_FANN_SET_PARAM(fann_set_cascade_min_cand_epochs, l, long);
 }
 /* }}} */
 
@@ -3175,7 +3175,7 @@ PHP_FUNCTION(fann_get_cascade_activation_functions)
 /* }}} */
 
 /* {{{ proto bool fann_set_cascade_activation_functions(resource ann, array cascade_activation_functions)
-   Sets the array of cascade candidate activation functions*/
+   Sets the array of cascade candidate activation functions */
 PHP_FUNCTION(fann_set_cascade_activation_functions)
 {
 	zval *z_ann, *array, **current;
@@ -3236,7 +3236,7 @@ PHP_FUNCTION(fann_get_cascade_activation_steepnesses)
 /* }}} */
 
 /* {{{ proto bool fann_set_cascade_activation_steepnesses(resource ann, array cascade_activation_steepnesses)
-   Sets the cascade activation steepnesses array is an array of the different activation functions used by the candidates*/
+   Sets the cascade activation steepnesses array is an array of the different activation functions used by the candidates */
 PHP_FUNCTION(fann_set_cascade_activation_steepnesses)
 {
 	zval *z_ann, *array, **current;
@@ -3273,7 +3273,7 @@ PHP_FUNCTION(fann_get_cascade_num_candidate_groups)
 /* }}} */
 
 /* {{{ proto bool fann_set_cascade_num_candidate_groups(resource ann, int cascade_num_candidate_groups)
-   Sets the number of candidate groups*/
+   Sets the number of candidate groups */
 PHP_FUNCTION(fann_set_cascade_num_candidate_groups)
 {
     PHP_FANN_SET_PARAM(fann_set_cascade_num_candidate_groups, l, long);

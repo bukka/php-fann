@@ -140,7 +140,7 @@ $cascade_params = array(
 		'test_param' => 0.02,
 	),
 	'cascade_output_stagnation_epochs' => array(
-		'params' => array( 'cascade_output_stagnation_epochs' => 'float' ),
+		'params' => array( 'cascade_output_stagnation_epochs' => 'int' ),
 		'comment' => 'the number of cascade output stagnation epochs',
 		'test_param' => 10,
 	),
@@ -180,7 +180,7 @@ $cascade_params = array(
 		'test_param' => 140,
 	),
 	'cascade_min_cand_epochs' => array(
-		'params' => array( 'cascade_min_cand_epochs' => 'float' ),
+		'params' => array( 'cascade_min_cand_epochs' => 'int' ),
 		'comment' => 'the min candidate epochs',
 		'test_param' => 60,
 	),
