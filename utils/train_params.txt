@@ -1,0 +1,45 @@
+fann_get_training_algorithm	Return the training algorithm as described by fann_train_enum. 
+fann_set_training_algorithm	Set the training algorithm.
+fann_get_learning_rate	Return the learning rate.
+fann_set_learning_rate	Set the learning rate.
+fann_get_learning_momentum	Get the learning momentum.
+fann_set_learning_momentum	Set the learning momentum.
+fann_get_activation_function	Get the activation function for neuron number neuron in layer number layer, counting the input layer as layer 0.
+fann_set_activation_function	Set the activation function for neuron number neuron in layer number layer, counting the input layer as layer 0.
+fann_set_activation_function_layer	Set the activation function for all the neurons in the layer number layer, counting the input layer as layer 0.
+fann_set_activation_function_hidden	Set the activation function for all of the hidden layers.
+fann_set_activation_function_output	Set the activation function for the output layer.
+fann_get_activation_steepness	Get the activation steepness for neuron number neuron in layer number layer, counting the input layer as layer 0.
+fann_set_activation_steepness	Set the activation steepness for neuron number neuron in layer number layer, counting the input layer as layer 0.
+fann_set_activation_steepness_layer	Set the activation steepness all of the neurons in layer number layer, counting the input layer as layer 0.
+fann_set_activation_steepness_hidden	Set the steepness of the activation steepness in all of the hidden layers.
+fann_set_activation_steepness_output	Set the steepness of the activation steepness in the output layer.
+fann_get_train_error_function	Returns the error function used during training.
+fann_set_train_error_function	Set the error function used during training.
+fann_get_train_stop_function	Returns the the stop function used during training.
+fann_set_train_stop_function	Set the stop function used during training.
+fann_get_bit_fail_limit	Returns the bit fail limit used during training.
+fann_set_bit_fail_limit	Set the bit fail limit used during training.
+fann_set_callback	Sets the callback function for use during training.
+fann_get_quickprop_decay	The decay is a small negative valued number which is the factor that the weights should become smaller in each iteration during quickprop training. 
+fann_set_quickprop_decay	Sets the quickprop decay factor.
+fann_get_quickprop_mu	The mu factor is used to increase and decrease the step-size during quickprop training. 
+fann_set_quickprop_mu	Sets the quickprop mu factor.
+fann_get_rprop_increase_factor	The increase factor is a value larger than 1, which is used to increase the step-size during RPROP training.
+fann_set_rprop_increase_factor	The increase factor used during RPROP training.
+fann_get_rprop_decrease_factor	The decrease factor is a value smaller than 1, which is used to decrease the step-size during RPROP training.
+fann_set_rprop_decrease_factor	The decrease factor is a value smaller than 1, which is used to decrease the step-size during RPROP training.
+fann_get_rprop_delta_min	The minimum step-size is a small positive number determining how small the minimum step-size may be.
+fann_set_rprop_delta_min	The minimum step-size is a small positive number determining how small the minimum step-size may be.
+fann_get_rprop_delta_max	The maximum step-size is a positive number determining how large the maximum step-size may be.
+fann_set_rprop_delta_max	The maximum step-size is a positive number determining how large the maximum step-size may be.
+fann_get_rprop_delta_zero	The initial step-size is a positive number determining the initial step size.
+fann_set_rprop_delta_zero	The initial step-size is a positive number determining the initial step size.
+fann_get_sarprop_weight_decay_shift	The sarprop weight decay shift.
+fann_set_sarprop_weight_decay_shift	Set the sarprop weight decay shift.
+fann_get_sarprop_step_error_threshold_factor	The sarprop step error threshold factor.
+fann_set_sarprop_step_error_threshold_factor	Set the sarprop step error threshold factor.
+fann_get_sarprop_step_error_shift	The get sarprop step error shift.
+fann_set_sarprop_step_error_shift	Set the sarprop step error shift.
+fann_get_sarprop_temperature	The sarprop weight decay shift.
+fann_set_sarprop_temperature	Set the sarprop_temperature.
