@@ -1175,6 +1175,16 @@ static char *php_fann_get_path_for_open(char *path, int path_len, int read TSRML
 }
 /* }}} */
 
+/* php_fann_array_to_zval() {{{ */
+static void php_fann_array_to_zval(const fann_type *from, zval *to, int len)
+{
+	int i;
+	array_init_size(to, len);
+	for (i = 0; i < len; i++)
+		add_index_double(to, i, (double) from[i]);
+}
+/* }}} */
+
 /* php_fann_check_num_layers() {{{ */
 static int php_fann_check_num_layers(int specified, int provided TSRMLS_DC)
 {
@@ -2311,7 +2321,9 @@ PHP_FUNCTION(fann_clear_scaling_params)
 }
 /* }}} */
 
-/* {{{ proto bool fann_scale_input(resource ann, array input_vector)
+/* {{{ php_fann_return_array
+
+/* {{{ proto array fann_scale_input(resource ann, array input_vector)
    Scales data in input vector before feed it to ann based on previously calculated parameters */
 PHP_FUNCTION(fann_scale_input)
 {
@@ -2326,14 +2338,14 @@ PHP_FUNCTION(fann_scale_input)
 	if (!php_fann_process_array(ann, z_array, &array, 1 TSRMLS_CC)) {
 		RETURN_FALSE;
 	}
-	fann_scale_input(ann, array);
+	fann_scale_input(ann, array);	
+	php_fann_array_to_zval(array, return_value, fann_get_num_input(ann));
 	efree(array);
 	PHP_FANN_ERROR_CHECK_ANN();
-	RETURN_TRUE;
 }
 /* }}} */
 
-/* {{{ proto bool fann_scale_output(resource ann, array output_vector)
+/* {{{ proto array fann_scale_output(resource ann, array output_vector)
    Scales data in output vector before feed it to ann based on previously calculated parameters */
 PHP_FUNCTION(fann_scale_output)
 {
@@ -2349,13 +2361,13 @@ PHP_FUNCTION(fann_scale_output)
 		RETURN_FALSE;
 	}
 	fann_scale_output(ann, array);
+	php_fann_array_to_zval(array, return_value, fann_get_num_output(ann));
 	efree(array);
 	PHP_FANN_ERROR_CHECK_ANN();
-	RETURN_TRUE;
 }
 /* }}} */
 
-/* {{{ proto bool fann_descale_input(resource ann, array input_vector)
+/* {{{ proto array fann_descale_input(resource ann, array input_vector)
    Scales data in input vector after feed it to ann based on previously calculated parameters */
 PHP_FUNCTION(fann_descale_input)
 {
@@ -2371,13 +2383,13 @@ PHP_FUNCTION(fann_descale_input)
 		RETURN_FALSE;
 	}
 	fann_descale_input(ann, array);
+	php_fann_array_to_zval(array, return_value, fann_get_num_input(ann));
 	efree(array);
 	PHP_FANN_ERROR_CHECK_ANN();
-	RETURN_TRUE;
 }
 /* }}} */
 
-/* {{{ proto bool fann_descale_output(resource ann, array output_vector)
+/* {{{ proto array fann_descale_output(resource ann, array output_vector)
    Scales data in output vector after feed it to ann based on previously calculated parameters */
 PHP_FUNCTION(fann_descale_output)
 {
@@ -2393,9 +2405,9 @@ PHP_FUNCTION(fann_descale_output)
 		RETURN_FALSE;
 	}
 	fann_descale_output(ann, array);
+	php_fann_array_to_zval(array, return_value, fann_get_num_output(ann));
 	efree(array);
 	PHP_FANN_ERROR_CHECK_ANN();
-	RETURN_TRUE;
 }
 /* }}} */
 
