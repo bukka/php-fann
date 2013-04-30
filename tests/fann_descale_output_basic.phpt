@@ -1,5 +1,5 @@
 --TEST--
-Test function fann_descale_output_basic() by calling it with its expected arguments
+Test function fann_descale_output() by calling it with its expected arguments
 --FILE--
 <?php
 

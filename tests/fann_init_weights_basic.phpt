@@ -1,5 +1,5 @@
 --TEST--
-Test function fann_init_weights_basic() by calling it with its expected arguments
+Test function fann_init_weights() by calling it with its expected arguments
 --FILE--
 <?php
 
