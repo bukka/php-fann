@@ -39,7 +39,7 @@
 #endif
 
 /* fann version */
-#define PHP_FANN_VERSION 0x020100
+#define PHP_FANN_VERSION 0x020200
 
 /* True global resources - no need for thread safety here */
 static int le_fannbuf, le_fanntrainbuf;
