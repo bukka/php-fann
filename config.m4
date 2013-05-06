@@ -33,7 +33,7 @@ if test "$PHP_FANN" != "no"; then
   PHP_ADD_INCLUDE($FANN_DIR/include)
 
   LIBNAME=fann
-  LIBSYMBOL=fann_copy
+  LIBSYMBOL=fann_set_user_data
 
   PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
   [

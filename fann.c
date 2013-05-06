@@ -29,6 +29,7 @@
 #include "ext/standard/php_string.h"
 #include "php_fann.h"
 
+/* used fann type - default float */
 #ifdef PHP_FANN_FIXED
 #include "fixedfann.h"
 #elseif PHP_FANN_DOUBLE
@@ -36,6 +37,9 @@
 #else
 #include "floatfann.h"
 #endif
+
+/* fann version */
+#define PHP_FANN_VERSION 0x020100
 
 /* True global resources - no need for thread safety here */
 static int le_fannbuf, le_fanntrainbuf;
@@ -1067,7 +1071,9 @@ PHP_MINIT_FUNCTION(fann)
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_BATCH);
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_RPROP);
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_QUICKPROP);
+#if PHP_FANN_VERSION >= 0x020200
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_SARPROP);
+#endif
 	/* Activation functions constants */
 	REGISTER_FANN_CONSTANT(FANN_LINEAR);
 	REGISTER_FANN_CONSTANT(FANN_THRESHOLD);
@@ -1116,9 +1122,11 @@ PHP_MINIT_FUNCTION(fann)
 	REGISTER_FANN_CONSTANT(FANN_E_TRAIN_DATA_SUBSET);
 	REGISTER_FANN_CONSTANT(FANN_E_INDEX_OUT_OF_BOUND);
 	REGISTER_FANN_CONSTANT(FANN_E_SCALE_NOT_PRESENT);
+#if PHP_FANN_VERSION >= 0x020200
 	REGISTER_FANN_CONSTANT(FANN_E_INPUT_NO_MATCH);
 	REGISTER_FANN_CONSTANT(FANN_E_OUTPUT_NO_MATCH);
-
+#endif
+	
 	/* Init FANNConnection class */
 	php_fannconnection_register_class(TSRMLS_C);
 	
