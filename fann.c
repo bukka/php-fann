@@ -3250,7 +3250,7 @@ PHP_FUNCTION(fann_get_cascade_activation_steepnesses)
 	PHP_FANN_ERROR_CHECK_ANN();
 	array_init_size(return_value, num_steepnesses);
 	for (i = 0; i < num_steepnesses; i++) {
-		add_index_long(return_value, i, (fann_type) steepnesses[i]);
+		add_index_double(return_value, i, (fann_type) steepnesses[i]);
 	}
 }
 /* }}} */
