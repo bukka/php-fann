@@ -3415,7 +3415,9 @@ PHP_FUNCTION(fann_reset_errstr)
 		return;
 	}
 	PHP_FANN_FETCH_ERRDAT();
-	fann_reset_errstr(errdat);
+
+	/* Use this in place of fann_reset_errstr that sets NULL which generates segfault later */
+	errdat->errstr[0] = 0;
 }
 /* }}} */
 
@@ -3430,7 +3432,11 @@ PHP_FUNCTION(fann_get_errstr)
 		return;
 	}
 	PHP_FANN_FETCH_ERRDAT();
-	RETURN_STRING(errdat->errstr, 1);
+	if (errdat->errstr) {
+		RETURN_STRING(errdat->errstr, 1);
+	} else {
+		RETURN_EMPTY_STRING();
+	}
 }
 /* }}} */
 
@@ -3445,7 +3451,11 @@ PHP_FUNCTION(fann_print_error)
 		return;
 	}
 	PHP_FANN_FETCH_ERRDAT();
-	php_printf("%s", errdat->errstr);
+	if (errdat->errstr) {
+		php_printf("%s", errdat->errstr);
+	} else {
+		php_printf("No error");
+	}
 }
 /* }}} */
 
