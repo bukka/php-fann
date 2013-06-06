@@ -799,7 +799,7 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_scale_input_train_data,                   arginfo_fann_scale_input_train_data)
 	PHP_FE(fann_scale_output_train_data,                  arginfo_fann_scale_output_train_data)
 	PHP_FE(fann_scale_train_data,                         arginfo_fann_scale_train_data)
-	PHP_FE(fann_merge_train_data,                         arginfo_fann_scale_train_data)
+	PHP_FE(fann_merge_train_data,                         arginfo_fann_merge_train_data)
 	PHP_FE(fann_duplicate_train_data,                     arginfo_fann_duplicate_train_data)
 	PHP_FE(fann_subset_train_data,                        arginfo_fann_subset_train_data)
 	PHP_FE(fann_length_train_data,                        arginfo_fann_length_train_data)
