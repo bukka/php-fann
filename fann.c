@@ -584,7 +584,6 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_fann_get_cascade_output_change_fraction, 0)
 ZEND_ARG_INFO(0, ann)
-ZEND_ARG_INFO(0, cascade_output_change_fraction)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_fann_set_cascade_output_change_fraction, 0)
