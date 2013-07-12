@@ -3439,7 +3439,7 @@ PHP_FUNCTION(fann_get_errstr)
 }
 /* }}} */
 
-/* {{{ proto string fann_print_error(resource errdat)
+/* {{{ proto void fann_print_error(resource errdat)
    Prints the last error string */
 PHP_FUNCTION(fann_print_error)
 {
