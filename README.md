@@ -77,6 +77,6 @@ printf("xor test (%f,%f) -> %f\n", $input[0], $input[1], $calc_out[0]);
 fann_destroy($ann);
 ```
 
-## Examples
+## Documentation
 
-The documentation is currently available at [my site](http://bukka.eu/php/doc/book.fann.html). It's not been styled yet. I would like to add it the officail PHP site in the future. Be aware that links outside the documentation (e.g. PHP Manual) does not work though. However the links on fann API documentation pages works as expected.
+The documentation is currently available at [http://bukka.eu/php/doc/book.fann.html](http://bukka.eu/php/doc/book.fann.html). It's not been styled because I would like to add it to the officail PHP site in the future. Be aware that the links to other PHP sections (e.g. PHP Manual) does not work (the documentation is generated from DocBook and only fann part is saved on the site). However the links on the fann API documentation pages works as expected.
