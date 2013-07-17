@@ -76,3 +76,7 @@ $calc_out = fann_run($ann, $input);
 printf("xor test (%f,%f) -> %f\n", $input[0], $input[1], $calc_out[0]);
 fann_destroy($ann);
 ```
+
+## Examples
+
+The documentation is currently available at [my site](http://bukka.eu/php/doc/book.fann.html). It's not been styled yet. I would like to add it the officail PHP site in the future. Be aware that links outside the documentation (e.g. PHP Manual) does not work though. However the links on fann API documentation pages works as expected.
