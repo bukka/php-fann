@@ -30,9 +30,7 @@
 #include "php_fann.h"
 
 /* used fann type - default float */
-#ifdef PHP_FANN_FIXED
-#include "fixedfann.h"
-#elseif PHP_FANN_DOUBLE
+#if PHP_FANN_DOUBLE
 #include "doublefann.h"
 #else
 #include "floatfann.h"
@@ -41,8 +39,10 @@
 /* fann version */
 #ifdef PHP_FANN_2_2
 #define PHP_FANN_VERSION 0x020200
+#define PHP_FANN_VERSION_STRING "2.2"
 #else
 #define PHP_FANN_VERSION 0x020100
+#define PHP_FANN_VERSION_STRING "2.1"
 #endif
 
 /* True global resources - no need for thread safety here */
@@ -1044,7 +1044,7 @@ ZEND_GET_MODULE(fann)
 #define PHP_FANN_RESET_PARAM PHP_FANN_SET_PARAM0
 
 /* macro for registering FANN constants */
-#define REGISTER_FANN_CONSTANT(__c) REGISTER_LONG_CONSTANT(#__c, __c, CONST_CS | CONST_PERSISTENT)
+#define REGISTER_FANN_CONSTANT(constant) REGISTER_LONG_CONSTANT(#constant, constant, CONST_CS | CONST_PERSISTENT)
 
 /* {{{ fann_destructor_fannbuf()
    fann resource destructor */
@@ -1088,6 +1088,9 @@ PHP_MINIT_FUNCTION(fann)
 	
 	/* do not print fann errors */
 	fann_set_error_log(NULL, NULL);
+
+	/* Fann version constant */
+	REGISTER_STRING_CONSTANT("FANN_VERSION", PHP_FANN_VERSION_STRING, CONST_PERSISTENT | CONST_CS);
 	
 	/* Train constants */
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_INCREMENTAL);
@@ -1170,7 +1173,8 @@ PHP_MSHUTDOWN_FUNCTION(fann)
 PHP_MINFO_FUNCTION(fann)
 {
 	php_info_print_table_start();
-	php_info_print_table_header(2, "fann support", "enabled");
+	php_info_print_table_row(2, "FANN support", "enabled");
+	php_info_print_table_row(2, "FANN library version", PHP_FANN_VERSION_STRING);
 	php_info_print_table_end();
 }
 /* }}} */
