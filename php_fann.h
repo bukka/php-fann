@@ -36,6 +36,15 @@ extern zend_module_entry fann_module_entry;
 #include "TSRM.h"
 #endif
 
+/* fann version */
+#ifdef HAVE_FANN_2_2
+#define PHP_FANN_VERSION 0x020200
+#define PHP_FANN_VERSION_STRING "2.2"
+#else
+#define PHP_FANN_VERSION 0x020100
+#define PHP_FANN_VERSION_STRING "2.1"
+#endif
+
 PHP_MINIT_FUNCTION(fann);
 PHP_MSHUTDOWN_FUNCTION(fann);
 PHP_RINIT_FUNCTION(fann);
@@ -51,7 +60,9 @@ PHP_FUNCTION(fann_create_sparse_array);
 PHP_FUNCTION(fann_create_shortcut);
 PHP_FUNCTION(fann_create_shortcut_array);
 PHP_FUNCTION(fann_destroy);
+#if PHP_FANN_VERSION >= 0x020200
 PHP_FUNCTION(fann_copy);
+#endif
 PHP_FUNCTION(fann_run);
 PHP_FUNCTION(fann_randomize_weights);
 PHP_FUNCTION(fann_init_weights);
@@ -83,8 +94,10 @@ PHP_FUNCTION(fann_train_epoch);
 PHP_FUNCTION(fann_test_data);
 /* Training Data Manipulation */
 PHP_FUNCTION(fann_read_train_from_file);
+#if PHP_FANN_VERSION >= 0x020200
 PHP_FUNCTION(fann_create_train);
 PHP_FUNCTION(fann_create_train_from_callback);
+#endif
 PHP_FUNCTION(fann_destroy_train);
 PHP_FUNCTION(fann_shuffle_train_data);
 PHP_FUNCTION(fann_scale_train);
@@ -145,6 +158,7 @@ PHP_FUNCTION(fann_get_rprop_delta_max);
 PHP_FUNCTION(fann_set_rprop_delta_max);
 PHP_FUNCTION(fann_get_rprop_delta_zero);
 PHP_FUNCTION(fann_set_rprop_delta_zero);
+#if PHP_FANN_VERSION >= 0x020200
 PHP_FUNCTION(fann_get_sarprop_weight_decay_shift);
 PHP_FUNCTION(fann_set_sarprop_weight_decay_shift);
 PHP_FUNCTION(fann_get_sarprop_step_error_threshold_factor);
@@ -153,6 +167,7 @@ PHP_FUNCTION(fann_get_sarprop_step_error_shift);
 PHP_FUNCTION(fann_set_sarprop_step_error_shift);
 PHP_FUNCTION(fann_get_sarprop_temperature);
 PHP_FUNCTION(fann_set_sarprop_temperature);
+#endif
 
 /* FANN Cascade Training */
 /* Cascade Training */
@@ -173,12 +188,16 @@ PHP_FUNCTION(fann_get_cascade_candidate_limit);
 PHP_FUNCTION(fann_set_cascade_candidate_limit);
 PHP_FUNCTION(fann_get_cascade_max_out_epochs);
 PHP_FUNCTION(fann_set_cascade_max_out_epochs);
+#if PHP_FANN_VERSION >= 0x020200
 PHP_FUNCTION(fann_get_cascade_min_out_epochs);
 PHP_FUNCTION(fann_set_cascade_min_out_epochs);
+#endif
 PHP_FUNCTION(fann_get_cascade_max_cand_epochs);
 PHP_FUNCTION(fann_set_cascade_max_cand_epochs);
+#if PHP_FANN_VERSION >= 0x020200
 PHP_FUNCTION(fann_get_cascade_min_cand_epochs);
 PHP_FUNCTION(fann_set_cascade_min_cand_epochs);
+#endif
 PHP_FUNCTION(fann_get_cascade_num_candidates);
 PHP_FUNCTION(fann_get_cascade_activation_functions_count);
 PHP_FUNCTION(fann_get_cascade_activation_functions);

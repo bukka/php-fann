@@ -30,19 +30,10 @@
 #include "php_fann.h"
 
 /* used fann type - default float */
-#if PHP_FANN_DOUBLE
+#ifdef PHP_FANN_DOUBLE
 #include "doublefann.h"
 #else
 #include "floatfann.h"
-#endif
-
-/* fann version */
-#ifdef PHP_FANN_2_2
-#define PHP_FANN_VERSION 0x020200
-#define PHP_FANN_VERSION_STRING "2.2"
-#else
-#define PHP_FANN_VERSION 0x020100
-#define PHP_FANN_VERSION_STRING "2.1"
 #endif
 
 /* True global resources - no need for thread safety here */
