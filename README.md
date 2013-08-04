@@ -28,7 +28,7 @@ sudo make install
 
 Finally you need to add
 ```
-extension=fann
+extension=fann.so
 ```
 to the php.ini
 
