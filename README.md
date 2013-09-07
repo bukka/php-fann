@@ -4,6 +4,8 @@ This is a PHP binding for [FANN (Fast Artificial Neural Network) library](http:/
 
 ## API
 
+The API is documented on http://www.php.net/manual/en/book.fann.php where is the complete documentation for PHP FANN.
+
 The API is very similar to the official [FANN C API](http://leenissen.dk/fann/html/files/fann-h.html). Just functions for fixed `fann_type` have not been mapped because PHP always support `float`. In addition unnecessary arguments for some functions have been left out (for example array length that is not necessary for PHP arrays).
 
 ## Installation
@@ -77,6 +79,3 @@ printf("xor test (%f,%f) -> %f\n", $input[0], $input[1], $calc_out[0]);
 fann_destroy($ann);
 ```
 
-## Documentation
-
-The documentation is currently available at [http://bukka.eu/php/doc/book.fann.html](http://bukka.eu/php/doc/book.fann.html). It's not been styled because I would like to add it to the officail PHP site in the future. Be aware that the links to other PHP sections (e.g. PHP Manual) does not work (the documentation is generated from DocBook and only fann part is saved on the site). However the links on the fann API documentation pages works as expected.
