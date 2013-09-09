@@ -1,6 +1,6 @@
-# The PHP FANN (Fast Artificial Neural Network) Extension
+# PHP FANN wrapper
 
-This is a PHP binding for [FANN (Fast Artificial Neural Network) library](http://leenissen.dk/fann/wp/).
+This is a PHP wrapper for [FANN (Fast Artificial Neural Network) library](http://leenissen.dk/fann/wp/).
 
 ## API
 
