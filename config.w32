@@ -4,9 +4,13 @@
 ARG_WITH("fann", "for fann support", "yes");
 
 if (PHP_FANN == "yes") {
-	if (CHECK_LIB("libfann.lib", "fann_create_standard") &&
+	if (CHECK_LIB("libfann.lib;doublefann.lib;fanndouble.lib", "fann", PHP_FANN) &&
 			CHECK_HEADER_ADD_INCLUDE("fann.h", "CFLAGS_FANN")) {
 
+		AC_DEFINE("PHP_FANN_DOUBLE", 1);
+
 		EXTENSION("fann", "fann.c fann_connection.c");
+	} else {
+		WARNING("fann not enabled, headers or libraries not found");
 	}
 }
