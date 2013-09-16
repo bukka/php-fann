@@ -1462,7 +1462,7 @@ static void php_fann_update_user_data(struct fann *ann, zval *z_ann, zval *z_tra
 static void php_fann_init_ann(struct fann *ann)
 {
 	/* set callback for reporting - don't print anything during fann_train_on_(data|file) */
-	fann_set_callback(ann, php_fann_callback);
+	fann_set_callback(ann, (fann_callback_type) php_fann_callback);
 }
 /* }}} */
 
