@@ -8,18 +8,18 @@
 							 http://pear.php.net/dtd/package-2.0.xsd">
  <name>fann</name>
  <channel>pecl.php.net</channel>
- <summary>Binding for FANN (Fast Artificial Neural Network) Library</summary>
- <description>This package provides PHP binding for FANN (Fast Artificial Neural Network) Library</description>
+ <summary>Wrapper for FANN (Fast Artificial Neural Network) Library</summary>
+ <description>This package provides a PHP binding for FANN (Fast Artificial Neural Network) Library</description>
  <lead>
   <name>Jakub Zelenka</name>
   <user>bukka</user>
-  <email>jakub.php@gmail.com</email>
+  <email>bukka@php.net</email>
   <active>yes</active>
  </lead>
- <date>2013-09-09</date>
+ <date>2013-09-18</date>
  <version>
-  <release>1.0.1</release>
-  <api>1.0.1</api>
+  <release>1.0.2</release>
+  <api>1.0.2</api>
  </version>
  <stability>
   <release>stable</release>
@@ -27,7 +27,8 @@
  </stability>
  <license uri="http://www.php.net/license">PHP 3.01</license>
  <notes><![CDATA[
- * Fixed configuration bug for older versions of autoconf
+ * Added configuration for Windows build to config.w32
+ * Fixed GCC and Windows compiler warnings
  ]]></notes>
  <contents>
   <dir name="/">
@@ -61,6 +62,21 @@
  <providesextension>fann</providesextension>
  <extsrcrelease/>
  <changelog>
+  <release>
+   <date>2013-09-09</date>
+   <version>
+	<release>1.0.1</release>
+	<api>1.0.1</api>
+   </version>
+   <stability>
+	<release>stable</release>
+	<api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP 3.01</license>
+   <notes><![CDATA[
+   * Fixed configuration bug for older versions of autoconf
+   ]]></notes>
+  </release>
   <release>
    <date>2013-08-02</date>
    <version>
