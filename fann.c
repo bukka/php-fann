@@ -1381,13 +1381,13 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 {
 	php_fann_user_data *user_data = fann_get_user_data(ann);
 	if (user_data != (php_fann_user_data *) NULL) {
-		TSRMLS_FETCH();
 		zend_fcall_info fci;
 		zend_fcall_info_cache fci_cache;
 		zval *retval, *z_max_epochs, *z_epochs_between_reports, *z_desired_error, *z_epochs, *z_train_data;
 		zval **params[6];
 		long rc;
 		char *is_callable_error = NULL;
+		TSRMLS_FETCH();
 		
 		if (zend_fcall_info_init(user_data->callback, 0, &fci, &fci_cache, NULL, &is_callable_error TSRMLS_CC)
 			!= SUCCESS || is_callable_error) {
@@ -1462,7 +1462,7 @@ static void php_fann_update_user_data(struct fann *ann, zval *z_ann, zval *z_tra
 static void php_fann_init_ann(struct fann *ann)
 {
 	/* set callback for reporting - don't print anything during fann_train_on_(data|file) */
-	fann_set_callback(ann, php_fann_callback);
+	fann_set_callback(ann, (fann_callback_type) php_fann_callback);
 }
 /* }}} */
 
