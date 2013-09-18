@@ -1196,7 +1196,7 @@ static char *php_fann_get_path_for_open(char *path, int path_len, int read TSRML
 		path_for_open = NULL;
 	}
 	else
-		php_stream_locate_url_wrapper(path, &path_for_open, 0 TSRMLS_CC);
+		php_stream_locate_url_wrapper((const char *) path, (const char **) &path_for_open, 0 TSRMLS_CC);
 	return path_for_open;
 }
 /* }}} */
@@ -2350,8 +2350,6 @@ PHP_FUNCTION(fann_clear_scaling_params)
     PHP_FANN_RESET_PARAM(fann_clear_scaling_params);
 }
 /* }}} */
-
-/* {{{ php_fann_return_array
 
 /* {{{ proto array fann_scale_input(resource ann, array input_vector)
    Scales data in input vector before feed it to ann based on previously calculated parameters */
