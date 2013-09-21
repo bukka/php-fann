@@ -10,12 +10,16 @@ The API is very similar to the official [FANN C API](http://leenissen.dk/fann/ht
 
 ## Installation
 
+The extension can be installed on Linux and Windows.
+
+### Linux
+
 Before you start installation make sure that `libfann` is installed on your system. It's part of the main repository in the most Linux distributions (search for `fann`). If not you need to install it first. Either download it from the [official site](http://leenissen.dk/fann/wp/) or get it from your distro repository. For example in Fedora:
 ```
 sudo yum install fann-devel
 ```
 
-### PECL Installation
+#### PECL
 
 This extension is available on PECL. The installation is very simple. Just run:
 
@@ -23,7 +27,7 @@ This extension is available on PECL. The installation is very simple. Just run:
 $ sudo pecl install fann
 ```
 
-### Manual Installation on Linux
+#### Manual Installation
 
 First download the source
 ```
@@ -45,9 +49,9 @@ extension=fann.so
 ```
 to the php.ini
 
-### Intallation on Windows
+### Windows
 
-Precompiled binary `dll` libraries for php-fann and libfann are available on (the official Windows download site for PECL packages)[http://windows.php.net/downloads/pecl/releases/fann/]. The compiled version of libfann is 2.2.
+Precompiled binary `dll` libraries for php-fann and libfann are available on [the official Windows download site for PECL packages](http://windows.php.net/downloads/pecl/releases/fann/). The compiled version of libfann is 2.2.
 
 ## Examples
 
