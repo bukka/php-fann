@@ -1196,7 +1196,7 @@ static char *php_fann_get_path_for_open(char *path, int path_len, int read TSRML
 		path_for_open = NULL;
 	}
 	else
-		php_stream_locate_url_wrapper((const char *) path, (const char **) &path_for_open, 0 TSRMLS_CC);
+		php_stream_locate_url_wrapper(path, &path_for_open, 0 TSRMLS_CC);
 	return path_for_open;
 }
 /* }}} */
@@ -1340,16 +1340,21 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 	zval *array, **ppdata;
 	HashPosition pos;
 	int i = 0;
+	unsigned long tmpnum;
+	double tmprate;
 
 	if (conn_rate) {
-		if (zend_parse_parameters(num_args TSRMLS_CC, "dla", conn_rate, num_layers, &array) == FAILURE) {
+		if (zend_parse_parameters(num_args TSRMLS_CC, "dla", &tmprate, &tmpnum, &array) == FAILURE) {
 			return FAILURE;
 		}
+		*conn_rate = (float)tmprate;
+		*num_layers = (uint)tmpnum;
 	}
 	else {
-		if (zend_parse_parameters(num_args TSRMLS_CC, "la", num_layers, &array) == FAILURE) {
+		if (zend_parse_parameters(num_args TSRMLS_CC, "la", &tmpnum, &array) == FAILURE) {
 			return FAILURE;
 		}
+		*num_layers = (uint)tmpnum;
 	}
 
 	if (php_fann_check_num_layers(
