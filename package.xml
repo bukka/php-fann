@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <package xmlns="http://pear.php.net/dtd/package-2.0"
-		 xmlns:tasks="http://pear.php.net/dtd/tasks-1.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0"
-		 xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
-							 http://pear.php.net/dtd/tasks-1.0.xsd
-							 http://pear.php.net/dtd/package-2.0
-							 http://pear.php.net/dtd/package-2.0.xsd">
+         xmlns:tasks="http://pear.php.net/dtd/tasks-1.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0"
+         xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+                             http://pear.php.net/dtd/tasks-1.0.xsd
+                             http://pear.php.net/dtd/package-2.0
+                             http://pear.php.net/dtd/package-2.0.xsd">
  <name>fann</name>
  <channel>pecl.php.net</channel>
  <summary>Wrapper for FANN (Fast Artificial Neural Network) Library</summary>
@@ -16,10 +16,10 @@
   <email>bukka@php.net</email>
   <active>yes</active>
  </lead>
- <date>2013-09-18</date>
+ <date>2013-10-06</date>
  <version>
-  <release>1.0.2</release>
-  <api>1.0.2</api>
+  <release>1.0.3</release>
+  <api>1.0.3</api>
  </version>
  <stability>
   <release>stable</release>
@@ -27,8 +27,8 @@
  </stability>
  <license uri="http://www.php.net/license">PHP 3.01</license>
  <notes><![CDATA[
- * Added configuration for Windows build to config.w32
- * Fixed GCC and Windows compiler warnings
+ * Fixed segfault on 32bit platform
+ * Included tests in PECL tarball
  ]]></notes>
  <contents>
   <dir name="/">
@@ -42,158 +42,157 @@
    <file role="src" name="fann_connection.c"/>
    <file role="src" name="fann.c"/>
    <dir name="examples">
-	<file role="doc" name="simple_test.php"/>
-	<file role="doc" name="simple_train.php"/>
-	<file role="doc" name="xor.data"/>
+    <file role="doc" name="simple_test.php"/>
+    <file role="doc" name="simple_train.php"/>
+    <file role="doc" name="xor.data"/>
    </dir>
    <dir name="tests">
-	<file role="test" name="001.phpt"/>
-	<file role="test" name="002.phpt"/>
-	<file role="test" name="fann_cascadetrain_on_data_basic.phpt"/>
-	<file role="test" name="fann_cascadetrain_on_file_basic.phpt"/>
-	<file role="test" name="fann_clear_scaling_params_basic.phpt"/>
-	<file role="test" name="fann_copy_basic.phpt"/>
-	<file role="test" name="fann_create_from_file_basic.phpt"/>
-	<file role="test" name="fann_create_shortcut_array_basic.phpt"/>
-	<file role="test" name="fann_create_shortcut_basic.phpt"/>
-	<file role="test" name="fann_create_sparse_array_basic.phpt"/>
-	<file role="test" name="fann_create_sparse_basic.phpt"/>
-	<file role="test" name="fann_create_standard_array_basic.phpt"/>
-	<file role="test" name="fann_create_standard_basic.phpt"/>
-	<file role="test" name="fann_create_train_basic.phpt"/>
-	<file role="test" name="fann_create_train_from_callback_basic.phpt"/>
-	<file role="test" name="fann_descale_input_basic.phpt"/>
-	<file role="test" name="fann_descale_output_basic.phpt"/>
-	<file role="test" name="fann_descale_train_basic.phpt"/>
-	<file role="test" name="fann_destroy_basic.phpt"/>
-	<file role="test" name="fann_destroy_train_basic.phpt"/>
-	<file role="test" name="fann_duplicate_train_data_basic.phpt"/>
-	<file role="test" name="fann_get_activation_function_basic.phpt"/>
-	<file role="test" name="fann_get_activation_steepness_basic.phpt"/>
-	<file role="test" name="fann_get_bias_array_basic.phpt"/>
-	<file role="test" name="fann_get_bit_fail_basic.phpt"/>
-	<file role="test" name="fann_get_bit_fail_limit_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_activation_functions_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_activation_functions_count_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_activation_steepnesses_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_activation_steepnesses_count_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_candidate_change_fraction_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_candidate_limit_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_candidate_stagnation_epochs_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_max_cand_epochs_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_max_out_epochs_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_min_cand_epochs_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_min_out_epochs_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_num_candidate_groups_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_num_candidates_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_output_change_fraction_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_output_stagnation_epochs_basic.phpt"/>
-	<file role="test" name="fann_get_cascade_weight_multiplier_basic.phpt"/>
-	<file role="test" name="fann_get_connection_array_basic.phpt"/>
-	<file role="test" name="fann_get_connection_rate_basic.phpt"/>
-	<file role="test" name="fann_get_errno_basic.phpt"/>
-	<file role="test" name="fann_get_errstr_basic.phpt"/>
-	<file role="test" name="fann_get_layer_array_basic.phpt"/>
-	<file role="test" name="fann_get_learning_momentum_basic.phpt"/>
-	<file role="test" name="fann_get_learning_rate_basic.phpt"/>
-	<file role="test" name="fann_get_mse_basic.phpt"/>
-	<file role="test" name="fann_get_network_type_basic.phpt"/>
-	<file role="test" name="fann_get_num_input_basic.phpt"/>
-	<file role="test" name="fann_get_num_layers_basic.phpt"/>
-	<file role="test" name="fann_get_num_output_basic.phpt"/>
-	<file role="test" name="fann_get_quickprop_decay_basic.phpt"/>
-	<file role="test" name="fann_get_quickprop_mu_basic.phpt"/>
-	<file role="test" name="fann_get_rprop_decrease_factor_basic.phpt"/>
-	<file role="test" name="fann_get_rprop_delta_max_basic.phpt"/>
-	<file role="test" name="fann_get_rprop_delta_min_basic.phpt"/>
-	<file role="test" name="fann_get_rprop_delta_zero_basic.phpt"/>
-	<file role="test" name="fann_get_rprop_increase_factor_basic.phpt"/>
-	<file role="test" name="fann_get_sarprop_step_error_shift_basic.phpt"/>
-	<file role="test" name="fann_get_sarprop_step_error_threshold_factor_basic.phpt"/>
-	<file role="test" name="fann_get_sarprop_temperature_basic.phpt"/>
-	<file role="test" name="fann_get_sarprop_weight_decay_shift_basic.phpt"/>
-	<file role="test" name="fann_get_total_connections_basic.phpt"/>
-	<file role="test" name="fann_get_total_neurons_basic.phpt"/>
-	<file role="test" name="fann_get_train_error_function_basic.phpt"/>
-	<file role="test" name="fann_get_training_algorithm_basic.phpt"/>
-	<file role="test" name="fann_get_train_stop_function_basic.phpt"/>
-	<file role="test" name="fann_init_weights_basic.phpt"/>
-	<file role="test" name="fann_length_train_data_basic.phpt"/>
-	<file role="test" name="fann_merge_train_data_basic.phpt"/>
-	<file role="test" name="fann_num_input_train_data_basic.phpt"/>
-	<file role="test" name="fann_num_output_train_data_basic.phpt"/>
-	<file role="test" name="fann_print_error_basic.phpt"/>
-	<file role="test" name="fann_randomize_weights_basic.phpt"/>
-	<file role="test" name="fann_read_train_from_file_basic.phpt"/>
-	<file role="test" name="fann_reset_errno_basic.phpt"/>
-	<file role="test" name="fann_reset_errstr_basic.phpt"/>
-	<file role="test" name="fann_reset_mse_basic.phpt"/>
-	<file role="test" name="fann_run_basic.phpt"/>
-	<file role="test" name="fann_save_basic.phpt"/>
-	<file role="test" name="fann_save_train_basic.phpt"/>
-	<file role="test" name="fann_scale_input_basic.phpt"/>
-	<file role="test" name="fann_scale_input_train_data_basic.phpt"/>
-	<file role="test" name="fann_scale_output_basic.phpt"/>
-	<file role="test" name="fann_scale_output_train_data_basic.phpt"/>
-	<file role="test" name="fann_scale_train_basic.phpt"/>
-	<file role="test" name="fann_scale_train_data_basic.phpt"/>
-	<file role="test" name="fann_set_activation_function_basic.phpt"/>
-	<file role="test" name="fann_set_activation_function_hidden_basic.phpt"/>
-	<file role="test" name="fann_set_activation_function_layer_basic.phpt"/>
-	<file role="test" name="fann_set_activation_function_output_basic.phpt"/>
-	<file role="test" name="fann_set_activation_steepness_basic.phpt"/>
-	<file role="test" name="fann_set_activation_steepness_hidden_basic.phpt"/>
-	<file role="test" name="fann_set_activation_steepness_layer_basic.phpt"/>
-	<file role="test" name="fann_set_activation_steepness_output_basic.phpt"/>
-	<file role="test" name="fann_set_bit_fail_limit_basic.phpt"/>
-	<file role="test" name="fann_set_callback_basic.phpt"/>
-	<file role="test" name="fann_set_cascade_activation_functions_basic.phpt"/>
-	<file role="test" name="fann_set_cascade_activation_steepnesses_basic.phpt"/>
-	<file role="test" name="fann_set_cascade_candidate_change_fraction_basic.phpt"/>
-	<file role="test" name="fann_set_cascade_candidate_limit_basic.phpt"/>
-	<file role="test" name="fann_set_cascade_candidate_stagnation_epochs_basic.phpt"/>
-	<file role="test" name="fann_set_cascade_max_cand_epochs_basic.phpt"/>
-	<file role="test" name="fann_set_cascade_max_out_epochs_basic.phpt"/>
-	<file role="test" name="fann_set_cascade_min_cand_epochs_basic.phpt"/>
-	<file role="test" name="fann_set_cascade_min_out_epochs_basic.phpt"/>
-	<file role="test" name="fann_set_cascade_num_candidate_groups_basic.phpt"/>
-	<file role="test" name="fann_set_cascade_output_change_fraction_basic.phpt"/>
-	<file role="test" name="fann_set_cascade_output_stagnation_epochs_basic.phpt"/>
-	<file role="test" name="fann_set_cascade_weight_multiplier_basic.phpt"/>
-	<file role="test" name="fann_set_error_log_basic.phpt"/>
-	<file role="test" name="fann_set_input_scaling_params_basic.phpt"/>
-	<file role="test" name="fann_set_learning_momentum_basic.phpt"/>
-	<file role="test" name="fann_set_learning_rate_basic.phpt"/>
-	<file role="test" name="fann_set_output_scaling_params_basic.phpt"/>
-	<file role="test" name="fann_set_quickprop_decay_basic.phpt"/>
-	<file role="test" name="fann_set_quickprop_mu_basic.phpt"/>
-	<file role="test" name="fann_set_rprop_decrease_factor_basic.phpt"/>
-	<file role="test" name="fann_set_rprop_delta_max_basic.phpt"/>
-	<file role="test" name="fann_set_rprop_delta_min_basic.phpt"/>
-	<file role="test" name="fann_set_rprop_delta_zero_basic.phpt"/>
-	<file role="test" name="fann_set_rprop_increase_factor_basic.phpt"/>
-	<file role="test" name="fann_set_sarprop_step_error_shift_basic.phpt"/>
-	<file role="test" name="fann_set_sarprop_step_error_threshold_factor_basic.phpt"/>
-	<file role="test" name="fann_set_sarprop_temperature_basic.phpt"/>
-	<file role="test" name="fann_set_sarprop_weight_decay_shift_basic.phpt"/>
-	<file role="test" name="fann_set_scaling_params_basic.phpt"/>
-	<file role="test" name="fann_set_train_error_function_basic.phpt"/>
-	<file role="test" name="fann_set_training_algorithm_basic.phpt"/>
-	<file role="test" name="fann_set_train_stop_function_basic.phpt"/>
-	<file role="test" name="fann_set_weight_array_basic.phpt"/>
-	<file role="test" name="fann_set_weight_basic.phpt"/>
-	<file role="test" name="fann_shuffle_train_data_basic.phpt"/>
-	<file role="test" name="fann_subset_train_data_basic.phpt"/>
-	<file role="test" name="fann_test_basic.phpt"/>
-	<file role="test" name="fann_test_data_basic.phpt"/>
-	<file role="test" name="fann_train_basic.phpt"/>
-	<file role="test" name="fann_train_epoch_basic.phpt"/>
-	<file role="test" name="fann_train_on_data_basic.phpt"/>
-	<file role="test" name="fann_train_on_file_basic.phpt"/>
+    <file role="test" name="001.phpt"/>
+    <file role="test" name="002.phpt"/>
+    <file role="test" name="fann_cascadetrain_on_data_basic.phpt"/>
+    <file role="test" name="fann_cascadetrain_on_file_basic.phpt"/>
+    <file role="test" name="fann_clear_scaling_params_basic.phpt"/>
+    <file role="test" name="fann_copy_basic.phpt"/>
+    <file role="test" name="fann_create_from_file_basic.phpt"/>
+    <file role="test" name="fann_create_shortcut_array_basic.phpt"/>
+    <file role="test" name="fann_create_shortcut_basic.phpt"/>
+    <file role="test" name="fann_create_sparse_array_basic.phpt"/>
+    <file role="test" name="fann_create_sparse_basic.phpt"/>
+    <file role="test" name="fann_create_standard_array_basic.phpt"/>
+    <file role="test" name="fann_create_standard_basic.phpt"/>
+    <file role="test" name="fann_create_train_basic.phpt"/>
+    <file role="test" name="fann_create_train_from_callback_basic.phpt"/>
+    <file role="test" name="fann_descale_input_basic.phpt"/>
+    <file role="test" name="fann_descale_output_basic.phpt"/>
+    <file role="test" name="fann_descale_train_basic.phpt"/>
+    <file role="test" name="fann_destroy_basic.phpt"/>
+    <file role="test" name="fann_destroy_train_basic.phpt"/>
+    <file role="test" name="fann_duplicate_train_data_basic.phpt"/>
+    <file role="test" name="fann_get_activation_function_basic.phpt"/>
+    <file role="test" name="fann_get_activation_steepness_basic.phpt"/>
+    <file role="test" name="fann_get_bias_array_basic.phpt"/>
+    <file role="test" name="fann_get_bit_fail_basic.phpt"/>
+    <file role="test" name="fann_get_bit_fail_limit_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_activation_functions_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_activation_functions_count_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_activation_steepnesses_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_activation_steepnesses_count_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_candidate_change_fraction_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_candidate_limit_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_candidate_stagnation_epochs_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_max_cand_epochs_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_max_out_epochs_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_min_cand_epochs_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_min_out_epochs_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_num_candidate_groups_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_num_candidates_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_output_change_fraction_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_output_stagnation_epochs_basic.phpt"/>
+    <file role="test" name="fann_get_cascade_weight_multiplier_basic.phpt"/>
+    <file role="test" name="fann_get_connection_array_basic.phpt"/>
+    <file role="test" name="fann_get_connection_rate_basic.phpt"/>
+    <file role="test" name="fann_get_errno_basic.phpt"/>
+    <file role="test" name="fann_get_errstr_basic.phpt"/>
+    <file role="test" name="fann_get_layer_array_basic.phpt"/>
+    <file role="test" name="fann_get_learning_momentum_basic.phpt"/>
+    <file role="test" name="fann_get_learning_rate_basic.phpt"/>
+    <file role="test" name="fann_get_mse_basic.phpt"/>
+    <file role="test" name="fann_get_network_type_basic.phpt"/>
+    <file role="test" name="fann_get_num_input_basic.phpt"/>
+    <file role="test" name="fann_get_num_layers_basic.phpt"/>
+    <file role="test" name="fann_get_num_output_basic.phpt"/>
+    <file role="test" name="fann_get_quickprop_decay_basic.phpt"/>
+    <file role="test" name="fann_get_quickprop_mu_basic.phpt"/>
+    <file role="test" name="fann_get_rprop_decrease_factor_basic.phpt"/>
+    <file role="test" name="fann_get_rprop_delta_max_basic.phpt"/>
+    <file role="test" name="fann_get_rprop_delta_min_basic.phpt"/>
+    <file role="test" name="fann_get_rprop_delta_zero_basic.phpt"/>
+    <file role="test" name="fann_get_rprop_increase_factor_basic.phpt"/>
+    <file role="test" name="fann_get_sarprop_step_error_shift_basic.phpt"/>
+    <file role="test" name="fann_get_sarprop_step_error_threshold_factor_basic.phpt"/>
+    <file role="test" name="fann_get_sarprop_temperature_basic.phpt"/>
+    <file role="test" name="fann_get_sarprop_weight_decay_shift_basic.phpt"/>
+    <file role="test" name="fann_get_total_connections_basic.phpt"/>
+    <file role="test" name="fann_get_total_neurons_basic.phpt"/>
+    <file role="test" name="fann_get_train_error_function_basic.phpt"/>
+    <file role="test" name="fann_get_training_algorithm_basic.phpt"/>
+    <file role="test" name="fann_get_train_stop_function_basic.phpt"/>
+    <file role="test" name="fann_init_weights_basic.phpt"/>
+    <file role="test" name="fann_length_train_data_basic.phpt"/>
+    <file role="test" name="fann_merge_train_data_basic.phpt"/>
+    <file role="test" name="fann_num_input_train_data_basic.phpt"/>
+    <file role="test" name="fann_num_output_train_data_basic.phpt"/>
+    <file role="test" name="fann_print_error_basic.phpt"/>
+    <file role="test" name="fann_randomize_weights_basic.phpt"/>
+    <file role="test" name="fann_read_train_from_file_basic.phpt"/>
+    <file role="test" name="fann_reset_errno_basic.phpt"/>
+    <file role="test" name="fann_reset_errstr_basic.phpt"/>
+    <file role="test" name="fann_reset_mse_basic.phpt"/>
+    <file role="test" name="fann_run_basic.phpt"/>
+    <file role="test" name="fann_save_basic.phpt"/>
+    <file role="test" name="fann_save_train_basic.phpt"/>
+    <file role="test" name="fann_scale_input_basic.phpt"/>
+    <file role="test" name="fann_scale_input_train_data_basic.phpt"/>
+    <file role="test" name="fann_scale_output_basic.phpt"/>
+    <file role="test" name="fann_scale_output_train_data_basic.phpt"/>
+    <file role="test" name="fann_scale_train_basic.phpt"/>
+    <file role="test" name="fann_scale_train_data_basic.phpt"/>
+    <file role="test" name="fann_set_activation_function_basic.phpt"/>
+    <file role="test" name="fann_set_activation_function_hidden_basic.phpt"/>
+    <file role="test" name="fann_set_activation_function_layer_basic.phpt"/>
+    <file role="test" name="fann_set_activation_function_output_basic.phpt"/>
+    <file role="test" name="fann_set_activation_steepness_basic.phpt"/>
+    <file role="test" name="fann_set_activation_steepness_hidden_basic.phpt"/>
+    <file role="test" name="fann_set_activation_steepness_layer_basic.phpt"/>
+    <file role="test" name="fann_set_activation_steepness_output_basic.phpt"/>
+    <file role="test" name="fann_set_bit_fail_limit_basic.phpt"/>
+    <file role="test" name="fann_set_callback_basic.phpt"/>
+    <file role="test" name="fann_set_cascade_activation_functions_basic.phpt"/>
+    <file role="test" name="fann_set_cascade_activation_steepnesses_basic.phpt"/>
+    <file role="test" name="fann_set_cascade_candidate_change_fraction_basic.phpt"/>
+    <file role="test" name="fann_set_cascade_candidate_limit_basic.phpt"/>
+    <file role="test" name="fann_set_cascade_candidate_stagnation_epochs_basic.phpt"/>
+    <file role="test" name="fann_set_cascade_max_cand_epochs_basic.phpt"/>
+    <file role="test" name="fann_set_cascade_max_out_epochs_basic.phpt"/>
+    <file role="test" name="fann_set_cascade_min_cand_epochs_basic.phpt"/>
+    <file role="test" name="fann_set_cascade_min_out_epochs_basic.phpt"/>
+    <file role="test" name="fann_set_cascade_num_candidate_groups_basic.phpt"/>
+    <file role="test" name="fann_set_cascade_output_change_fraction_basic.phpt"/>
+    <file role="test" name="fann_set_cascade_output_stagnation_epochs_basic.phpt"/>
+    <file role="test" name="fann_set_cascade_weight_multiplier_basic.phpt"/>
+    <file role="test" name="fann_set_error_log_basic.phpt"/>
+    <file role="test" name="fann_set_input_scaling_params_basic.phpt"/>
+    <file role="test" name="fann_set_learning_momentum_basic.phpt"/>
+    <file role="test" name="fann_set_learning_rate_basic.phpt"/>
+    <file role="test" name="fann_set_output_scaling_params_basic.phpt"/>
+    <file role="test" name="fann_set_quickprop_decay_basic.phpt"/>
+    <file role="test" name="fann_set_quickprop_mu_basic.phpt"/>
+    <file role="test" name="fann_set_rprop_decrease_factor_basic.phpt"/>
+    <file role="test" name="fann_set_rprop_delta_max_basic.phpt"/>
+    <file role="test" name="fann_set_rprop_delta_min_basic.phpt"/>
+    <file role="test" name="fann_set_rprop_delta_zero_basic.phpt"/>
+    <file role="test" name="fann_set_rprop_increase_factor_basic.phpt"/>
+    <file role="test" name="fann_set_sarprop_step_error_shift_basic.phpt"/>
+    <file role="test" name="fann_set_sarprop_step_error_threshold_factor_basic.phpt"/>
+    <file role="test" name="fann_set_sarprop_temperature_basic.phpt"/>
+    <file role="test" name="fann_set_sarprop_weight_decay_shift_basic.phpt"/>
+    <file role="test" name="fann_set_scaling_params_basic.phpt"/>
+    <file role="test" name="fann_set_train_error_function_basic.phpt"/>
+    <file role="test" name="fann_set_training_algorithm_basic.phpt"/>
+    <file role="test" name="fann_set_train_stop_function_basic.phpt"/>
+    <file role="test" name="fann_set_weight_array_basic.phpt"/>
+    <file role="test" name="fann_set_weight_basic.phpt"/>
+    <file role="test" name="fann_shuffle_train_data_basic.phpt"/>
+    <file role="test" name="fann_subset_train_data_basic.phpt"/>
+    <file role="test" name="fann_test_basic.phpt"/>
+    <file role="test" name="fann_test_data_basic.phpt"/>
+    <file role="test" name="fann_train_basic.phpt"/>
+    <file role="test" name="fann_train_epoch_basic.phpt"/>
+    <file role="test" name="fann_train_on_data_basic.phpt"/>
+    <file role="test" name="fann_train_on_file_basic.phpt"/>
    </dir>
   </dir>
  </contents>
-
  <dependencies>
   <required>
    <php>
@@ -208,14 +207,30 @@
  <extsrcrelease/>
  <changelog>
   <release>
-   <date>2013-09-09</date>
+   <date>2013-09-18</date>
    <version>
-	<release>1.0.1</release>
-	<api>1.0.1</api>
+	<release>1.0.2</release>
+	<api>1.0.2</api>
    </version>
    <stability>
 	<release>stable</release>
-	<api>stable</api>
+	 <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP 3.01</license>
+   <notes><![CDATA[
+   * Added configuration for Windows build to config.w32
+   * Fixed GCC and Windows compiler warnings
+   ]]></notes>
+  </release>
+  <release>
+   <date>2013-09-09</date>
+   <version>
+    <release>1.0.1</release>
+    <api>1.0.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
    </stability>
    <license uri="http://www.php.net/license">PHP 3.01</license>
    <notes><![CDATA[
@@ -225,12 +240,12 @@
   <release>
    <date>2013-08-02</date>
    <version>
-	<release>1.0.0</release>
-	<api>1.0.0</api>
+    <release>1.0.0</release>
+    <api>1.0.0</api>
    </version>
    <stability>
-	<release>stable</release>
-	<api>stable</api>
+    <release>stable</release>
+    <api>stable</api>
    </stability>
    <license uri="http://www.php.net/license">PHP 3.01</license>
    <notes><![CDATA[
