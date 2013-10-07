@@ -14,9 +14,21 @@ The extension can be installed on Linux and Windows.
 
 ### Linux
 
-Before you start installation make sure that `libfann` is installed on your system. It's part of the main repository in the most Linux distributions (search for `fann`). If not you need to install it first. Either download it from the [official site](http://leenissen.dk/fann/wp/) or get it from your distro repository. For example in Fedora:
+Before you start installation make sure that `libfann` is installed on your system. It's part of the main repository in the most Linux distributions (search for `fann`). If not you need to install it first. Either download it from the [official site](http://leenissen.dk/fann/wp/) or get it from your distro repository. For example on Ubuntu:
 ```
-sudo yum install fann-devel
+$ sudo apt-get install libfann-dev
+```
+Fann installation can be skipped if an RPM for Fedora is used (`libfann` is in the package dependencies).
+
+#### Fedora
+
+The RPM package for PHP FANN is available in Remi's repository: http://rpms.famillecollet.com/
+
+It is available only for Fedora. RHEL and clones (CentOS, SC and others) are not available as `libfann` is not available in EPEL.
+
+After downloading remi-release RPM, the package can be installed by executing following command:
+```
+$ sudo yum --enablerepo=remi install php-pecl-fann
 ```
 
 #### PECL
