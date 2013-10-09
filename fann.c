@@ -752,7 +752,7 @@ ZEND_END_ARG_INFO()
 /* }}} */
 
 /* {{{ fann_functions[] */
-const zend_function_entry fann_functions[] = {
+zend_function_entry fann_functions[] = {
 	PHP_FE(fann_create_standard,                          arginfo_fann_create_standard)
 	PHP_FE(fann_create_standard_array,                    arginfo_fann_create_standard_array)
 	PHP_FE(fann_create_sparse,                            arginfo_fann_create_sparse)
@@ -904,7 +904,7 @@ const zend_function_entry fann_functions[] = {
 	PHP_FE(fann_reset_errstr,                             arginfo_fann_reset_errstr)
 	PHP_FE(fann_get_errstr,                               arginfo_fann_get_errstr)
 	PHP_FE(fann_print_error,                              arginfo_fann_print_error)
-	PHP_FE_END
+	PHP_FANN_FE_END
 };
 /* }}} */
 
@@ -1205,9 +1205,14 @@ static char *php_fann_get_path_for_open(char *path, int path_len, int read TSRML
 static void php_fann_array_to_zval(const fann_type *from, zval *to, int len)
 {
 	int i;
+#if PHP_API_VERSION < 20090626
+	array_init(to);
+#else
 	array_init_size(to, len);
-	for (i = 0; i < len; i++)
+#endif
+	for (i = 0; i < len; i++) {
 		add_index_double(to, i, (double) from[i]);
+	}
 }
 /* }}} */
 
@@ -1261,10 +1266,13 @@ static int php_fann_check_num_outputs(struct fann *ann, int num_outputs TSRMLS_D
 }
 /* }}} */
 
-/* {{{ php_funn_io_foreach()
+/* {{{ php_fann_io_foreach()
    callback for converting input hash map to fann_type array */
-static int php_funn_process_array_foreach(zval **element TSRMLS_DC, int num_args,
-										  va_list args, zend_hash_key *hash_key)
+#if PHP_API_VERSION < 20090626
+static int php_fann_process_array_foreach(zval **element, int num_args, va_list args, zend_hash_key *hash_key)
+#else
+static int php_fann_process_array_foreach(zval **element TSRMLS_DC, int num_args, va_list args, zend_hash_key *hash_key)
+#endif
 {
 	fann_type *input = va_arg(args, fann_type *);
 	int *pos = va_arg(args, int *);
@@ -1286,22 +1294,34 @@ static int php_fann_process_array(struct fann *ann, zval *z_array, fann_type **a
 		return 0;
 	}
 	*array = (fann_type *) emalloc(sizeof(fann_type) * n);
-	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_array) TSRMLS_CC,
-								   (apply_func_args_t) php_funn_process_array_foreach, 2, *array, &i);
+#if PHP_API_VERSION < 20090626
+	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_array), (apply_func_args_t) php_fann_process_array_foreach, 2, *array, &i);
+#else
+	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_array) TSRMLS_CC, (apply_func_args_t) php_fann_process_array_foreach, 2, *array, &i);
+#endif
 	return n;
 }
 /* }}} */
 
 /* php_fann_create() {{{ */
 static int php_fann_create(int num_args, float *connection_rate,
-						   uint *num_layers, uint **layers TSRMLS_DC)
+						   unsigned *num_layers, unsigned **layers TSRMLS_DC)
 {
 	zval ***args;
 	int argc, i, pos;
-	
+
+#if PHP_API_VERSION < 20090626
+	argc = num_args;
+	args = (zval ***) safe_emalloc(argc, sizeof (zval **), 0);
+	if (num_args == 0 || zend_get_parameters_array_ex(argc, args) == FAILURE) {
+		efree (args);
+		WRONG_PARAM_COUNT;
+	}
+#else
 	if (zend_parse_parameters(num_args TSRMLS_CC, "+", &args, &argc) == FAILURE) {
 		return FAILURE;
 	}
+#endif
 
 	pos = 0;
 	if (connection_rate) {
@@ -1317,7 +1337,7 @@ static int php_fann_create(int num_args, float *connection_rate,
 		return FAILURE;
 	}
 
-	*layers = (uint *) emalloc(*num_layers * sizeof(uint));
+	*layers = (unsigned *) emalloc(*num_layers * sizeof(unsigned));
 	for (i = pos; i < argc; i++) {
 		convert_to_long_ex(args[i]);
 		if (php_fann_check_num_neurons(Z_LVAL_PP(args[i]) TSRMLS_CC) == FAILURE) {
@@ -1335,7 +1355,7 @@ static int php_fann_create(int num_args, float *connection_rate,
 
 /* php_fann_create_array() {{{ */
 static int php_fann_create_array(int num_args, float *conn_rate,
-								 uint *num_layers, uint **layers TSRMLS_DC)
+								 unsigned *num_layers, unsigned **layers TSRMLS_DC)
 {
 	zval *array, **ppdata;
 	HashPosition pos;
@@ -1348,13 +1368,13 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 			return FAILURE;
 		}
 		*conn_rate = (float)tmprate;
-		*num_layers = (uint)tmpnum;
+		*num_layers = (unsigned)tmpnum;
 	}
 	else {
 		if (zend_parse_parameters(num_args TSRMLS_CC, "la", &tmpnum, &array) == FAILURE) {
 			return FAILURE;
 		}
-		*num_layers = (uint)tmpnum;
+		*num_layers = (unsigned)tmpnum;
 	}
 
 	if (php_fann_check_num_layers(
@@ -1362,7 +1382,7 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 		return FAILURE;
 	}
 
-	*layers = (uint *) emalloc(*num_layers * sizeof(uint));
+	*layers = (unsigned *) emalloc(*num_layers * sizeof(unsigned));
 	for (zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(array), &pos);
 		 zend_hash_get_current_data_ex(Z_ARRVAL_P(array), (void **) &ppdata, &pos) == SUCCESS;
 		 zend_hash_move_forward_ex(Z_ARRVAL_P(array), &pos)) {
@@ -1393,19 +1413,25 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 		long rc;
 		char *is_callable_error = NULL;
 		TSRMLS_FETCH();
-		
+#if PHP_API_VERSION < 20090626
+		if (zend_fcall_info_init(user_data->callback, &fci, &fci_cache TSRMLS_CC) != SUCCESS) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "User callback is not a valid callback");
+			return -1;
+		}
+#else
 		if (zend_fcall_info_init(user_data->callback, 0, &fci, &fci_cache, NULL, &is_callable_error TSRMLS_CC)
 			!= SUCCESS || is_callable_error) {
 			if (is_callable_error) {
-				php_error_docref(NULL TSRMLS_CC, E_WARNING, "User callback is not a valie callback, %s",
+				php_error_docref(NULL TSRMLS_CC, E_WARNING, "User callback is not a valid callback, %s",
 								 is_callable_error);
 				efree(is_callable_error);
 			}
 			else {
-				php_error_docref(NULL TSRMLS_CC, E_WARNING, "User callback is not a valie callback");
+				php_error_docref(NULL TSRMLS_CC, E_WARNING, "User callback is not a valid callback");
 			}
 			return -1;
 		}
+#endif
 		MAKE_STD_ZVAL(z_max_epochs);
 		MAKE_STD_ZVAL(z_epochs_between_reports);
 		MAKE_STD_ZVAL(z_desired_error);
@@ -1475,7 +1501,7 @@ static void php_fann_init_ann(struct fann *ann)
    Creates a standard fully connected backpropagation neural network */
 PHP_FUNCTION(fann_create_standard)
 {
-	uint num_layers, *layers; 
+	unsigned num_layers, *layers;
 	struct fann *ann;
 	
 	if (php_fann_create(ZEND_NUM_ARGS(), NULL, &num_layers, &layers TSRMLS_CC) == FAILURE) {
@@ -1494,7 +1520,7 @@ PHP_FUNCTION(fann_create_standard)
    Creates a standard fully connected backpropagation neural network (array for layers) */
 PHP_FUNCTION(fann_create_standard_array)
 {
-	uint num_layers, *layers; 
+	unsigned num_layers, *layers;
 	struct fann *ann;
 	
 	if (php_fann_create_array(ZEND_NUM_ARGS(), NULL, &num_layers, &layers TSRMLS_CC) == FAILURE) {
@@ -1513,7 +1539,7 @@ PHP_FUNCTION(fann_create_standard_array)
    Creates a standard backpropagation neural network, which is not fully connected */
 PHP_FUNCTION(fann_create_sparse)
 {
-	uint num_layers, *layers;
+	unsigned num_layers, *layers;
 	float connection_rate;
 	struct fann *ann;
 	
@@ -1534,7 +1560,7 @@ PHP_FUNCTION(fann_create_sparse)
    (using array for layers)  */
 PHP_FUNCTION(fann_create_sparse_array)
 {
-	uint num_layers, *layers;
+	unsigned num_layers, *layers;
 	float connection_rate;
 	struct fann *ann;
 	
@@ -1555,7 +1581,7 @@ PHP_FUNCTION(fann_create_sparse_array)
    which also has shortcut connections. */
 PHP_FUNCTION(fann_create_shortcut)
 {
-	uint num_layers, *layers; 
+	unsigned num_layers, *layers;
 	struct fann *ann;
 	
 	if (php_fann_create(ZEND_NUM_ARGS(), NULL, &num_layers, &layers TSRMLS_CC) == FAILURE) {
@@ -1575,7 +1601,7 @@ PHP_FUNCTION(fann_create_shortcut)
    which also has shortcut connections (using array of layers) */
 PHP_FUNCTION(fann_create_shortcut_array)
 {
-	uint num_layers, *layers; 
+	unsigned num_layers, *layers;
 	struct fann *ann;
 	
 	if (php_fann_create_array(ZEND_NUM_ARGS(), NULL, &num_layers, &layers TSRMLS_CC) == FAILURE) {
@@ -1755,7 +1781,7 @@ PHP_FUNCTION(fann_get_layer_array)
 {
 	zval *z_ann;
 	struct fann *ann;
-	uint num_layers, *layers, i;
+	unsigned num_layers, *layers, i;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
 		return;
@@ -1764,7 +1790,7 @@ PHP_FUNCTION(fann_get_layer_array)
 	PHP_FANN_FETCH_ANN();
 	num_layers = fann_get_num_layers(ann);
 	PHP_FANN_ERROR_CHECK_ANN();
-	layers = (uint *) emalloc(num_layers * sizeof(uint)); 
+	layers = (unsigned *) emalloc(num_layers * sizeof(unsigned));
 	fann_get_layer_array(ann, layers);
 	PHP_FANN_ERROR_CHECK_ANN();
 	array_init(return_value);
@@ -1780,7 +1806,7 @@ PHP_FUNCTION(fann_get_bias_array)
 {
 	zval *z_ann;
 	struct fann *ann;
-	uint num_layers, *layers, i;
+	unsigned num_layers, *layers, i;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
 		return;
@@ -1789,7 +1815,7 @@ PHP_FUNCTION(fann_get_bias_array)
 	PHP_FANN_FETCH_ANN();
 	num_layers = fann_get_num_layers(ann);
 	PHP_FANN_ERROR_CHECK_ANN();
-	layers = (uint *) emalloc(num_layers * sizeof(uint)); 
+	layers = (unsigned *) emalloc(num_layers * sizeof(unsigned));
 	fann_get_bias_array(ann, layers);
 	PHP_FANN_ERROR_CHECK_ANN();
 	array_init(return_value);
@@ -1806,7 +1832,7 @@ PHP_FUNCTION(fann_get_connection_array)
 	zval *z_ann, *z_connection;
 	struct fann *ann;
 	struct fann_connection *connections;
-	uint num_connections, i;
+	unsigned num_connections, i;
 	long from_neuron, to_neuron;
 	double weight;
 		
@@ -1843,7 +1869,7 @@ PHP_FUNCTION(fann_set_weight_array)
 	HashPosition pos;
 	struct fann *ann;
 	struct fann_connection *connections;
-	uint num_connections, i = 0;
+	unsigned num_connections, i = 0;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &array) == FAILURE) {
 		return;
@@ -1994,7 +2020,7 @@ PHP_FUNCTION(fann_train_on_file)
 	double desired_error;
 	struct fann *ann;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rplld", &z_ann, &filename, &filename_len,
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rslld", &z_ann, &filename, &filename_len,
 							  &max_epochs, &epochs_between_reports, &desired_error) == FAILURE) {
 		return;
 	}
@@ -2082,7 +2108,7 @@ PHP_FUNCTION(fann_read_train_from_file)
 	int filename_len;
 	struct fann_train_data *train_data;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p", &filename, &filename_len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filename, &filename_len) == FAILURE) {
 		return;
 	}
 	filename = php_fann_get_path_for_open(filename, filename_len, 1 TSRMLS_CC);
@@ -2187,14 +2213,22 @@ PHP_FUNCTION(fann_create_train_from_callback)
 		}
 		// convert input array
 		j = 0;
-		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_input) TSRMLS_CC,
-									   (apply_func_args_t) php_funn_process_array_foreach, 2,
-									   train_data->input[i], &j);
+#if PHP_API_VERSION < 20090626
+		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_input),  (apply_func_args_t) php_fann_process_array_foreach,
+									   2, train_data->input[i], &j);
+#else
+		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_input) TSRMLS_CC, (apply_func_args_t) php_fann_process_array_foreach,
+									   2, train_data->input[i], &j);
+#endif
 		// convert output array
 		j = 0;
-		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_output) TSRMLS_CC,
-									   (apply_func_args_t) php_funn_process_array_foreach, 2,
-									   train_data->output[i], &j);
+#if PHP_API_VERSION < 20090626
+		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_output), (apply_func_args_t) php_fann_process_array_foreach,
+									   2, train_data->output[i], &j);
+#else
+		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_output) TSRMLS_CC, (apply_func_args_t) php_fann_process_array_foreach,
+									   2, train_data->output[i], &j);;
+#endif
 		zval_ptr_dtor(&retval);
 	}
 	PHP_FANN_RETURN_TRAIN_DATA();
@@ -2587,7 +2621,7 @@ PHP_FUNCTION(fann_save_train)
 	zval *z_train_data;
 	struct fann_train_data *train_data;
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rp", &z_train_data, &filename, &filename_len)
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_train_data, &filename, &filename_len)
 		== FAILURE) {
 		return;
 	}
@@ -3005,7 +3039,7 @@ PHP_FUNCTION(fann_cascadetrain_on_file)
 	double desired_error;
 	struct fann *ann;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rplld", &z_ann, &filename, &filename_len,
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rslld", &z_ann, &filename, &filename_len,
 							  &max_neurons, &neurons_between_reports, &desired_error) == FAILURE) {
 		return;
 	}
@@ -3207,7 +3241,7 @@ PHP_FUNCTION(fann_get_cascade_activation_functions)
 {
 	zval *z_ann;
 	struct fann *ann;
-	uint num_functions, i;
+	unsigned num_functions, i;
 	enum fann_activationfunc_enum *functions;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
@@ -3218,7 +3252,11 @@ PHP_FUNCTION(fann_get_cascade_activation_functions)
 	PHP_FANN_ERROR_CHECK_ANN();
 	functions = fann_get_cascade_activation_functions(ann);
 	PHP_FANN_ERROR_CHECK_ANN();
+#if PHP_API_VERSION < 20090626
+	array_init(return_value);
+#else
 	array_init_size(return_value, num_functions);
+#endif
 	for (i = 0; i < num_functions; i++) {
 		add_index_long(return_value, i, (long) functions[i]);
 	}
@@ -3233,7 +3271,7 @@ PHP_FUNCTION(fann_set_cascade_activation_functions)
 	HashPosition pos;
 	struct fann *ann;
 	enum fann_activationfunc_enum *functions;
-	uint num_functions, i = 0;
+	unsigned num_functions, i = 0;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &array) == FAILURE) {
 		return;
@@ -3268,7 +3306,7 @@ PHP_FUNCTION(fann_get_cascade_activation_steepnesses)
 {
 	zval *z_ann;
 	struct fann *ann;
-	uint num_steepnesses, i;
+	unsigned num_steepnesses, i;
 	fann_type *steepnesses;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
@@ -3279,7 +3317,11 @@ PHP_FUNCTION(fann_get_cascade_activation_steepnesses)
 	PHP_FANN_ERROR_CHECK_ANN();
 	steepnesses = fann_get_cascade_activation_steepnesses(ann);
 	PHP_FANN_ERROR_CHECK_ANN();
+#if PHP_API_VERSION < 20090626
+	array_init(return_value);
+#else
 	array_init_size(return_value, num_steepnesses);
+#endif
 	for (i = 0; i < num_steepnesses; i++) {
 		add_index_double(return_value, i, (fann_type) steepnesses[i]);
 	}
@@ -3294,7 +3336,7 @@ PHP_FUNCTION(fann_set_cascade_activation_steepnesses)
 	HashPosition pos;
 	struct fann *ann;
 	fann_type *steepnesses;
-	uint num_steepnesses, i = 0;
+	unsigned num_steepnesses, i = 0;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &array) == FAILURE) {
 		return;
@@ -3339,7 +3381,7 @@ PHP_FUNCTION(fann_create_from_file)
 	int cf_name_len;
 	struct fann *ann;
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p", &cf_name, &cf_name_len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &cf_name, &cf_name_len) == FAILURE) {
 		return;
 	}
 	cf_name = php_fann_get_path_for_open(cf_name, cf_name_len, 1 TSRMLS_CC);
@@ -3362,7 +3404,7 @@ PHP_FUNCTION(fann_save)
 	int cf_name_len;
 	struct fann *ann;
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rp", &z_ann, &cf_name, &cf_name_len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_ann, &cf_name, &cf_name_len) == FAILURE) {
 		return;
 	}
 	cf_name = php_fann_get_path_for_open(cf_name, cf_name_len, 0 TSRMLS_CC);
@@ -3389,7 +3431,7 @@ PHP_FUNCTION(fann_set_error_log)
 	int log_name_len;
 	struct fann_error *errdat;
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rp", &z_errdat, &log_name, &log_name_len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_errdat, &log_name, &log_name_len) == FAILURE) {
 		return;
 	}
 	log_name = php_fann_get_path_for_open(log_name, log_name_len, 0 TSRMLS_CC);

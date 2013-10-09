@@ -36,6 +36,12 @@ extern zend_module_entry fann_module_entry;
 #include "TSRM.h"
 #endif
 
+#if (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION == 3 && PHP_RELEASE_VERSION >= 7) || (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 4) || (PHP_MAJOR_VERSION > 5)
+#define PHP_FANN_FE_END PHP_FE_END
+#else
+#define PHP_FANN_FE_END {NULL,NULL,NULL}
+#endif
+
 /* fann version */
 #ifdef HAVE_FANN_2_2
 #define PHP_FANN_VERSION 0x020200

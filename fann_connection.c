@@ -50,7 +50,7 @@ PHP_METHOD(FANNConnection, __construct)
 static void php_fannconnection_get_property(char *name, INTERNAL_FUNCTION_PARAMETERS)
 {
 	zval *res;
-	if (zend_parse_parameters_none() == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "") == FAILURE) {
 		return;
 	}
 	res = zend_read_property(php_fann_FANNConnection_class, getThis(), name, strlen(name), 1 TSRMLS_CC);
@@ -109,13 +109,13 @@ ZEND_BEGIN_ARG_INFO(arginfo_fannconnection_set_weight, 0)
 ZEND_END_ARG_INFO()
 /* }}} */
 
-static const zend_function_entry fannconnection_funcs[] = {
+static zend_function_entry fannconnection_funcs[] = {
 	PHP_ME(FANNConnection,  __construct,      arginfo_fannconnection___construct,  ZEND_ACC_CTOR | ZEND_ACC_PUBLIC)
 	PHP_ME(FANNConnection,  getFromNeuron,    NULL,                                ZEND_ACC_PUBLIC)
 	PHP_ME(FANNConnection,  getToNeuron,      NULL,                                ZEND_ACC_PUBLIC)
 	PHP_ME(FANNConnection,  getWeight,        NULL,                                ZEND_ACC_PUBLIC)
 	PHP_ME(FANNConnection,  setWeight,        arginfo_fannconnection_set_weight,   ZEND_ACC_PUBLIC)
-	PHP_FE_END
+	PHP_FANN_FE_END
 };
 
 
