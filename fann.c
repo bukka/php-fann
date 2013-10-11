@@ -1049,8 +1049,9 @@ static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 		FREE_ZVAL(user_data->callback);
 		efree(user_data);
 	}
-	if (ann->error_log)
+	if (ann->error_log) {
 		fclose(ann->error_log);
+	}
 	fann_destroy(ann);
 }
 /* }}} */
@@ -1060,8 +1061,9 @@ static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 static void fann_destructor_fanntrainbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
 	struct fann_train_data *train_data = (struct fann_train_data *) rsrc->ptr;
-	if (train_data->error_log)
+	if (train_data->error_log) {
 		fclose(train_data->error_log);
+	}
 	fann_destroy_train(train_data);
 }
 /* }}} */
@@ -1180,8 +1182,7 @@ static char *php_fann_get_path_for_open(char *path, int path_len, int read TSRML
 
 	if (read) {
 		php_stat(path, (php_stat_len) path_len, FS_IS_R, &retval TSRMLS_CC);
-	}
-	else {
+	} else {
 		php_stat(path, (php_stat_len) path_len, FS_IS_W, &retval TSRMLS_CC);
 		if (!PHP_FANN_PATH_OK(retval)) {
 			char *dirname = estrndup(path, path_len);
@@ -1194,9 +1195,9 @@ static char *php_fann_get_path_for_open(char *path, int path_len, int read TSRML
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Filename '%s' cannot be opened for %s",
 		  path, read ? "reading" : "writing");
 		path_for_open = NULL;
-	}
-	else
+	} else {
 		php_stream_locate_url_wrapper(path, &path_for_open, 0 TSRMLS_CC);
+	}
 	return path_for_open;
 }
 /* }}} */
@@ -1315,7 +1316,8 @@ static int php_fann_create(int num_args, float *connection_rate,
 	args = (zval ***) safe_emalloc(argc, sizeof (zval **), 0);
 	if (num_args == 0 || zend_get_parameters_array_ex(argc, args) == FAILURE) {
 		efree (args);
-		WRONG_PARAM_COUNT;
+		zend_wrong_param_count(TSRMLS_C);
+		return FAILURE;
 	}
 #else
 	if (zend_parse_parameters(num_args TSRMLS_CC, "+", &args, &argc) == FAILURE) {
@@ -1411,14 +1413,15 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 		zval *retval, *z_max_epochs, *z_epochs_between_reports, *z_desired_error, *z_epochs, *z_train_data;
 		zval **params[6];
 		long rc;
-		char *is_callable_error = NULL;
-		TSRMLS_FETCH();
 #if PHP_API_VERSION < 20090626
+		TSRMLS_FETCH();
 		if (zend_fcall_info_init(user_data->callback, &fci, &fci_cache TSRMLS_CC) != SUCCESS) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "User callback is not a valid callback");
 			return -1;
 		}
 #else
+		char *is_callable_error = NULL;
+		TSRMLS_FETCH();
 		if (zend_fcall_info_init(user_data->callback, 0, &fci, &fci_cache, NULL, &is_callable_error TSRMLS_CC)
 			!= SUCCESS || is_callable_error) {
 			if (is_callable_error) {
@@ -1447,8 +1450,7 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 		params[0] = &user_data->z_ann;
 		if (user_data->z_train_data) {
 			params[1] = &user_data->z_train_data;
-		}
-		else {
+		} else {
 			MAKE_STD_ZVAL(z_train_data);
 			ZVAL_NULL(z_train_data);
 			params[1] = &z_train_data;
@@ -1471,8 +1473,9 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 		FREE_ZVAL(z_epochs_between_reports);
 		FREE_ZVAL(z_desired_error);
 		FREE_ZVAL(z_epochs);
-		if (!rc)
+		if (!rc) {
 			return -1;
+		}
 	}
 	return 0;
 }
@@ -1909,8 +1912,7 @@ PHP_FUNCTION(fann_set_weight)
 	long from_neuron, to_neuron;
 	double weight;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlld", &z_ann, &from_neuron, &to_neuron, &weight)
-		== FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlld", &z_ann, &from_neuron, &to_neuron, &weight) == FAILURE) {
 		return;
 	}
 	PHP_FANN_FETCH_ANN();
@@ -2165,7 +2167,7 @@ PHP_FUNCTION(fann_create_train_from_callback)
 	train_data = fann_create_train(Z_LVAL_P(z_num_data), Z_LVAL_P(z_num_input), Z_LVAL_P(z_num_output));
 	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
 	
-	// initialize callback function
+	/* initialize callback function */
 	fci.retval_ptr_ptr = &retval;
 	fci.no_separation = 0;
 	fci.param_count = 3;
@@ -2173,7 +2175,7 @@ PHP_FUNCTION(fann_create_train_from_callback)
 	params[0] = &z_num_data;
 	params[1] = &z_num_input;
 	params[2] = &z_num_output;
-	// call callback for each data
+	/* call callback for each data */
 	for (i = 0; i < Z_LVAL_P(z_num_data); i++) {
 		if (zend_call_function(&fci, &fci_cache TSRMLS_CC) != SUCCESS || !retval) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "An error occurred while invoking the user callback");
@@ -2211,7 +2213,7 @@ PHP_FUNCTION(fann_create_train_from_callback)
 			zval_ptr_dtor(&retval);
 			RETURN_FALSE;
 		}
-		// convert input array
+		/* convert input array */
 		j = 0;
 #if PHP_API_VERSION < 20090626
 		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_input),  (apply_func_args_t) php_fann_process_array_foreach,
@@ -2220,7 +2222,7 @@ PHP_FUNCTION(fann_create_train_from_callback)
 		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_input) TSRMLS_CC, (apply_func_args_t) php_fann_process_array_foreach,
 									   2, train_data->input[i], &j);
 #endif
-		// convert output array
+		/* convert output array */
 		j = 0;
 #if PHP_API_VERSION < 20090626
 		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_output), (apply_func_args_t) php_fann_process_array_foreach,
