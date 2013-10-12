@@ -16,10 +16,10 @@
   <email>bukka@php.net</email>
   <active>yes</active>
  </lead>
- <date>2013-10-06</date>
+ <date>2013-10-12</date>
  <version>
-  <release>1.0.3</release>
-  <api>1.0.3</api>
+  <release>1.0.4</release>
+  <api>1.0.4</api>
  </version>
  <stability>
   <release>stable</release>
@@ -27,8 +27,7 @@
  </stability>
  <license uri="http://www.php.net/license">PHP 3.01</license>
  <notes><![CDATA[
- * Fixed segfault on 32bit platform
- * Included tests in PECL tarball
+ * Fixed compilation errors and warnings for PHP 5.2 and 5.3
  ]]></notes>
  <contents>
   <dir name="/">
@@ -207,6 +206,22 @@
  <extsrcrelease/>
  <changelog>
   <release>
+   <date>2013-10-06</date>
+   <version>
+	<release>1.0.3</release>
+	<api>1.0.3</api>
+   </version>
+   <stability>
+	<release>stable</release>
+	<api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP 3.01</license>
+   <notes><![CDATA[
+   * Fixed segfault on 32bit platform
+   * Included tests in PECL tarball
+   ]]></notes>
+  </release>
+  <release>
    <date>2013-09-18</date>
    <version>
 	<release>1.0.2</release>
@@ -214,7 +229,7 @@
    </version>
    <stability>
 	<release>stable</release>
-	 <api>stable</api>
+	<api>stable</api>
    </stability>
    <license uri="http://www.php.net/license">PHP 3.01</license>
    <notes><![CDATA[
