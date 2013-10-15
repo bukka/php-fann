@@ -91,7 +91,7 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_destroy, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
 
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 ZEND_BEGIN_ARG_INFO(arginfo_fann_copy, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
@@ -219,7 +219,7 @@ ZEND_BEGIN_ARG_INFO(arginfo_fann_read_train_from_file, 0)
 ZEND_ARG_INFO(0, filename)
 ZEND_END_ARG_INFO()
 
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 ZEND_BEGIN_ARG_INFO(arginfo_fann_create_train, 0)
 ZEND_ARG_INFO(0, num_data)
 ZEND_ARG_INFO(0, num_input)
@@ -471,7 +471,7 @@ ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0 , rprop_delta_zero)
 ZEND_END_ARG_INFO()
 
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 ZEND_BEGIN_ARG_INFO(arginfo_fann_get_sarprop_weight_decay_shift, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
@@ -646,7 +646,7 @@ ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, cascade_max_out_epochs)
 ZEND_END_ARG_INFO()
 
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 ZEND_BEGIN_ARG_INFO(arginfo_fann_get_cascade_min_out_epochs, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
@@ -666,7 +666,7 @@ ZEND_ARG_INFO(0, ann)
 ZEND_ARG_INFO(0, cascade_max_cand_epochs)
 ZEND_END_ARG_INFO()
 
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 ZEND_BEGIN_ARG_INFO(arginfo_fann_get_cascade_min_cand_epochs, 0)
 ZEND_ARG_INFO(0, ann)
 ZEND_END_ARG_INFO()
@@ -760,7 +760,7 @@ zend_function_entry fann_functions[] = {
 	PHP_FE(fann_create_shortcut,                          arginfo_fann_create_shortcut)
 	PHP_FE(fann_create_shortcut_array,                    arginfo_fann_create_shortcut_array)
 	PHP_FE(fann_destroy,                                  arginfo_fann_destroy)
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 	PHP_FE(fann_copy,                                     arginfo_fann_copy)
 #endif
 	PHP_FE(fann_run,                                      arginfo_fann_run)
@@ -788,7 +788,7 @@ zend_function_entry fann_functions[] = {
 	PHP_FE(fann_train_epoch,                              arginfo_fann_train_epoch)
 	PHP_FE(fann_test_data,                                arginfo_fann_test_data)
 	PHP_FE(fann_read_train_from_file,                     arginfo_fann_read_train_from_file)
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 	PHP_FE(fann_create_train,                             arginfo_fann_create_train)
 	PHP_FE(fann_create_train_from_callback,               arginfo_fann_create_train_from_callback)
 #endif
@@ -839,7 +839,7 @@ zend_function_entry fann_functions[] = {
 	PHP_FE(fann_set_rprop_delta_max,                      arginfo_fann_set_rprop_delta_max)
 	PHP_FE(fann_get_rprop_delta_zero,                     arginfo_fann_get_rprop_delta_zero)
 	PHP_FE(fann_set_rprop_delta_zero,                     arginfo_fann_set_rprop_delta_zero)
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 	PHP_FE(fann_get_sarprop_weight_decay_shift,           arginfo_fann_get_sarprop_weight_decay_shift)
 	PHP_FE(fann_set_sarprop_weight_decay_shift,           arginfo_fann_set_sarprop_weight_decay_shift)
 	PHP_FE(fann_get_sarprop_step_error_threshold_factor,  arginfo_fann_get_sarprop_step_error_threshold_factor)
@@ -877,13 +877,13 @@ zend_function_entry fann_functions[] = {
 	PHP_FE(fann_set_cascade_candidate_limit,              arginfo_fann_set_cascade_candidate_limit)
 	PHP_FE(fann_get_cascade_max_out_epochs,               arginfo_fann_get_cascade_max_out_epochs)
 	PHP_FE(fann_set_cascade_max_out_epochs,               arginfo_fann_set_cascade_max_out_epochs)
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 	PHP_FE(fann_get_cascade_min_out_epochs,               arginfo_fann_get_cascade_min_out_epochs)
 	PHP_FE(fann_set_cascade_min_out_epochs,               arginfo_fann_set_cascade_min_out_epochs)
 #endif
 	PHP_FE(fann_get_cascade_max_cand_epochs,              arginfo_fann_get_cascade_max_cand_epochs)
 	PHP_FE(fann_set_cascade_max_cand_epochs,              arginfo_fann_set_cascade_max_cand_epochs)
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 	PHP_FE(fann_get_cascade_min_cand_epochs,              arginfo_fann_get_cascade_min_cand_epochs)
 	PHP_FE(fann_set_cascade_min_cand_epochs,              arginfo_fann_set_cascade_min_cand_epochs)
 #endif
@@ -921,7 +921,7 @@ zend_module_entry fann_module_entry = {
 	NULL,
 	PHP_MINFO(fann),
 #if ZEND_MODULE_API_NO >= 20010901
-	"0.1",
+	PHP_FANN_VERSION,
 #endif
 	STANDARD_MODULE_PROPERTIES
 };
@@ -1083,14 +1083,14 @@ PHP_MINIT_FUNCTION(fann)
 	fann_set_error_log(NULL, NULL);
 
 	/* Fann version constant */
-	REGISTER_STRING_CONSTANT("FANN_VERSION", PHP_FANN_VERSION_STRING, CONST_PERSISTENT | CONST_CS);
+	REGISTER_STRING_CONSTANT("FANN_VERSION", PHP_FANN_VERSION, CONST_PERSISTENT | CONST_CS);
 	
 	/* Train constants */
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_INCREMENTAL);
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_BATCH);
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_RPROP);
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_QUICKPROP);
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 	REGISTER_FANN_CONSTANT(FANN_TRAIN_SARPROP);
 #endif
 	/* Activation functions constants */
@@ -1141,7 +1141,7 @@ PHP_MINIT_FUNCTION(fann)
 	REGISTER_FANN_CONSTANT(FANN_E_TRAIN_DATA_SUBSET);
 	REGISTER_FANN_CONSTANT(FANN_E_INDEX_OUT_OF_BOUND);
 	REGISTER_FANN_CONSTANT(FANN_E_SCALE_NOT_PRESENT);
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 	REGISTER_FANN_CONSTANT(FANN_E_INPUT_NO_MATCH);
 	REGISTER_FANN_CONSTANT(FANN_E_OUTPUT_NO_MATCH);
 #endif
@@ -1167,7 +1167,8 @@ PHP_MINFO_FUNCTION(fann)
 {
 	php_info_print_table_start();
 	php_info_print_table_row(2, "FANN support", "enabled");
-	php_info_print_table_row(2, "FANN library version", PHP_FANN_VERSION_STRING);
+	php_info_print_table_row(2, "FANN version", PHP_FANN_VERSION);
+	php_info_print_table_row(2, "FANN library version", PHP_FANN_LIBFANN_VERSION);
 	php_info_print_table_end();
 }
 /* }}} */
@@ -1635,7 +1636,7 @@ PHP_FUNCTION(fann_destroy)
 }
 /* }}} */
 
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 /* {{{ proto resource fann_copy(resource ann)
    Creates a copy of the neural network */
 PHP_FUNCTION(fann_copy)
@@ -2127,7 +2128,7 @@ PHP_FUNCTION(fann_read_train_from_file)
 }
 /* }}} */
 
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 /* {{{ proto resource fann_create_train(int num_data, int num_input, int num_output)
    Creates an empty training data struct */
 PHP_FUNCTION(fann_create_train)
@@ -2945,7 +2946,7 @@ PHP_FUNCTION(fann_set_rprop_delta_zero)
 }
 /* }}} */
 
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 /* {{{ proto double fann_get_sarprop_weight_decay_shift(resource ann)
    Returns the sarprop weight decay shift */
 PHP_FUNCTION(fann_get_sarprop_weight_decay_shift)
@@ -3169,7 +3170,7 @@ PHP_FUNCTION(fann_set_cascade_max_out_epochs)
 }
 /* }}} */
 
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 /* {{{ proto bool fann_get_cascade_min_out_epochs(resource ann)
    Returns the minimum out epochs */
 PHP_FUNCTION(fann_get_cascade_min_out_epochs)
@@ -3203,7 +3204,7 @@ PHP_FUNCTION(fann_set_cascade_max_cand_epochs)
 }
 /* }}} */
 
-#if PHP_FANN_VERSION >= 0x020200
+#if PHP_FANN_LIBFANN_VERSION_ID >= 0x020200
 /* {{{ proto bool fann_get_cascade_min_cand_epochs(resource ann)
    Returns the min candidate epochs */
 PHP_FUNCTION(fann_get_cascade_min_cand_epochs)
