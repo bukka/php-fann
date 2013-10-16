@@ -48,7 +48,7 @@ extern zend_module_entry fann_module_entry;
 #define PHP_FANN_LIBFANN_VERSION_ID 0x020200
 #define PHP_FANN_LIBFANN_VERSION "2.2"
 #else
-#define PHP_FANN_VERSION 0x020100
+#define PHP_FANN_LIBFANN_VERSION_ID 0x020100
 #define PHP_FANN_LIBFANN_VERSION "2.1"
 #endif
 
