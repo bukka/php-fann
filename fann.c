@@ -932,9 +932,9 @@ ZEND_GET_MODULE(fann)
 #endif
 
 /* macro for chencking fann_error structs */
-#define PHP_FANN_ERROR_CHECK(__fann_struct)								\
-	if (fann_get_errno((struct fann_error *) __fann_struct) != 0) {		\
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, __fann_struct->errstr); \
+#define PHP_FANN_ERROR_CHECK(_fann_struct)								\
+	if (fann_get_errno((struct fann_error *) _fann_struct) != 0) {		\
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, _fann_struct->errstr); \
 		RETURN_FALSE;													\
 	}
 
@@ -970,62 +970,62 @@ ZEND_GET_MODULE(fann)
 	ZEND_FETCH_RESOURCE2(errdat, struct fann_error *, &z_errdat, -1, NULL, le_fannbuf, le_fanntrainbuf)
 
 /* macro for getting ann param identified by 0 args */
-#define PHP_FANN_GET_PARAM0(__fce, __return)							\
+#define PHP_FANN_GET_PARAM0(_fce, _return)							\
 	zval *z_ann; struct fann *ann;										\
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) return; \
 	PHP_FANN_FETCH_ANN();												\
-	__return(__fce(ann))
+	_return(_fce(ann))
 
 /* macro for getting ann param identified by 2 args */
-#define PHP_FANN_GET_PARAM2(__fce, __return, __zppval, __type1, __type2) \
+#define PHP_FANN_GET_PARAM2(_fce, _return, _zppval, _type1, _type2) \
 	zval *z_ann; struct fann *ann;										\
-	__type1 param1; __type2 param2;										\
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #__zppval, &z_ann, &param1, &param2) == FAILURE) \
+	_type1 param1; _type2 param2;										\
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #_zppval, &z_ann, &param1, &param2) == FAILURE) \
 		return;															\
 	PHP_FANN_FETCH_ANN();												\
-	__return(__fce(ann, param1, param2))
+	_return(_fce(ann, param1, param2))
 
 /* macro for getting ann param (just alias for one param macro) */
 #define PHP_FANN_GET_PARAM PHP_FANN_GET_PARAM0
 
 /* macro for setting ann param not identified by arg */
-#define PHP_FANN_SET_PARAM0(__fce)										\
+#define PHP_FANN_SET_PARAM0(_fce)										\
 	zval *z_ann; struct fann *ann;										\
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) return; \
 	PHP_FANN_FETCH_ANN();												\
-	__fce(ann);															\
+	_fce(ann);															\
 	PHP_FANN_ERROR_CHECK_ANN();											\
 	RETURN_TRUE
 
 /* macro for setting ann param identified by 1 arg */
-#define PHP_FANN_SET_PARAM1(__fce, __zppval, __type)					\
-	zval *z_ann; struct fann *ann; __type param;						\
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #__zppval, &z_ann, &param) == FAILURE) return; \
+#define PHP_FANN_SET_PARAM1(_fce, _zppval, _type)					\
+	zval *z_ann; struct fann *ann; _type param;						\
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #_zppval, &z_ann, &param) == FAILURE) return; \
 	PHP_FANN_FETCH_ANN();												\
-	__fce(ann, param);													\
+	_fce(ann, param);													\
 	PHP_FANN_ERROR_CHECK_ANN();											\
 	RETURN_TRUE
 
 
 /* macro for setting ann param identified by 2 args */
-#define PHP_FANN_SET_PARAM2(__fce, __zppval, __type1, __type2)			\
+#define PHP_FANN_SET_PARAM2(_fce, _zppval, _type1, _type2)			\
 	zval *z_ann; struct fann *ann;										\
-	__type1 param1; __type2 param2;										\
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #__zppval, &z_ann, &param1, &param2) == FAILURE) \
+	_type1 param1; _type2 param2;										\
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #_zppval, &z_ann, &param1, &param2) == FAILURE) \
 		return;															\
 	PHP_FANN_FETCH_ANN();												\
-	__fce(ann, param1, param2);											\
+	_fce(ann, param1, param2);											\
 	PHP_FANN_ERROR_CHECK_ANN();											\
 	RETURN_TRUE
 
 /* macro for setting ann param identified by 3 args */
-#define PHP_FANN_SET_PARAM3(__fce, __zppval, __type1, __type2, __type3)	\
+#define PHP_FANN_SET_PARAM3(_fce, _zppval, _type1, _type2, _type3)	\
 	zval *z_ann; struct fann *ann;										\
-	__type1 param1; __type2 param2; __type3 param3;						\
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #__zppval, &z_ann, &param1, &param2, &param3) \
+	_type1 param1; _type2 param2; _type3 param3;						\
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r" #_zppval, &z_ann, &param1, &param2, &param3) \
 		== FAILURE) return;												\
 	PHP_FANN_FETCH_ANN();												\
-	__fce(ann, param1, param2, param3);									\
+	_fce(ann, param1, param2, param3);									\
 	PHP_FANN_ERROR_CHECK_ANN();											\
 	RETURN_TRUE
 
