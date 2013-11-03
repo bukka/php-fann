@@ -931,18 +931,27 @@ zend_module_entry fann_module_entry = {
 ZEND_GET_MODULE(fann)
 #endif
 
-/* macro for chencking fann_error structs */
-#define PHP_FANN_ERROR_CHECK(_fann_struct)								\
-	if (fann_get_errno((struct fann_error *) _fann_struct) != 0) {		\
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, _fann_struct->errstr); \
+/* macro for checking fann_error structs */
+#define PHP_FANN_ERROR_CHECK_EX(_fann_struct, _error_msg)		 \
+	if (!(_fann_struct)) {										 \
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, _error_msg); \
+		RETURN_FALSE;													\
+	}																	\
+	if (fann_get_errno((struct fann_error *) (_fann_struct)) != 0) {	\
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, (_fann_struct)->errstr); \
 		RETURN_FALSE;													\
 	}
 
-/* macro for checking ann errors */
-#define PHP_FANN_ERROR_CHECK_ANN() PHP_FANN_ERROR_CHECK(ann)
+/* macro for checking fann_error structs with default message */
+#define PHP_FANN_ERROR_CHECK(_fann_struct) PHP_FANN_ERROR_CHECK_EX(_fann_struct, "Internal FANN error")
 
 /* macro for checking ann errors */
-#define PHP_FANN_ERROR_CHECK_TRAIN_DATA() PHP_FANN_ERROR_CHECK(train_data)
+#define PHP_FANN_ERROR_CHECK_ANN_EX(_error_msg) PHP_FANN_ERROR_CHECK_EX(ann, _error_msg)
+#define PHP_FANN_ERROR_CHECK_ANN() PHP_FANN_ERROR_CHECK_ANN_EX("Neural network not created")
+
+/* macro for checking ann errors */
+#define PHP_FANN_ERROR_CHECK_TRAIN_DATA_EX(_error_msg) PHP_FANN_ERROR_CHECK_EX(train_data, _error_msg)
+#define PHP_FANN_ERROR_CHECK_TRAIN_DATA() PHP_FANN_ERROR_CHECK_TRAIN_DATA_EX("Train data not created")
 
 /* macro for returning ann resource */
 #define PHP_FANN_RETURN_ANN()								\
@@ -3396,6 +3405,10 @@ PHP_FUNCTION(fann_create_from_file)
 		RETURN_FALSE;
 	}
 	ann = fann_create_from_file(cf_name);
+	if (!ann) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Invalid configuration file '%s'", cf_name);
+		RETURN_FALSE;
+	}
 	PHP_FANN_ERROR_CHECK_ANN();
 	php_fann_init_ann(ann);
 	PHP_FANN_RETURN_ANN();
