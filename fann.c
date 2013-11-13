@@ -1958,7 +1958,7 @@ PHP_FUNCTION(fann_train)
 		RETURN_FALSE;
 	}
 		
-	fann_test(ann, input, desired_output);
+	fann_train(ann, input, desired_output);
 	efree(input);
 	efree(desired_output);
 	PHP_FANN_ERROR_CHECK_ANN();
