@@ -2,7 +2,7 @@
   +----------------------------------------------------------------------+
   | PHP Version 5                                                        |
   +----------------------------------------------------------------------+
-  | Copyright (c) 1997-2012 The PHP Group                                |
+  | Copyright (c) 1997-2014 Jakub Zelenka                                |
   +----------------------------------------------------------------------+
   | This source file is subject to version 3.01 of the PHP license,      |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -12,7 +12,7 @@
   | obtain it through the world-wide-web, please send a note to          |
   | license@php.net so we can mail you a copy immediately.               |
   +----------------------------------------------------------------------+
-  | Author: Jakub Zelenka <jakub.php@gmail.com>                          |
+  | Author: Jakub Zelenka <bukka@php.net>                                |
   +----------------------------------------------------------------------+
 */
 
@@ -43,7 +43,7 @@ extern zend_module_entry fann_module_entry;
 #endif
 
 /* fann version */
-#define PHP_FANN_VERSION "1.0.5"
+#define PHP_FANN_VERSION "1.0.6"
 #ifdef HAVE_FANN_2_2
 #define PHP_FANN_LIBFANN_VERSION_ID 0x020200
 #define PHP_FANN_LIBFANN_VERSION "2.2"
