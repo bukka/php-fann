@@ -934,11 +934,11 @@ ZEND_GET_MODULE(fann)
 /* macro for checking fann_error structs */
 #define PHP_FANN_ERROR_CHECK_EX(_fann_struct, _error_msg)		 \
 	if (!(_fann_struct)) {										 \
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, _error_msg); \
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s", _error_msg); \
 		RETURN_FALSE;													\
 	}																	\
 	if (fann_get_errno((struct fann_error *) (_fann_struct)) != 0) {	\
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, (_fann_struct)->errstr); \
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s", (_fann_struct)->errstr); \
 		RETURN_FALSE;													\
 	}
 
