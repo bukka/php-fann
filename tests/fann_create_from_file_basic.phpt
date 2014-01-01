@@ -31,3 +31,6 @@ if ( file_exists( $filename ) )
 --EXPECTF--
 bool(true)
 resource(%d) of type (FANN)
+
+Warning: fann_create_from_file(): Invalid configuration file '%s%efann_create_from_file_invalid.tmp' in %s%efann_create_from_file_basic.php on line %d
+bool(false)
