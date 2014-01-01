@@ -16,10 +16,10 @@
   <email>bukka@php.net</email>
   <active>yes</active>
  </lead>
- <date>2013-12-31</date>
+ <date>2014-01-01</date>
  <version>
-  <release>1.0.6</release>
-  <api>1.0.6</api>
+  <release>1.0.7</release>
+  <api>1.0.7</api>
  </version>
  <stability>
   <release>stable</release>
@@ -27,8 +27,7 @@
  </stability>
  <license uri="http://www.php.net/license">PHP 3.01</license>
  <notes><![CDATA[
- * Fixed not working fann_train
- * Added extra check for NULL when ANN creation fails 
+ * Fixed build with -Werror=format-security
  ]]></notes>
  <contents>
   <dir name="/">
@@ -206,6 +205,22 @@
  <providesextension>fann</providesextension>
  <extsrcrelease/>
  <changelog>
+  <release>
+    <date>2013-12-31</date>
+	<version>
+	 <release>1.0.6</release>
+	 <api>1.0.6</api>
+	</version>
+	<stability>
+	 <release>stable</release>
+	 <api>stable</api>
+	</stability>
+	<license uri="http://www.php.net/license">PHP 3.01</license>
+	<notes><![CDATA[
+	* Fixed not working fann_train
+	* Added extra check for NULL when ANN creation fails 
+	]]></notes>
+  </release>
   <release>
    <date>2013-10-16</date>
    <version>

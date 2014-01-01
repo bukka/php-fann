@@ -43,7 +43,7 @@ extern zend_module_entry fann_module_entry;
 #endif
 
 /* fann version */
-#define PHP_FANN_VERSION "1.0.6"
+#define PHP_FANN_VERSION "1.0.7"
 #ifdef HAVE_FANN_2_2
 #define PHP_FANN_LIBFANN_VERSION_ID 0x020200
 #define PHP_FANN_LIBFANN_VERSION "2.2"
