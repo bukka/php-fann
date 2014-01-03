@@ -24,7 +24,7 @@ Fann installation can be skipped if an RPM for Fedora is used (`libfann` is in t
 
 The RPM package for PHP FANN is available in Remi's repository: http://rpms.famillecollet.com/
 
-It is available only for Fedora. RHEL and clones (CentOS, SC and others) are not available as `libfann` is not available in EPEL.
+It is available for Fedora, RHEL and clones (CentOS, SC and others).
 
 After downloading remi-release RPM, the package can be installed by executing following command:
 ```
@@ -63,7 +63,7 @@ to the php.ini
 
 ### Windows
 
-Precompiled binary `dll` libraries for php-fann and libfann are available on [the official Windows download site for PECL packages](http://windows.php.net/downloads/pecl/releases/fann/). The compiled version of libfann is 2.2.
+Precompiled binary `dll` libraries for php-fann and libfann are available on [the PECL fann page](http://pecl.php.net/package/fann). The compiled version of libfann is 2.2.
 
 ## Examples
 
