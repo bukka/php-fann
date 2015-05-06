@@ -206,30 +206,30 @@
  <extsrcrelease/>
  <changelog>
   <release>
-    <date>2013-12-31</date>
-	<version>
-	 <release>1.0.6</release>
-	 <api>1.0.6</api>
-	</version>
-	<stability>
-	 <release>stable</release>
-	 <api>stable</api>
-	</stability>
-	<license uri="http://www.php.net/license">PHP 3.01</license>
-	<notes><![CDATA[
-	* Fixed not working fann_train
-	* Added extra check for NULL when ANN creation fails 
-	]]></notes>
+   <date>2013-12-31</date>
+   <version>
+    <release>1.0.6</release>
+    <api>1.0.6</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP 3.01</license>
+   <notes><![CDATA[
+   * Fixed not working fann_train
+   * Added extra check for NULL when ANN creation fails
+   ]]></notes>
   </release>
   <release>
    <date>2013-10-16</date>
    <version>
-	<release>1.0.5</release>
-	<api>1.0.5</api>
+    <release>1.0.5</release>
+    <api>1.0.5</api>
    </version>
    <stability>
-	<release>stable</release>
-	<api>stable</api>
+    <release>stable</release>
+    <api>stable</api>
    </stability>
    <license uri="http://www.php.net/license">PHP 3.01</license>
    <notes><![CDATA[
@@ -239,12 +239,12 @@
   <release>
    <date>2013-10-12</date>
    <version>
-	<release>1.0.4</release>
-	<api>1.0.4</api>
+    <release>1.0.4</release>
+    <api>1.0.4</api>
    </version>
    <stability>
-	<release>stable</release>
-	<api>stable</api>
+    <release>stable</release>
+    <api>stable</api>
    </stability>
    <license uri="http://www.php.net/license">PHP 3.01</license>
    <notes><![CDATA[
@@ -254,12 +254,12 @@
   <release>
    <date>2013-10-06</date>
    <version>
-	<release>1.0.3</release>
-	<api>1.0.3</api>
+    <release>1.0.3</release>
+    <api>1.0.3</api>
    </version>
    <stability>
-	<release>stable</release>
-	<api>stable</api>
+    <release>stable</release>
+    <api>stable</api>
    </stability>
    <license uri="http://www.php.net/license">PHP 3.01</license>
    <notes><![CDATA[
@@ -270,12 +270,12 @@
   <release>
    <date>2013-09-18</date>
    <version>
-	<release>1.0.2</release>
-	<api>1.0.2</api>
+    <release>1.0.2</release>
+    <api>1.0.2</api>
    </version>
    <stability>
-	<release>stable</release>
-	<api>stable</api>
+    <release>stable</release>
+    <api>stable</api>
    </stability>
    <license uri="http://www.php.net/license">PHP 3.01</license>
    <notes><![CDATA[
