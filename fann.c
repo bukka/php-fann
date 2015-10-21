@@ -2,7 +2,7 @@
   +----------------------------------------------------------------------+
   | PHP Version 5                                                        |
   +----------------------------------------------------------------------+
-  | Copyright (c) 1997-2014 Jakub Zelenka                                |
+  | Copyright (c) 1997-2015 Jakub Zelenka                                |
   +----------------------------------------------------------------------+
   | This source file is subject to version 3.01 of the PHP license,      |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -27,6 +27,7 @@
 #include "ext/standard/info.h"
 #include "ext/standard/php_filestat.h"
 #include "ext/standard/php_string.h"
+#include "phpc/phpc.h"
 #include "php_fann.h"
 
 /* used fann type - default float */
@@ -904,7 +905,7 @@ zend_function_entry fann_functions[] = {
 	PHP_FE(fann_reset_errstr,                             arginfo_fann_reset_errstr)
 	PHP_FE(fann_get_errstr,                               arginfo_fann_get_errstr)
 	PHP_FE(fann_print_error,                              arginfo_fann_print_error)
-	PHP_FANN_FE_END
+	PHPC_FE_END
 };
 /* }}} */
 
