@@ -115,7 +115,7 @@ static zend_function_entry fannconnection_funcs[] = {
 	PHP_ME(FANNConnection,  getToNeuron,      NULL,                                ZEND_ACC_PUBLIC)
 	PHP_ME(FANNConnection,  getWeight,        NULL,                                ZEND_ACC_PUBLIC)
 	PHP_ME(FANNConnection,  setWeight,        arginfo_fannconnection_set_weight,   ZEND_ACC_PUBLIC)
-	PHP_FANN_FE_END
+	PHPC_FE_END
 };
 
 
