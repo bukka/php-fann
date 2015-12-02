@@ -911,9 +911,7 @@ zend_function_entry fann_functions[] = {
 
 /* {{{ fann_module_entry */
 zend_module_entry fann_module_entry = {
-#if ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
-#endif
 	"fann",
 	fann_functions,
 	PHP_MINIT(fann),
@@ -921,9 +919,7 @@ zend_module_entry fann_module_entry = {
 	NULL,
 	NULL,
 	PHP_MINFO(fann),
-#if ZEND_MODULE_API_NO >= 20010901
 	PHP_FANN_VERSION,
-#endif
 	STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
@@ -933,14 +929,14 @@ ZEND_GET_MODULE(fann)
 #endif
 
 /* macro for checking fann_error structs */
-#define PHP_FANN_ERROR_CHECK_EX(_fann_struct, _error_msg)		 \
-	if (!(_fann_struct)) {										 \
+#define PHP_FANN_ERROR_CHECK_EX(_fann_struct, _error_msg) \
+	if (!(_fann_struct)) { \
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s", _error_msg); \
-		RETURN_FALSE;													\
-	}																	\
-	if (fann_get_errno((struct fann_error *) (_fann_struct)) != 0) {	\
+		RETURN_FALSE; \
+	} \
+	if (fann_get_errno((struct fann_error *) (_fann_struct)) != 0) { \
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s", (_fann_struct)->errstr); \
-		RETURN_FALSE;													\
+		RETURN_FALSE; \
 	}
 
 /* macro for checking fann_error structs with default message */
@@ -955,29 +951,30 @@ ZEND_GET_MODULE(fann)
 #define PHP_FANN_ERROR_CHECK_TRAIN_DATA() PHP_FANN_ERROR_CHECK_TRAIN_DATA_EX("Train data not created")
 
 /* macro for returning ann resource */
-#define PHP_FANN_RETURN_ANN()								\
-	if (!ann) { RETURN_FALSE; }								\
-	ZEND_REGISTER_RESOURCE(return_value, ann, le_fannbuf)
+#define PHP_FANN_RETURN_ANN() \
+	if (!ann) { RETURN_FALSE; } \
+	PHPC_RES_RETVAL(PHPC_RES_REGISTER(ann, le_fannbuf TSRMLS_CC))
 
 /* macro for returning train data resource */
-#define PHP_FANN_RETURN_TRAIN_DATA()									\
-	if (!train_data) { RETURN_FALSE; }									\
-	ZEND_REGISTER_RESOURCE(return_value, train_data, le_fanntrainbuf)
+#define PHP_FANN_RETURN_TRAIN_DATA() \
+	if (!train_data) { RETURN_FALSE; } \
+	PHPC_RES_RETVAL(PHPC_RES_REGISTER(train_data, le_fanntrainbuf TSRMLS_CC))
 
 /* macro for fetching ann resource */
-#define PHP_FANN_FETCH_ANN()											\
-	ZEND_FETCH_RESOURCE(ann, struct fann *, &z_ann, -1, le_fannbuf_name, le_fannbuf)
+#define PHP_FANN_FETCH_ANN() \
+	ann = (struct fann *) PHPC_RES_FETCH(z_ann, le_fannbuf_name, le_fannbuf)
 
 /* macro for fetching train data resource */
-#define PHP_FANN_FETCH_TRAIN_DATA_EX(_train_data)											\
-	ZEND_FETCH_RESOURCE(_train_data, struct fann_train_data *, &z_##_train_data, -1, le_fanntrainbuf_name, le_fanntrainbuf)
+#define PHP_FANN_FETCH_TRAIN_DATA_EX(_train_data) \
+	_train_data = (struct fann_train_data *) \
+		PHPC_RES_FETCH(z_##_train_data, le_fanntrainbuf_name, le_fanntrainbuf)
 
 /* macro for fetching train data resource using train_data variable */
 #define PHP_FANN_FETCH_TRAIN_DATA() PHP_FANN_FETCH_TRAIN_DATA_EX(train_data)
 
 /* fetch error data */
 #define PHP_FANN_FETCH_ERRDAT() \
-	ZEND_FETCH_RESOURCE2(errdat, struct fann_error *, &z_errdat, -1, NULL, le_fannbuf, le_fanntrainbuf)
+	errdat = (struct fann_error *) PHPC_RES_FETCH2(z_errdat, NULL, le_fannbuf, le_fanntrainbuf)
 
 /* macro for getting ann param identified by 0 args */
 #define PHP_FANN_GET_PARAM0(_fce, _return)							\
