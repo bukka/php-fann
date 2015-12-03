@@ -1046,7 +1046,7 @@ ZEND_GET_MODULE(fann)
 
 /* {{{ fann_destructor_fannbuf()
    fann resource destructor */
-static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
+static void fann_destructor_fannbuf(phpc_res_entry_t *rsrc TSRMLS_DC)
 {
 	php_fann_user_data *user_data;
 	struct fann *ann = (struct fann *) rsrc->ptr;
@@ -1065,7 +1065,7 @@ static void fann_destructor_fannbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 
 /* {{{ fann_destructor_fanntrainbuf()
    fann_train resource destructor */
-static void fann_destructor_fanntrainbuf(zend_rsrc_list_entry *rsrc TSRMLS_DC)
+static void fann_destructor_fanntrainbuf(phpc_res_entry_t *rsrc TSRMLS_DC)
 {
 	struct fann_train_data *train_data = (struct fann_train_data *) rsrc->ptr;
 	if (train_data->error_log) {
