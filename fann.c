@@ -953,12 +953,12 @@ ZEND_GET_MODULE(fann)
 /* macro for returning ann resource */
 #define PHP_FANN_RETURN_ANN() \
 	if (!ann) { RETURN_FALSE; } \
-	PHPC_RES_RETVAL(PHPC_RES_REGISTER(ann, le_fannbuf TSRMLS_CC))
+	PHPC_RES_RETVAL(PHPC_RES_REGISTER(ann, le_fannbuf))
 
 /* macro for returning train data resource */
 #define PHP_FANN_RETURN_TRAIN_DATA() \
 	if (!train_data) { RETURN_FALSE; } \
-	PHPC_RES_RETVAL(PHPC_RES_REGISTER(train_data, le_fanntrainbuf TSRMLS_CC))
+	PHPC_RES_RETVAL(PHPC_RES_REGISTER(train_data, le_fanntrainbuf))
 
 /* macro for fetching ann resource */
 #define PHP_FANN_FETCH_ANN() \
