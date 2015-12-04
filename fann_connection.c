@@ -125,7 +125,7 @@ void php_fannconnection_register_class(TSRMLS_D)
 {
 	zend_class_entry ce;
 	INIT_CLASS_ENTRY(ce, "FANNConnection", fannconnection_funcs);
-	php_fann_FANNConnection_class = zend_register_internal_class(&ce TSRMLS_CC);
+	php_fann_FANNConnection_class = PHPC_CLASS_REGISTER(ce);
     PHP_FANN_CONN_PROP_DECLARE(long, "from_neuron");
     PHP_FANN_CONN_PROP_DECLARE(long, "to_neuron");
     PHP_FANN_CONN_PROP_DECLARE(double, "weight");
