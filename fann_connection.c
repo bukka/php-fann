@@ -50,13 +50,14 @@ PHP_METHOD(FANNConnection, __construct)
 static void php_fannconnection_get_property(char *name, INTERNAL_FUNCTION_PARAMETERS)
 {
 	zval *res;
+	PHPC_READ_PROPERTY_RV_DECLARE;
+
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "") == FAILURE) {
 		return;
 	}
-	res = zend_read_property(php_fann_FANNConnection_class, getThis(), name, strlen(name), 1 TSRMLS_CC);
-	*return_value = *res;
-	zval_copy_ctor(return_value);
-	INIT_PZVAL(return_value);
+
+	res = PHPC_READ_PROPERTY(php_fann_FANNConnection_class, getThis(), name, strlen(name), 1);
+	RETVAL_ZVAL(res, 1, 0);
 }
 /* }}} */
 
