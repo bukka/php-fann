@@ -1204,11 +1204,7 @@ static char *php_fann_get_path_for_open(char *path, int path_len, int read TSRML
 		  path, read ? "reading" : "writing");
 		path_for_open = NULL;
 	} else {
-#if (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 6) || (PHP_MAJOR_VERSION > 5)
-		php_stream_locate_url_wrapper(path, (const char **) &path_for_open, 0 TSRMLS_CC);
-#else
-		php_stream_locate_url_wrapper(path, &path_for_open, 0 TSRMLS_CC);
-#endif
+		PHPC_STREAM_LOCATE_URL_WRAPPER(path, &path_for_open, 0);
 	}
 	return path_for_open;
 }
