@@ -1214,13 +1214,11 @@ static char *php_fann_get_path_for_open(char *path, int path_len, int read TSRML
 static void php_fann_array_to_zval(const fann_type *from, zval *to, int len)
 {
 	int i;
-#if PHP_API_VERSION < 20090626
-	array_init(to);
-#else
-	array_init_size(to, len);
-#endif
+
+	PHPC_ARRAY_INIT_SIZE(to, len);
+
 	for (i = 0; i < len; i++) {
-		add_index_double(to, i, (double) from[i]);
+		PHPC_ARRAY_ADD_INDEX_DOUBLE(to, i, (double) from[i]);
 	}
 }
 /* }}} */
