@@ -1273,40 +1273,33 @@ static int php_fann_check_num_outputs(struct fann *ann, int num_outputs TSRMLS_D
 }
 /* }}} */
 
-/* {{{ php_fann_io_foreach()
-   callback for converting input hash map to fann_type array */
-#if PHP_API_VERSION < 20090626
-static int php_fann_process_array_foreach(zval **element, int num_args, va_list args, zend_hash_key *hash_key)
-#else
-static int php_fann_process_array_foreach(zval **element TSRMLS_DC, int num_args, va_list args, zend_hash_key *hash_key)
-#endif
+/* php_fann_convert_array() {{{ */
+static int php_fann_convert_array(HashTable *source, fann_type *dest)
 {
-	fann_type *input = va_arg(args, fann_type *);
-	int *pos = va_arg(args, int *);
+	phpc_val *element;
+	int pos = 0;
 
-	convert_to_double_ex(element);
-	input[(*pos)++] = (fann_type) Z_DVAL_PP(element);
+	PHPC_HASH_FOREACH_VAL(source, element) {
+		convert_to_double_ex(element);
+		dest[pos++] = (fann_type) PHPC_DVAL_P(element);
+	} PHPC_HASH_FOREACH_END();
 
-	return ZEND_HASH_APPLY_KEEP;
+	return pos;
 }
 /* }}} */
 
-/* php_fann_convert_array() {{{ */
+/* php_fann_process_array() {{{ */
 static int php_fann_process_array(struct fann *ann, zval *z_array, fann_type **array, int is_input TSRMLS_DC)
 {
-	int i = 0, n;
-	n = zend_hash_num_elements(Z_ARRVAL_P(z_array));
+	int n = PHPC_HASH_NUM_ELEMENTS(Z_ARRVAL_P(z_array));
+
 	if ((is_input && php_fann_check_num_inputs(ann, n TSRMLS_CC) == FAILURE) ||
-		(!is_input && php_fann_check_num_outputs(ann, n TSRMLS_CC))) {
+			(!is_input && php_fann_check_num_outputs(ann, n TSRMLS_CC))) {
 		return 0;
 	}
 	*array = (fann_type *) emalloc(sizeof(fann_type) * n);
-#if PHP_API_VERSION < 20090626
-	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_array), (apply_func_args_t) php_fann_process_array_foreach, 2, *array, &i);
-#else
-	zend_hash_apply_with_arguments(Z_ARRVAL_P(z_array) TSRMLS_CC, (apply_func_args_t) php_fann_process_array_foreach, 2, *array, &i);
-#endif
-	return n;
+
+	return php_fann_convert_array(Z_ARRVAL_P(z_array), *array);
 }
 /* }}} */
 
@@ -2147,6 +2140,25 @@ PHP_FUNCTION(fann_create_train)
 	train_data = fann_create_train(num_data, num_input, num_output);
 	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
 	PHP_FANN_RETURN_TRAIN_DATA();
+}
+/* }}} */
+
+
+/* {{{ php_fann_io_foreach()
+   callback for converting input hash map to fann_type array */
+#if PHP_API_VERSION < 20090626
+static int php_fann_process_array_foreach(zval **element, int num_args, va_list args, zend_hash_key *hash_key)
+#else
+static int php_fann_process_array_foreach(zval **element TSRMLS_DC, int num_args, va_list args, zend_hash_key *hash_key)
+#endif
+{
+	fann_type *input = va_arg(args, fann_type *);
+	int *pos = va_arg(args, int *);
+
+	convert_to_double_ex(element);
+	input[(*pos)++] = (fann_type) Z_DVAL_PP(element);
+
+	return ZEND_HASH_APPLY_KEEP;
 }
 /* }}} */
 
