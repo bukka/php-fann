@@ -1307,48 +1307,39 @@ static int php_fann_process_array(struct fann *ann, zval *z_array, fann_type **a
 static int php_fann_create(int num_args, float *connection_rate,
 						   unsigned *num_layers, unsigned **layers TSRMLS_DC)
 {
-	zval ***args;
-	int argc, i, pos;
+	int i, pos;
+	PHPC_ZPP_ARGS_DECLARE();
 
-#if PHP_API_VERSION < 20090626
-	argc = num_args;
-	args = (zval ***) safe_emalloc(argc, sizeof (zval **), 0);
-	if (num_args == 0 || zend_get_parameters_array_ex(argc, args) == FAILURE) {
-		efree (args);
-		zend_wrong_param_count(TSRMLS_C);
-		return FAILURE;
-	}
-#else
-	if (zend_parse_parameters(num_args TSRMLS_CC, "+", &args, &argc) == FAILURE) {
-		return FAILURE;
-	}
-#endif
+	PHPC_ZPP_ARGS_LOAD_EX(+, num_args, return FAILURE);
 
 	pos = 0;
 	if (connection_rate) {
-		convert_to_double_ex(args[pos]);
-		*connection_rate = Z_DVAL_PP(args[pos++]);
+		convert_to_double_ex(PHPC_ZPP_ARGS_GET_PVAL(pos));
+		*connection_rate = PHPC_DVAL_P(PHPC_ZPP_ARGS_GET_PVAL(pos++));
 	}
 
-	convert_to_long_ex(args[pos]);
-	*num_layers = Z_LVAL_PP(args[pos++]);
+	convert_to_long_ex(PHPC_ZPP_ARGS_GET_PVAL(pos));
+	*num_layers = PHPC_LVAL_P(PHPC_ZPP_ARGS_GET_PVAL(pos++));
 
-	if (php_fann_check_num_layers(*num_layers, argc - pos TSRMLS_CC) == FAILURE) {
-		efree(args);
+	if (php_fann_check_num_layers(*num_layers, PHPC_ZPP_ARGS_COUNT - pos TSRMLS_CC) == FAILURE) {
+		PHPC_ZPP_ARGS_FREE();
 		return FAILURE;
 	}
 
 	*layers = (unsigned *) emalloc(*num_layers * sizeof(unsigned));
-	for (i = pos; i < argc; i++) {
-		convert_to_long_ex(args[i]);
-		if (php_fann_check_num_neurons(Z_LVAL_PP(args[i]) TSRMLS_CC) == FAILURE) {
-			efree(args);
+	i = 0;
+	PHPC_ZPP_ARGS_LOOP_START_EX(pos) {
+		convert_to_long_ex(PHPC_ZPP_ARGS_GET_CURRENT_PVAL());
+		if (php_fann_check_num_neurons(
+				PHPC_LVAL_P(PHPC_ZPP_ARGS_GET_CURRENT_PVAL()) TSRMLS_CC) == FAILURE) {
+			PHPC_ZPP_ARGS_FREE();
 			efree(*layers);
 			return FAILURE;
 		}
-		(*layers)[i - pos] = Z_LVAL_PP(args[i]);
-	}
-	efree(args);
+		(*layers)[i++] = PHPC_LVAL_P(PHPC_ZPP_ARGS_GET_CURRENT_PVAL());
+	} PHPC_ZPP_ARGS_LOOP_END();
+
+	PHPC_ZPP_ARGS_FREE();
 
 	return SUCCESS;
 }
