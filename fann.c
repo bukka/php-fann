@@ -1349,8 +1349,8 @@ static int php_fann_create(int num_args, float *connection_rate,
 static int php_fann_create_array(int num_args, float *conn_rate,
 								 unsigned *num_layers, unsigned **layers TSRMLS_DC)
 {
-	zval *array, **ppdata;
-	HashPosition pos;
+	zval *array;
+	phpc_val *pdata;
 	int i = 0;
 	unsigned long tmpnum;
 	double tmprate;
@@ -1370,21 +1370,19 @@ static int php_fann_create_array(int num_args, float *conn_rate,
 	}
 
 	if (php_fann_check_num_layers(
-			*num_layers, zend_hash_num_elements(Z_ARRVAL_P(array)) TSRMLS_CC) == FAILURE) {
+			*num_layers, PHPC_HASH_NUM_ELEMENTS(Z_ARRVAL_P(array)) TSRMLS_CC) == FAILURE) {
 		return FAILURE;
 	}
 
 	*layers = (unsigned *) emalloc(*num_layers * sizeof(unsigned));
-	for (zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(array), &pos);
-		 zend_hash_get_current_data_ex(Z_ARRVAL_P(array), (void **) &ppdata, &pos) == SUCCESS;
-		 zend_hash_move_forward_ex(Z_ARRVAL_P(array), &pos)) {
-		convert_to_long_ex(ppdata);
-		if (php_fann_check_num_neurons(Z_LVAL_PP(ppdata) TSRMLS_CC) == FAILURE) {
+	PHPC_HASH_FOREACH_VAL(Z_ARRVAL_P(array), pdata) {
+		convert_to_long_ex(pdata);
+		if (php_fann_check_num_neurons(PHPC_LVAL_P(pdata) TSRMLS_CC) == FAILURE) {
 			efree(*layers);
 			return FAILURE;
 		}
-		(*layers)[i++] = Z_LVAL_PP(ppdata);
-	}
+		(*layers)[i++] = PHPC_LVAL_P(pdata);
+	} PHPC_HASH_FOREACH_END();
 
 	return SUCCESS;
 }
