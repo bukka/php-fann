@@ -1394,77 +1394,80 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 							 unsigned int epochs_between_reports,
 							 float desired_error, unsigned int epochs)
 {
+	PHPC_FCALL_PARAMS_DECLARE(callback, 6);
+	zend_fcall_info fci;
+	zend_fcall_info_cache fci_cache;
+	zval *retval;
+	long rc;
+	char *is_callable_error = NULL;
 	php_fann_user_data *user_data = fann_get_user_data(ann);
-	if (user_data != (php_fann_user_data *) NULL) {
-		zend_fcall_info fci;
-		zend_fcall_info_cache fci_cache;
-		zval *retval, *z_max_epochs, *z_epochs_between_reports, *z_desired_error, *z_epochs, *z_train_data;
-		zval **params[6];
-		long rc;
-#if PHP_API_VERSION < 20090626
-		TSRMLS_FETCH();
-		if (zend_fcall_info_init(user_data->callback, &fci, &fci_cache TSRMLS_CC) != SUCCESS) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "User callback is not a valid callback");
-			return -1;
-		}
-#else
-		char *is_callable_error = NULL;
-		TSRMLS_FETCH();
-		if (zend_fcall_info_init(user_data->callback, 0, &fci, &fci_cache, NULL, &is_callable_error TSRMLS_CC)
-			!= SUCCESS || is_callable_error) {
-			if (is_callable_error) {
-				php_error_docref(NULL TSRMLS_CC, E_WARNING, "User callback is not a valid callback, %s",
-								 is_callable_error);
-				efree(is_callable_error);
-			}
-			else {
-				php_error_docref(NULL TSRMLS_CC, E_WARNING, "User callback is not a valid callback");
-			}
-			return -1;
-		}
-#endif
-		MAKE_STD_ZVAL(z_max_epochs);
-		MAKE_STD_ZVAL(z_epochs_between_reports);
-		MAKE_STD_ZVAL(z_desired_error);
-		MAKE_STD_ZVAL(z_epochs);
-		ZVAL_LONG(z_max_epochs, (long) max_epochs);
-		ZVAL_LONG(z_epochs_between_reports, (long) epochs_between_reports);
-		ZVAL_DOUBLE(z_desired_error, (double) desired_error);
-		ZVAL_LONG(z_epochs, (long) epochs);
-		fci.retval_ptr_ptr = &retval;
-		fci.no_separation = 0;
-		fci.param_count = 6;
-		fci.params = params;
-		params[0] = &user_data->z_ann;
-		if (user_data->z_train_data) {
-			params[1] = &user_data->z_train_data;
-		} else {
-			MAKE_STD_ZVAL(z_train_data);
-			ZVAL_NULL(z_train_data);
-			params[1] = &z_train_data;
-		}
-		params[2] = &z_max_epochs;
-		params[3] = &z_epochs_between_reports;
-		params[4] = &z_desired_error;
-		params[5] = &z_epochs;
-		if (zend_call_function(&fci, &fci_cache TSRMLS_CC) != SUCCESS || !retval) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "An error occurred while invoking the user callback");
-			zval_ptr_dtor(&retval);
-			return -1;
-		}
-		convert_to_boolean(retval);
-		rc = Z_BVAL_P(retval);
-		zval_ptr_dtor(&retval);
-		if (!user_data->z_train_data)
-			FREE_ZVAL(z_train_data);
-		FREE_ZVAL(z_max_epochs);
-		FREE_ZVAL(z_epochs_between_reports);
-		FREE_ZVAL(z_desired_error);
-		FREE_ZVAL(z_epochs);
-		if (!rc) {
-			return -1;
-		}
+
+	if (user_data == (php_fann_user_data *) NULL) {
+		return 0;
 	}
+
+	TSRMLS_FETCH();
+	if (PHPC_FCALL_INFO_INIT(user_data->callback, 0, &fci, &fci_cache,
+				NULL, &is_callable_error) == FAILURE) {
+		if (is_callable_error) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING,
+					"User callback is not a valid callback, %s", is_callable_error);
+			efree(is_callable_error);
+		}
+		else {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "User callback is not a valid callback");
+		}
+		return -1;
+	}
+
+	PHPC_FCALL_PARAMS_INIT(callback);
+	/* ann */
+	PHPC_FCALL_PARAM_PZVAL(callback, 0) = user_data->z_ann;
+	/* train data */
+	if (user_data->z_train_data) {
+		PHPC_FCALL_PARAM_PZVAL(callback, 1) = user_data->z_train_data;
+	} else {
+		PHPC_VAL_MAKE(PHPC_FCALL_PARAM_VAL(callback, 1));
+		ZVAL_NULL(PHPC_FCALL_PARAM_PZVAL(callback, 1));
+	}
+	/* max epochs */
+	PHPC_VAL_MAKE(PHPC_FCALL_PARAM_VAL(callback, 2));
+	ZVAL_LONG(PHPC_FCALL_PARAM_PZVAL(callback, 2), (long) max_epochs);
+	/* epochs between reports */
+	PHPC_VAL_MAKE(PHPC_FCALL_PARAM_VAL(callback, 3));
+	ZVAL_LONG(PHPC_FCALL_PARAM_PZVAL(callback, 3), (long) epochs_between_reports);
+	/* desired error */
+	PHPC_VAL_MAKE(PHPC_FCALL_PARAM_VAL(callback, 4));
+	ZVAL_DOUBLE(PHPC_FCALL_PARAM_PZVAL(callback, 4), (double) desired_error);
+	/* epochs */
+	PHPC_VAL_MAKE(PHPC_FCALL_PARAM_VAL(callback, 5));
+	ZVAL_LONG(PHPC_FCALL_PARAM_PZVAL(callback, 5), (long) epochs);
+
+	/* set fci */
+	PHPC_FCALL_RETVAL(fci, retval);
+	fci.params = PHPC_FCALL_PARAMS_NAME(callback);
+	fci.param_count = 6;
+	fci.no_separation = 0;
+
+	if (zend_call_function(&fci, &fci_cache TSRMLS_CC) != SUCCESS ||  PHPC_VAL_ISUNDEF(retval)) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "An error occurred while invoking the user callback");
+		zval_ptr_dtor(&retval);
+		return -1;
+	}
+	convert_to_boolean(retval);
+	rc = Z_BVAL_P(retval);
+	zval_ptr_dtor(&retval);
+	zval_ptr_dtor(&PHPC_FCALL_PARAM_VAL(callback, 0));
+	if (!user_data->z_train_data)
+		zval_ptr_dtor(&PHPC_FCALL_PARAM_VAL(callback, 1));
+	zval_ptr_dtor(&PHPC_FCALL_PARAM_VAL(callback, 2));
+	zval_ptr_dtor(&PHPC_FCALL_PARAM_VAL(callback, 3));
+	zval_ptr_dtor(&PHPC_FCALL_PARAM_VAL(callback, 4));
+	zval_ptr_dtor(&PHPC_FCALL_PARAM_VAL(callback, 5));
+	if (!rc) {
+		return -1;
+	}
+
 	return 0;
 }
 /* }}} */
