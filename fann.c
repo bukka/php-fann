@@ -1643,7 +1643,7 @@ PHP_FUNCTION(fann_copy)
 	if (!ann_copy) {
 		RETURN_FALSE;
 	}
-	ZEND_REGISTER_RESOURCE(return_value, ann_copy, le_fannbuf)
+	PHPC_RES_RETVAL(PHPC_RES_REGISTER(ann_copy, le_fannbuf));
 }
 /* }}} */
 #endif
