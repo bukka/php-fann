@@ -1787,9 +1787,9 @@ PHP_FUNCTION(fann_get_layer_array)
 	layers = (unsigned *) emalloc(num_layers * sizeof(unsigned));
 	fann_get_layer_array(ann, layers);
 	PHP_FANN_ERROR_CHECK_ANN();
-	array_init(return_value);
+	PHPC_ARRAY_INIT_SIZE(return_value, num_layers);
 	for (i = 0; i < num_layers; i++) {
-		add_index_long(return_value, i, layers[i]);
+		PHPC_ARRAY_ADD_INDEX_LONG(return_value, i, layers[i]);
 	}
 	efree(layers);
 }
@@ -1812,9 +1812,9 @@ PHP_FUNCTION(fann_get_bias_array)
 	layers = (unsigned *) emalloc(num_layers * sizeof(unsigned));
 	fann_get_bias_array(ann, layers);
 	PHP_FANN_ERROR_CHECK_ANN();
-	array_init(return_value);
+	PHPC_ARRAY_INIT_SIZE(return_value, num_layers);
 	for (i = 0; i < num_layers; i++) {
-		add_index_long(return_value, i, layers[i]);
+		PHPC_ARRAY_ADD_INDEX_LONG(return_value, i, layers[i]);
 	}
 	efree(layers);
 }
