@@ -1824,6 +1824,7 @@ PHP_FUNCTION(fann_get_bias_array)
 PHP_FUNCTION(fann_get_connection_array)
 {
 	zval *z_ann, *z_connection;
+	phpc_val pv_connection;
 	struct fann *ann;
 	struct fann_connection *connections;
 	unsigned num_connections, i;
@@ -1840,17 +1841,18 @@ PHP_FUNCTION(fann_get_connection_array)
 	connections = (struct fann_connection *) emalloc(num_connections * sizeof(struct fann_connection));
 	fann_get_connection_array(ann, connections);
 	PHP_FANN_ERROR_CHECK_ANN();
-	array_init(return_value);
+	PHPC_ARRAY_INIT_SIZE(return_value, num_connections);
 	for (i = 0; i < num_connections; i++) {
 		from_neuron = (long) connections[i].from_neuron;
 		to_neuron = (long) connections[i].to_neuron;
 		weight = (double) connections[i].weight;
-		MAKE_STD_ZVAL(z_connection);
+		PHPC_VAL_MAKE(pv_connection);
+		PHPC_VAL_TO_PZVAL(pv_connection, z_connection);
 		object_init_ex(z_connection, php_fann_FANNConnection_class);
 		PHP_FANN_CONN_PROP_UPDATE(long, z_connection, "from_neuron", from_neuron);
 		PHP_FANN_CONN_PROP_UPDATE(long, z_connection, "to_neuron", to_neuron);
 		PHP_FANN_CONN_PROP_UPDATE(double, z_connection, "weight",  weight);
-		add_index_zval(return_value, i, z_connection);
+		PHPC_ARRAY_ADD_INDEX_ZVAL(return_value, i, z_connection);
 	}
 	efree(connections);
 }
