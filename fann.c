@@ -1861,8 +1861,8 @@ PHP_FUNCTION(fann_get_connection_array)
    Sets connections in the network */
 PHP_FUNCTION(fann_set_weight_array)
 {
-	zval *z_ann, *array, **current;
-	HashPosition pos;
+	zval *z_ann, *array, *z_connection;
+	phpc_val *pv_connection;
 	struct fann *ann;
 	struct fann_connection *connections;
 	unsigned num_connections, i = 0;
@@ -1872,16 +1872,16 @@ PHP_FUNCTION(fann_set_weight_array)
 	}
 
 	PHP_FANN_FETCH_ANN();
-	num_connections = zend_hash_num_elements(Z_ARRVAL_P(array));
+	num_connections = PHPC_HASH_NUM_ELEMENTS(Z_ARRVAL_P(array));
 	connections = (struct fann_connection *) emalloc(num_connections * sizeof(struct fann_connection));
-	for (zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(array), &pos);
-		 zend_hash_get_current_data_ex(Z_ARRVAL_P(array), (void **) &current, &pos) == SUCCESS;
-		 zend_hash_move_forward_ex(Z_ARRVAL_P(array), &pos)) {
-		if (Z_TYPE_PP(current) == IS_OBJECT && instanceof_function(
-				Z_OBJCE_PP(current), php_fann_FANNConnection_class TSRMLS_CC)) {
-			connections[i].from_neuron = Z_LVAL_P(PHP_FANN_CONN_PROP_READ(*current, "from_neuron"));
-			connections[i].to_neuron = Z_LVAL_P(PHP_FANN_CONN_PROP_READ(*current, "to_neuron"));
-			connections[i].weight = Z_DVAL_P(PHP_FANN_CONN_PROP_READ(*current, "weight"));
+
+	PHPC_HASH_FOREACH_VAL(Z_ARRVAL_P(array), pv_connection) {
+		if (PHPC_TYPE_P(pv_connection) == IS_OBJECT && instanceof_function(
+				PHPC_OBJCE_P(pv_connection), php_fann_FANNConnection_class TSRMLS_CC)) {
+			PHPC_PVAL_TO_PZVAL(pv_connection, z_connection);
+			connections[i].from_neuron = Z_LVAL_P(PHP_FANN_CONN_PROP_READ(z_connection, "from_neuron"));
+			connections[i].to_neuron = Z_LVAL_P(PHP_FANN_CONN_PROP_READ(z_connection, "to_neuron"));
+			connections[i].weight = Z_DVAL_P(PHP_FANN_CONN_PROP_READ(z_connection, "weight"));
 			++i;
 		}
 		else {
@@ -1889,7 +1889,8 @@ PHP_FUNCTION(fann_set_weight_array)
 			efree(connections);
 			RETURN_FALSE;
 		}
-	}
+	} PHPC_HASH_FOREACH_END();
+
 	fann_set_weight_array(ann, connections, i);
 	efree(connections);
 	PHP_FANN_ERROR_CHECK_ANN();
