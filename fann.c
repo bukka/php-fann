@@ -1977,9 +1977,9 @@ PHP_FUNCTION(fann_test)
 	efree(desired_output);
 	PHP_FANN_ERROR_CHECK_ANN();
 
-	array_init(return_value);
+	PHPC_ARRAY_INIT_SIZE(return_value, num_outputs);
 	for (i = 0; i < num_outputs; i++) {
-		add_next_index_double(return_value, (double) output[i]);
+		PHPC_ARRAY_ADD_NEXT_INDEX_DOUBLE(return_value, (double) output[i]);
 	}
 }
 /* }}} */
