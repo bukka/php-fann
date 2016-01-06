@@ -2138,114 +2138,99 @@ PHP_FUNCTION(fann_create_train)
 }
 /* }}} */
 
-
-/* {{{ php_fann_io_foreach()
-   callback for converting input hash map to fann_type array */
-#if PHP_API_VERSION < 20090626
-static int php_fann_process_array_foreach(zval **element, int num_args, va_list args, zend_hash_key *hash_key)
-#else
-static int php_fann_process_array_foreach(zval **element TSRMLS_DC, int num_args, va_list args, zend_hash_key *hash_key)
-#endif
-{
-	fann_type *input = va_arg(args, fann_type *);
-	int *pos = va_arg(args, int *);
-
-	convert_to_double_ex(element);
-	input[(*pos)++] = (fann_type) Z_DVAL_PP(element);
-
-	return ZEND_HASH_APPLY_KEEP;
-}
-/* }}} */
-
 /* {{{ proto resource fann_create_train_from_callback(int num_data, int num_input, int num_output, callable user_function)
    Creates the training data struct from a user supplied function */
 PHP_FUNCTION(fann_create_train_from_callback)
 {
-	zval *z_num_data, *z_num_input, *z_num_output, *retval;
-	zval **z_input, **z_output, **params[3];
+	PHPC_FCALL_PARAMS_DECLARE(callback, 3);
+	phpc_val retval, *pv_input, *pv_output;
 	zend_fcall_info fci;
 	zend_fcall_info_cache fci_cache = empty_fcall_info_cache;
-	int i, j;
+	phpc_long_t num_data, num_input, num_output;
+	int i;
 	struct fann_train_data *train_data;
 
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zzzf", &z_num_data, &z_num_input, &z_num_output,
-							  &fci, &fci_cache) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lllf",
+			&num_data, &num_input, &num_output, &fci, &fci_cache) == FAILURE) {
 		return;
 	}
-	convert_to_long_ex(&z_num_data);
-	convert_to_long_ex(&z_num_input);
-	convert_to_long_ex(&z_num_output);
 
-	train_data = fann_create_train(Z_LVAL_P(z_num_data), Z_LVAL_P(z_num_input), Z_LVAL_P(z_num_output));
+	train_data = fann_create_train(num_data, num_input, num_output);
 	PHP_FANN_ERROR_CHECK_TRAIN_DATA();
 
 	/* initialize callback function */
-	fci.retval_ptr_ptr = &retval;
-	fci.no_separation = 0;
+	PHPC_FCALL_PARAMS_INIT(callback);
+	/* number of data */
+	PHPC_VAL_MAKE(PHPC_FCALL_PARAM_VAL(callback, 0));
+	ZVAL_LONG(PHPC_FCALL_PARAM_PZVAL(callback, 0), num_data);
+	/* nummber of inputs */
+	PHPC_VAL_MAKE(PHPC_FCALL_PARAM_VAL(callback, 1));
+	ZVAL_LONG(PHPC_FCALL_PARAM_PZVAL(callback, 1), num_input);
+	/* number of outputs */
+	PHPC_VAL_MAKE(PHPC_FCALL_PARAM_VAL(callback, 2));
+	ZVAL_LONG(PHPC_FCALL_PARAM_PZVAL(callback, 2), num_output);
+
+	/* set fci */
+	PHPC_FCALL_RETVAL(fci, retval);
+	fci.params = PHPC_FCALL_PARAMS_NAME(callback);
 	fci.param_count = 3;
-	fci.params = params;
-	params[0] = &z_num_data;
-	params[1] = &z_num_input;
-	params[2] = &z_num_output;
+	fci.no_separation = 0;
+
 	/* call callback for each data */
-	for (i = 0; i < Z_LVAL_P(z_num_data); i++) {
-		if (zend_call_function(&fci, &fci_cache TSRMLS_CC) != SUCCESS || !retval) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "An error occurred while invoking the user callback");
+	for (i = 0; i < num_data; i++) {
+		if (zend_call_function(&fci, &fci_cache TSRMLS_CC) != SUCCESS || PHPC_VAL_ISUNDEF(retval)) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING,
+					"An error occurred while invoking the user callback");
 			zval_ptr_dtor(&retval);
 			RETURN_FALSE;
 		}
-		if (Z_TYPE_P(retval) != IS_ARRAY) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "The user callback result should be an array");
+		if (PHPC_TYPE(retval) != IS_ARRAY) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING,
+					"The user callback result should be an array");
 			zval_ptr_dtor(&retval);
 			RETURN_FALSE;
 		}
-		if (zend_hash_index_find(Z_ARRVAL_P(retval), 0, (void **) &z_input) != SUCCESS &&
-			zend_hash_find(Z_ARRVAL_P(retval), "input", sizeof("input"), (void **) &z_input) != SUCCESS) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "The return value must have 'input' or 0 key for input");
+		if (!PHPC_HASH_INDEX_FIND_IN_COND(PHPC_ARRVAL(retval), 0, pv_input) &&
+				!PHPC_HASH_CSTR_FIND_IN_COND(PHPC_ARRVAL(retval), "input", pv_input)) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING,
+					"The return value must have 'input' or 0 key for input");
 			zval_ptr_dtor(&retval);
 			RETURN_FALSE;
 		}
-		if (zend_hash_index_find(Z_ARRVAL_P(retval), 1, (void **) &z_output) != SUCCESS &&
-			zend_hash_find(Z_ARRVAL_P(retval), "output", sizeof("output"), (void **) &z_output) != SUCCESS) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "The return value must have 'output' or 1 key for output");
+		if (!PHPC_HASH_INDEX_FIND_IN_COND(PHPC_ARRVAL(retval), 1, pv_output) &&
+				!PHPC_HASH_CSTR_FIND_IN_COND(PHPC_ARRVAL(retval), "output", pv_output)) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING,
+					"The return value must have 'output' or 1 key for output");
 			zval_ptr_dtor(&retval);
 			RETURN_FALSE;
 		}
-		if (Z_TYPE_PP(z_input) != IS_ARRAY ||
-			zend_hash_num_elements(Z_ARRVAL_PP(z_input)) != Z_LVAL_P(z_num_input)) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Returned input must be an array with %ld elements",
-							 Z_LVAL_P(z_num_input));
+		if (PHPC_TYPE_P(pv_input) != IS_ARRAY ||
+				PHPC_HASH_NUM_ELEMENTS(PHPC_ARRVAL_P(pv_input)) != num_input) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING,
+					"Returned input must be an array with %ld elements", num_input);
 			zval_ptr_dtor(&retval);
 			RETURN_FALSE;
 		}
-		if (Z_TYPE_PP(z_output) != IS_ARRAY ||
-			zend_hash_num_elements(Z_ARRVAL_PP(z_output)) != Z_LVAL_P(z_num_output)) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Returned output must be an array with %ld elements",
-							 Z_LVAL_P(z_num_output));
+		if (PHPC_TYPE_P(pv_output) != IS_ARRAY ||
+				PHPC_HASH_NUM_ELEMENTS(PHPC_ARRVAL_P(pv_output)) != num_output) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING,
+					"Returned output must be an array with %ld elements", num_output);
 			zval_ptr_dtor(&retval);
 			RETURN_FALSE;
 		}
 		/* convert input array */
-		j = 0;
-#if PHP_API_VERSION < 20090626
-		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_input),  (apply_func_args_t) php_fann_process_array_foreach,
-									   2, train_data->input[i], &j);
-#else
-		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_input) TSRMLS_CC, (apply_func_args_t) php_fann_process_array_foreach,
-									   2, train_data->input[i], &j);
-#endif
+		php_fann_convert_array(PHPC_ARRVAL_P(pv_input), train_data->input[i]);
 		/* convert output array */
-		j = 0;
-#if PHP_API_VERSION < 20090626
-		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_output), (apply_func_args_t) php_fann_process_array_foreach,
-									   2, train_data->output[i], &j);
-#else
-		zend_hash_apply_with_arguments(Z_ARRVAL_PP(z_output) TSRMLS_CC, (apply_func_args_t) php_fann_process_array_foreach,
-									   2, train_data->output[i], &j);;
-#endif
+		php_fann_convert_array(PHPC_ARRVAL_P(pv_output), train_data->output[i]);
+
 		zval_ptr_dtor(&retval);
 	}
+
+	zval_ptr_dtor(&PHPC_FCALL_PARAM_VAL(callback, 0));
+	zval_ptr_dtor(&PHPC_FCALL_PARAM_VAL(callback, 1));
+	zval_ptr_dtor(&PHPC_FCALL_PARAM_VAL(callback, 2));
+
 	PHP_FANN_RETURN_TRAIN_DATA();
 }
 /* }}} */
