@@ -2247,7 +2247,7 @@ PHP_FUNCTION(fann_destroy_train)
 		return;
 	}
 	PHP_FANN_FETCH_TRAIN_DATA();
-	RETURN_BOOL(zend_list_delete(Z_LVAL_P(z_train_data)) == SUCCESS);
+	RETURN_BOOL(PHPC_RES_DELETE(z_train_data) == SUCCESS);
 }
 /* }}} */
 
