@@ -44,7 +44,7 @@ static int le_fannbuf, le_fanntrainbuf;
 
 /* fann user data structure */
 typedef struct _php_fann_user_data {
-	zval *callback;
+	phpc_val callback;
 	zval *z_ann;
 	zval *z_train_data;
 } php_fann_user_data;
@@ -1052,8 +1052,8 @@ static void fann_destructor_fannbuf(phpc_res_entry_t *rsrc TSRMLS_DC)
 	struct fann *ann = (struct fann *) rsrc->ptr;
 	user_data = (php_fann_user_data *) fann_get_user_data(ann);
 	if (user_data != (php_fann_user_data *) NULL) {
-		zval_dtor(user_data->callback);
-		FREE_ZVAL(user_data->callback);
+		zval_dtor(PHPC_VAL_CAST_TO_PZVAL(user_data->callback));
+		PHPC_VAL_FREE(user_data->callback);
 		efree(user_data);
 	}
 	if (ann->error_log) {
@@ -1407,8 +1407,8 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 	}
 
 	TSRMLS_FETCH();
-	if (PHPC_FCALL_INFO_INIT(user_data->callback, 0, &fci, &fci_cache,
-				NULL, &is_callable_error) == FAILURE) {
+	if (PHPC_FCALL_INFO_INIT(PHPC_VAL_CAST_TO_PZVAL(user_data->callback), 0,
+				&fci, &fci_cache, NULL, &is_callable_error) == FAILURE) {
 		if (is_callable_error) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING,
 					"User callback is not a valid callback, %s", is_callable_error);
@@ -2827,9 +2827,9 @@ PHP_FUNCTION(fann_set_callback)
 	user_data = (php_fann_user_data *) fann_get_user_data(ann);
 	if (user_data == (php_fann_user_data *) NULL) {
 		user_data = (php_fann_user_data *) emalloc(sizeof (php_fann_user_data));
-		MAKE_STD_ZVAL(user_data->callback);
+		PHPC_VAL_MAKE(user_data->callback);
 	}
-	ZVAL_ZVAL(user_data->callback, callback, 1, 0);
+	PHPC_VAL_COPY(user_data->callback, callback);
 	fann_set_user_data(ann, user_data);
 	RETURN_TRUE;
 }
