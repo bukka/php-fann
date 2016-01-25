@@ -3252,13 +3252,9 @@ PHP_FUNCTION(fann_get_cascade_activation_functions)
 	PHP_FANN_ERROR_CHECK_ANN();
 	functions = fann_get_cascade_activation_functions(ann);
 	PHP_FANN_ERROR_CHECK_ANN();
-#if PHP_API_VERSION < 20090626
-	array_init(return_value);
-#else
-	array_init_size(return_value, num_functions);
-#endif
+	PHPC_ARRAY_INIT_SIZE(return_value, num_functions);
 	for (i = 0; i < num_functions; i++) {
-		add_index_long(return_value, i, (long) functions[i]);
+		PHPC_ARRAY_ADD_INDEX_LONG(return_value, i, (long) functions[i]);
 	}
 }
 /* }}} */
