@@ -3263,8 +3263,8 @@ PHP_FUNCTION(fann_get_cascade_activation_functions)
    Sets the array of cascade candidate activation functions */
 PHP_FUNCTION(fann_set_cascade_activation_functions)
 {
-	zval *z_ann, *array, **current;
-	HashPosition pos;
+	zval *z_ann, *array;
+	phpc_val *element;
 	struct fann *ann;
 	enum fann_activationfunc_enum *functions;
 	unsigned num_functions, i = 0;
@@ -3273,14 +3273,12 @@ PHP_FUNCTION(fann_set_cascade_activation_functions)
 		return;
 	}
 	PHP_FANN_FETCH_ANN();
-	num_functions = zend_hash_num_elements(Z_ARRVAL_P(array));
+	num_functions = PHPC_HASH_NUM_ELEMENTS(Z_ARRVAL_P(array));
 	functions = (enum fann_activationfunc_enum *) emalloc(num_functions * sizeof(enum fann_activationfunc_enum));
-	for (zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(array), &pos);
-		 zend_hash_get_current_data_ex(Z_ARRVAL_P(array), (void **) &current, &pos) == SUCCESS;
-		 zend_hash_move_forward_ex(Z_ARRVAL_P(array), &pos)) {
-		convert_to_long_ex(current);
-		functions[i++] = (enum fann_activationfunc_enum) Z_LVAL_PP(current);
-	}
+	PHPC_HASH_FOREACH_VAL(Z_ARRVAL_P(array), element) {
+		convert_to_long_ex(element);
+		functions[i++] = (enum fann_activationfunc_enum) PHPC_LVAL_P(element);
+	} PHPC_HASH_FOREACH_END();
 	fann_set_cascade_activation_functions(ann, functions, i);
 	efree(functions);
 	PHP_FANN_ERROR_CHECK_ANN();
