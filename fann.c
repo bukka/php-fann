@@ -3322,8 +3322,8 @@ PHP_FUNCTION(fann_get_cascade_activation_steepnesses)
    Sets the cascade activation steepnesses array is an array of the different activation functions used by the candidates */
 PHP_FUNCTION(fann_set_cascade_activation_steepnesses)
 {
-	zval *z_ann, *array, **current;
-	HashPosition pos;
+	zval *z_ann, *array;
+	phpc_val *element;
 	struct fann *ann;
 	fann_type *steepnesses;
 	unsigned num_steepnesses, i = 0;
@@ -3334,12 +3334,10 @@ PHP_FUNCTION(fann_set_cascade_activation_steepnesses)
 	PHP_FANN_FETCH_ANN();
 	num_steepnesses = zend_hash_num_elements(Z_ARRVAL_P(array));
 	steepnesses = (fann_type *) emalloc(num_steepnesses * sizeof(fann_type));
-	for (zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(array), &pos);
-		 zend_hash_get_current_data_ex(Z_ARRVAL_P(array), (void **) &current, &pos) == SUCCESS;
-		 zend_hash_move_forward_ex(Z_ARRVAL_P(array), &pos)) {
-		convert_to_double_ex(current);
-		steepnesses[i++] = (fann_type) Z_DVAL_PP(current);
-	}
+	PHPC_HASH_FOREACH_VAL(Z_ARRVAL_P(array), element) {
+		convert_to_double_ex(element);
+		steepnesses[i++] = (fann_type) PHPC_DVAL_P(element);
+	} PHPC_HASH_FOREACH_END();
 	fann_set_cascade_activation_steepnesses(ann, steepnesses, i);
 	efree(steepnesses);
 	PHP_FANN_ERROR_CHECK_ANN();
