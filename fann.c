@@ -3498,7 +3498,7 @@ PHP_FUNCTION(fann_get_errstr)
 	}
 	PHP_FANN_FETCH_ERRDAT();
 	if (errdat->errstr) {
-		RETURN_STRING(errdat->errstr, 1);
+		PHPC_CSTR_RETURN(errdat->errstr);
 	} else {
 		RETURN_EMPTY_STRING();
 	}
