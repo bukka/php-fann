@@ -1180,7 +1180,7 @@ PHP_MINFO_FUNCTION(fann)
 }
 /* }}} */
 
-#define PHP_FANN_PATH_FORBIDDEN(_retval) (Z_TYPE(_retval) != IS_BOOL || !Z_BVAL(_retval))
+#define PHP_FANN_PATH_FORBIDDEN(_retval) !PHPC_ZVAL_IS_TRUE(_retval)
 
 /* php_fann_get_file_path() {{{ */
 static char *php_fann_get_path_for_open(char *path, int path_len, int read TSRMLS_DC)
