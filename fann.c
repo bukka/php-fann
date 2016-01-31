@@ -1422,10 +1422,10 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 
 	PHPC_FCALL_PARAMS_INIT(callback);
 	/* ann */
-	PHPC_FCALL_PARAM_PZVAL(callback, 0) = user_data->z_ann;
+	PHPC_VAL_ASSIGN(PHPC_FCALL_PARAM_VAL(callback, 0), user_data->z_ann);
 	/* train data */
 	if (user_data->z_train_data) {
-		PHPC_FCALL_PARAM_PZVAL(callback, 1) = user_data->z_train_data;
+		PHPC_VAL_ASSIGN(PHPC_FCALL_PARAM_VAL(callback, 1), user_data->z_train_data);
 	} else {
 		PHPC_VAL_MAKE(PHPC_FCALL_PARAM_VAL(callback, 1));
 		ZVAL_NULL(PHPC_FCALL_PARAM_PZVAL(callback, 1));
