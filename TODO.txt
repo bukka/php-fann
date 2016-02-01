@@ -1,6 +1,8 @@
 Generic
 - reporting callback
   - provide train_data for train_on_file (currently always null)
+  - there is a possible memory leak if the callback return allocated value (e.g. string)
+    - convert_to_bool is used without freeing previous data
   - proper testing (more iterations)
 - error logging
   - use log error messages when generic error is reported (fann_read_train_from_file)
