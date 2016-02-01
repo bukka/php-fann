@@ -1397,7 +1397,7 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 	PHPC_FCALL_PARAMS_DECLARE(callback, 6);
 	zend_fcall_info fci;
 	zend_fcall_info_cache fci_cache;
-	zval *retval;
+	phpc_val retval;
 	long rc;
 	char *is_callable_error = NULL;
 	php_fann_user_data *user_data = fann_get_user_data(ann);
@@ -1454,8 +1454,8 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 		zval_ptr_dtor(&retval);
 		return -1;
 	}
-	convert_to_boolean(retval);
-	rc = Z_BVAL_P(retval);
+	convert_to_boolean(PHPC_VAL_CAST_TO_PZVAL(retval));
+	rc = PHPC_ZVAL_IS_TRUE(retval);
 	zval_ptr_dtor(&retval);
 	zval_ptr_dtor(&PHPC_FCALL_PARAM_VAL(callback, 0));
 	if (!user_data->z_train_data)
