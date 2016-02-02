@@ -1622,7 +1622,7 @@ PHP_FUNCTION(fann_destroy)
 	}
 
 	PHP_FANN_FETCH_ANN();
-	RETURN_BOOL(zend_list_delete(Z_LVAL_P(z_ann)) == SUCCESS);
+	RETURN_BOOL(PHPC_RES_DELETE(z_ann) == SUCCESS);
 }
 /* }}} */
 
