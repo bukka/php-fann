@@ -238,8 +238,8 @@ PHP_FANN_API extern zend_class_entry *php_fann_FANNConnection_class;
 	zend_declare_property_##__type(php_fann_FANNConnection_class, PHP_FANN_CONN_PROP_NAME(__name), \
 								   0, ZEND_ACC_PUBLIC TSRMLS_CC)
 #define PHP_FANN_CONN_PROP_READ(__obj, __name) \
-	zend_read_property(php_fann_FANNConnection_class, (__obj),	\
-					   PHP_FANN_CONN_PROP_NAME(__name), 0 TSRMLS_CC)
+	PHPC_READ_PROPERTY(php_fann_FANNConnection_class, (__obj),	\
+					   __name, sizeof(__name)-1, 0)
 
 #endif	/* PHP_FANN_H */
 

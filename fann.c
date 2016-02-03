@@ -1866,6 +1866,7 @@ PHP_FUNCTION(fann_set_weight_array)
 	struct fann *ann;
 	struct fann_connection *connections;
 	unsigned num_connections, i = 0;
+	PHPC_READ_PROPERTY_RV_DECLARE;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &z_ann, &array) == FAILURE) {
 		return;
