@@ -1455,7 +1455,7 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 		return -1;
 	}
 	convert_to_boolean(PHPC_VAL_CAST_TO_PZVAL(retval));
-	rc = PHPC_ZVAL_IS_TRUE(retval);
+	rc = PHPC_VAL_IS_TRUE(retval);
 	zval_ptr_dtor(&retval);
 	zval_ptr_dtor(&PHPC_FCALL_PARAM_VAL(callback, 0));
 	if (!user_data->z_train_data)
