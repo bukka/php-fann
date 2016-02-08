@@ -1183,7 +1183,7 @@ PHP_MINFO_FUNCTION(fann)
 #define PHP_FANN_PATH_FORBIDDEN(_retval) !PHPC_ZVAL_IS_TRUE(_retval)
 
 /* php_fann_get_file_path() {{{ */
-static char *php_fann_get_path_for_open(char *path, int path_len, int read TSRMLS_DC)
+static char *php_fann_get_path_for_open(char *path, phpc_str_size_t path_len, int read TSRMLS_DC)
 {
 	zval retval;
 	char *path_for_open;
@@ -2012,7 +2012,7 @@ PHP_FUNCTION(fann_train_on_file)
 {
 	zval *z_ann;
 	char *filename;
-	int filename_len;
+	phpc_str_size_t filename_len;
 	long max_epochs, epochs_between_reports;
 	double desired_error;
 	struct fann *ann;
@@ -2102,7 +2102,7 @@ PHP_FUNCTION(fann_test_data)
 PHP_FUNCTION(fann_read_train_from_file)
 {
 	char *filename;
-	int filename_len;
+	phpc_str_size_t filename_len;
 	struct fann_train_data *train_data;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filename, &filename_len) == FAILURE) {
@@ -2618,7 +2618,7 @@ PHP_FUNCTION(fann_num_output_train_data)
 PHP_FUNCTION(fann_save_train)
 {
 	char *filename;
-	int filename_len;
+	phpc_str_size_t filename_len;
 	zval *z_train_data;
 	struct fann_train_data *train_data;
 
@@ -3035,7 +3035,7 @@ PHP_FUNCTION(fann_cascadetrain_on_file)
 {
 	zval *z_ann;
 	char *filename;
-	int filename_len;
+	phpc_str_size_t filename_len;
 	long max_neurons, neurons_between_reports;
 	double desired_error;
 	struct fann *ann;
@@ -3367,7 +3367,7 @@ PHP_FUNCTION(fann_set_cascade_num_candidate_groups)
 PHP_FUNCTION(fann_create_from_file)
 {
 	char *cf_name = NULL;
-	int cf_name_len;
+	phpc_str_size_t cf_name_len;
 	struct fann *ann;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &cf_name, &cf_name_len) == FAILURE) {
@@ -3394,7 +3394,7 @@ PHP_FUNCTION(fann_save)
 {
 	zval *z_ann;
 	char *cf_name = NULL;
-	int cf_name_len;
+	phpc_str_size_t cf_name_len;
 	struct fann *ann;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_ann, &cf_name, &cf_name_len) == FAILURE) {
@@ -3421,7 +3421,7 @@ PHP_FUNCTION(fann_set_error_log)
 	zval *z_errdat;
 	char *log_name = NULL;
 	FILE *log_file;
-	int log_name_len;
+	phpc_str_size_t log_name_len;
 	struct fann_error *errdat;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_errdat, &log_name, &log_name_len) == FAILURE) {
