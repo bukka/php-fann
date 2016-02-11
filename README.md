@@ -41,9 +41,12 @@ $ sudo pecl install fann
 
 #### Manual Installation
 
-First download the source
+It's important to have a git installed as it's necessary for recursive fetch of
+[phpc](https://github.com/bukka/phpc).
+
+First clone recursively the repository
 ```
-git clone https://github.com/bukka/php-fann.git
+git clone --recursive https://github.com/bukka/php-fann.git
 ```
 
 Then go to the created source directory and compile the extension. You need to have a php development package installed (command `phpize` must be available).
