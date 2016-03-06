@@ -16,18 +16,19 @@
   <email>bukka@php.net</email>
   <active>yes</active>
  </lead>
- <date>2014-01-01</date>
+ <date>2016-03-06</date>
  <version>
-  <release>1.0.7</release>
-  <api>1.0.7</api>
+  <release>1.1.0RC1</release>
+  <api>1.1.0RC1</api>
  </version>
  <stability>
-  <release>stable</release>
-  <api>stable</api>
+  <release>beta</release>
+  <api>beta</api>
  </stability>
  <license uri="http://www.php.net/license">PHP 3.01</license>
  <notes><![CDATA[
- * Fixed build with -Werror=format-security
+ * Added support for PHP 7
+ * Fixed issue #15: Incorrect path permission check
  ]]></notes>
  <contents>
   <dir name="/">
@@ -44,6 +45,9 @@
     <file role="doc" name="simple_test.php"/>
     <file role="doc" name="simple_train.php"/>
     <file role="doc" name="xor.data"/>
+   </dir>
+   <dir name="phpc">
+    <file role="src" name="phpc.h"/>
    </dir>
    <dir name="tests">
     <file role="test" name="001.phpt"/>
@@ -205,6 +209,21 @@
  <providesextension>fann</providesextension>
  <extsrcrelease/>
  <changelog>
+  <release>
+   <date>2014-01-01</date>
+   <version>
+	<release>1.0.7</release>
+	<api>1.0.7</api>
+   </version>
+   <stability>
+	<release>stable</release>
+	<api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP 3.01</license>
+   <notes><![CDATA[
+   * Fixed build with -Werror=format-security
+   ]]></notes>
+  </release>
   <release>
    <date>2013-12-31</date>
    <version>
