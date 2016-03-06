@@ -1615,13 +1615,11 @@ PHP_FUNCTION(fann_create_shortcut_array)
 PHP_FUNCTION(fann_destroy)
 {
 	zval *z_ann;
-	struct fann *ann;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_ann) == FAILURE) {
 		return;
 	}
 
-	PHP_FANN_FETCH_ANN();
 	RETURN_BOOL(PHPC_RES_DELETE(z_ann) == SUCCESS);
 }
 /* }}} */
@@ -2242,12 +2240,11 @@ PHP_FUNCTION(fann_create_train_from_callback)
 PHP_FUNCTION(fann_destroy_train)
 {
 	zval *z_train_data;
-	struct fann_train_data *train_data;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_train_data) == FAILURE) {
 		return;
 	}
-	PHP_FANN_FETCH_TRAIN_DATA();
+
 	RETURN_BOOL(PHPC_RES_DELETE(z_train_data) == SUCCESS);
 }
 /* }}} */
