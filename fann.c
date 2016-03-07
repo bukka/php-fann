@@ -1401,12 +1401,12 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 	long rc;
 	char *is_callable_error = NULL;
 	php_fann_user_data *user_data = fann_get_user_data(ann);
+	TSRMLS_FETCH();
 
 	if (user_data == (php_fann_user_data *) NULL) {
 		return 0;
 	}
 
-	TSRMLS_FETCH();
 	if (PHPC_FCALL_INFO_INIT(PHPC_VAL_CAST_TO_PZVAL(user_data->callback), 0,
 				&fci, &fci_cache, NULL, &is_callable_error) == FAILURE) {
 		if (is_callable_error) {
