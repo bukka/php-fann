@@ -16,10 +16,10 @@
   <email>bukka@php.net</email>
   <active>yes</active>
  </lead>
- <date>2016-03-06</date>
+ <date>2016-03-13</date>
  <version>
-  <release>1.1.0RC1</release>
-  <api>1.1.0RC1</api>
+  <release>1.1.0RC2</release>
+  <api>1.1.0RC2</api>
  </version>
  <stability>
   <release>beta</release>
@@ -27,8 +27,7 @@
  </stability>
  <license uri="http://www.php.net/license">PHP 3.01</license>
  <notes><![CDATA[
- * Added support for PHP 7
- * Fixed issue #15: Incorrect path permission check
+ * Fixed C89 compatibility in placing TSRMLS_FETCH
  ]]></notes>
  <contents>
   <dir name="/">
@@ -209,6 +208,22 @@
  <providesextension>fann</providesextension>
  <extsrcrelease/>
  <changelog>
+  <release>
+   <date>2016-03-06</date>
+   <version>
+	<release>1.1.0RC1</release>
+	<api>1.1.0RC1</api>
+   </version>
+   <stability>
+	<release>beta</release>
+	<api>beta</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP 3.01</license>
+   <notes><![CDATA[
+   * Added support for PHP 7
+   * Fixed issue #15: Incorrect path permission check
+   ]]></notes>
+  </release>
   <release>
    <date>2014-01-01</date>
    <version>

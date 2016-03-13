@@ -39,7 +39,7 @@ extern zend_module_entry fann_module_entry;
 #include "phpc/phpc.h"
 
 /* fann version */
-#define PHP_FANN_VERSION "1.1.0RC1"
+#define PHP_FANN_VERSION "1.1.0RC2"
 #ifdef HAVE_FANN_2_2
 #define PHP_FANN_LIBFANN_VERSION_ID 0x020200
 #define PHP_FANN_LIBFANN_VERSION "2.2"
