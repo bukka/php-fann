@@ -1620,7 +1620,7 @@ PHP_FUNCTION(fann_destroy)
 		return;
 	}
 
-	RETURN_BOOL(PHPC_RES_DELETE(z_ann) == SUCCESS);
+	RETURN_BOOL(PHPC_RES_CLOSE(z_ann) == SUCCESS);
 }
 /* }}} */
 
@@ -2245,7 +2245,7 @@ PHP_FUNCTION(fann_destroy_train)
 		return;
 	}
 
-	RETURN_BOOL(PHPC_RES_DELETE(z_train_data) == SUCCESS);
+	RETURN_BOOL(PHPC_RES_CLOSE(z_train_data) == SUCCESS);
 }
 /* }}} */
 
