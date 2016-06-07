@@ -1,5 +1,5 @@
 --TEST--
-Test bug 
+Test bug #23: Segmenation fault after fann_destroy
 --FILE--
 <?php
 $num_input = 2;
