@@ -16,7 +16,7 @@ function test($net, $test_data) {
 			for($i = 0; $i < $num_inputs; $i++) {
 				$test_result .= $test_data[$i];
 
-				if ($i < $num_inputs) {
+				if ($i < $num_inputs - 1) {
 					$test_result .= ', ';
 				}
 			}
@@ -32,7 +32,7 @@ function test($net, $test_data) {
 			
 			fann_destroy($ann);
 		} else {
-			die("Invalid file format<br>" . PHP_EOL);
+			die("Invalid file format" . PHP_EOL);
 		}
 	}
 }
