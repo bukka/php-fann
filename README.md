@@ -20,6 +20,8 @@ $ sudo apt-get install libfann-dev
 ```
 Fann installation can be skipped if an RPM for Fedora is used (`libfann` is in the package dependencies).
 
+If the library is re-installed manually, then all old library file should be removed before re-installing otherwise the old library version could be linked.
+
 #### Fedora
 
 The RPM package for PHP FANN is available in Remi's repository: http://rpms.famillecollet.com/
