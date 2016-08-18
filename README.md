@@ -70,7 +70,7 @@ Precompiled binary `dll` libraries for php-fann and libfann are available on [th
 
 ## Examples
 
-There are three example projects: Logic Gates, OCR & Pathfinder.
+There are three example projects: [Logic Gates](examples/logic_gates/), [OCR](examples/ocr/) & [Pathfinder](examples/pathfinder/).
 
 #### Logic Gates
 
