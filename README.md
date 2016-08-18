@@ -78,9 +78,9 @@ There are three example projects: Logic Gates, OCR & Pathfinder.
 
 The Simple example trains a single neural network to perform the XOR operation.
 
-[simple_train.php](examples/logic_gates/train_all.php)
+[simple_train.php](examples/logic_gates/simple_train.php)
 
-[simple_test.php](examples/logic_gates/train_all.php)
+[simple_test.php](examples/logic_gates/simple_test.php)
 
 
 ###### All
