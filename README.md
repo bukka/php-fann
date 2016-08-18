@@ -89,7 +89,7 @@ The All example trains 7 seperate neural networks to perform the AND, NAND, NOR,
 
 [train_all.php](examples/logic_gates/train_all.php)
 
-[test_all.php](examples/logic_gates/train_all.php)
+[test_all.php](examples/logic_gates/test_all.php)
 
 
 #### OCR
@@ -98,7 +98,7 @@ OCR is a practical example of Optical Character Recognition using FANN. While th
 
 [train_ocr.php](examples/ocr/train_ocr.php)
 
-[test_ocr.php](examples/ocr/train_ocr.php)
+[test_ocr.php](examples/ocr/test_ocr.php)
 
 
 
