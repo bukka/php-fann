@@ -3,13 +3,8 @@
 function test($net, $test_data) {
 	$train_file = (dirname(__FILE__) . '/' . $net . '_float.net');
 	if (!is_file($train_file)) {
-<<<<<<< HEAD:examples/logic_gates/test_all.php
 		print('The file ' . $net . '_float.net has not been created! Please run train_all.php to generate it.<br>' . PHP_EOL);
-	} else {
-=======
-		print('The file ' . $net . '_float.net has not been created! Please run <a href="train_all.php">train_all.php</a> to generate it.<br>' . PHP_EOL);
 	} else{
->>>>>>> origin/master:examples/test_all.php
 		$ann = fann_create_from_file($train_file);
 		if ($ann) {
 			$calc_out = fann_run($ann, $test_data);
