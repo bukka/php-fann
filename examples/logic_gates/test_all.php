@@ -4,7 +4,7 @@ function test($net, $test_data) {
 	$train_file = (dirname(__FILE__) . '/' . $net . '_float.net');
 	if (!is_file($train_file)) {
 		print('The file ' . $net . '_float.net has not been created! Please run train_all.php to generate it.<br>' . PHP_EOL);
-	} else{
+	} else {
 		$ann = fann_create_from_file($train_file);
 		if ($ann) {
 			$calc_out = fann_run($ann, $test_data);

@@ -70,46 +70,46 @@ Precompiled binary `dll` libraries for php-fann and libfann are available on [th
 
 ## Examples
 
-These are just two basic examples for simple training and running supplied data on the trained network.
+There are three example projects: Logic Gates, OCR & Pathfinder.
 
-### `simple_train.php`
+#### Logic Gates
 
-```php
-$num_input = 2;
-$num_output = 1;
-$num_layers = 3;
-$num_neurons_hidden = 3;
-$desired_error = 0.001;
-$max_epochs = 500000;
-$epochs_between_reports = 1000;
+###### Simple
 
-$ann = fann_create_standard($num_layers, $num_input, $num_neurons_hidden, $num_output);
+The Simple example trains a single neural network to perform the XOR operation.
 
-if ($ann) {
-    fann_set_activation_function_hidden($ann, FANN_SIGMOID_SYMMETRIC);
-    fann_set_activation_function_output($ann, FANN_SIGMOID_SYMMETRIC);
+[simple_train.php](examples/logic_gates/train_all.php)
 
-    $filename = dirname(__FILE__) . "/xor.data";
-    if (fann_train_on_file($ann, $filename, $max_epochs, $epochs_between_reports, $desired_error))
-        fann_save($ann, dirname(__FILE__) . "/xor_float.net");
+[simple_test.php](examples/logic_gates/train_all.php)
 
-    fann_destroy($ann);
-}
-```
-### `simple_test.php`
 
-```php
-$train_file = (dirname(__FILE__) . "/xor_float.net");
-if (!is_file($train_file))
-    die("The file xor_float.net has not been created! Please run simple_train.php to generate it");
+###### All
 
-$ann = fann_create_from_file($train_file);
-if (!$ann)
-	die("ANN could not be created");
+The All example trains 7 seperate neural networks to perform the AND, NAND, NOR, NOT, OR, XNOR & XOR operations.
 
-$input = array(-1, 1);
-$calc_out = fann_run($ann, $input);
-printf("xor test (%f,%f) -> %f\n", $input[0], $input[1], $calc_out[0]);
-fann_destroy($ann);
-```
+[train_all.php](examples/logic_gates/train_all.php)
+
+[test_all.php](examples/logic_gates/train_all.php)
+
+
+#### OCR
+
+OCR is a practical example of Optical Character Recognition using FANN. While this example is limited and does make mistakes, the concepts illustrated by OCR can be applied to a more robust stacked network that uses feature extraction and convolution layers to recognize text of any font in any size image. 
+
+[train_ocr.php](examples/ocr/train_ocr.php)
+
+[test_ocr.php](examples/ocr/train_ocr.php)
+
+
+
+#### Pathfinder
+
+Pathfinder is an example of a neural network that is capable of plotting an 8 direction step path from a starting position in a 5x5 grid to an ending position in that grid. To keep the Pathfinder example simple it is not trained to deal with walls or non-traversable terrain however it would be very easy to add that by adding additional training.
+
+[pathfinder_train.php](examples/pathfinder/pathfinder_train.php)
+
+[pathfinder_test.php](examples/pathfinder/pathfinder_test.php)
+
+
+
 
