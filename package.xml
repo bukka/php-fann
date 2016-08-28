@@ -39,11 +39,125 @@
    <file role="src" name="config.w32" />
    <file role="src" name="php_fann.h"/>
    <file role="src" name="fann_connection.c"/>
-   <file role="src" name="fann.c"/>
-   <dir name="examples">
+   <file role="src" name="fann.c"/> 
+   <dir name="examples/logic_gates">
+    <file role="doc" name="and.data"/>
+    <file role="doc" name="nand.data"/>
+    <file role="doc" name="nor.data"/>
+    <file role="doc" name="not.data"/>
+    <file role="doc" name="or.data"/>
     <file role="doc" name="simple_test.php"/>
     <file role="doc" name="simple_train.php"/>
+    <file role="doc" name="test_all.php"/>
+    <file role="doc" name="train_all.php"/>
+    <file role="doc" name="xnor.data"/>
     <file role="doc" name="xor.data"/>
+   </dir>
+   <dir name="examples/ocr">
+    <file role="doc" name="ocr.data"/>
+    <file role="doc" name="test_ocr.php"/>
+    <file role="doc" name="train_ocr.php"/>
+   </dir>
+   <dir name="examples/ocr/images">
+    <file role="doc" name="0.png"/>
+    <file role="doc" name="1.png"/>
+    <file role="doc" name="2.png"/>
+    <file role="doc" name="3.png"/>
+    <file role="doc" name="4.png"/>
+    <file role="doc" name="5.png"/>
+    <file role="doc" name="6.png"/>
+    <file role="doc" name="7.png"/>
+    <file role="doc" name="8.png"/>
+    <file role="doc" name="9.png"/>
+    <file role="doc" name="10.png"/>
+    <file role="doc" name="11.png"/>
+    <file role="doc" name="12.png"/>
+    <file role="doc" name="13.png"/>
+    <file role="doc" name="14.png"/>
+    <file role="doc" name="15.png"/>
+    <file role="doc" name="16.png"/>
+    <file role="doc" name="17.png"/>
+    <file role="doc" name="18.png"/>
+    <file role="doc" name="19.png"/>
+    <file role="doc" name="20.png"/>
+    <file role="doc" name="21.png"/>
+    <file role="doc" name="22.png"/>
+    <file role="doc" name="23.png"/>
+    <file role="doc" name="24.png"/>
+    <file role="doc" name="25.png"/>
+    <file role="doc" name="26.png"/>
+    <file role="doc" name="27.png"/>
+    <file role="doc" name="28.png"/>
+    <file role="doc" name="29.png"/>
+    <file role="doc" name="30.png"/>
+    <file role="doc" name="31.png"/>
+    <file role="doc" name="32.png"/>
+    <file role="doc" name="33.png"/>
+    <file role="doc" name="34.png"/>
+    <file role="doc" name="35.png"/>
+    <file role="doc" name="36.png"/>
+    <file role="doc" name="37.png"/>
+    <file role="doc" name="38.png"/>
+    <file role="doc" name="39.png"/>
+    <file role="doc" name="40.png"/>
+    <file role="doc" name="41.png"/>
+    <file role="doc" name="42.png"/>
+    <file role="doc" name="43.png"/>
+    <file role="doc" name="44.png"/>
+    <file role="doc" name="45.png"/>
+    <file role="doc" name="46.png"/>
+    <file role="doc" name="47.png"/>
+    <file role="doc" name="48.png"/>
+    <file role="doc" name="49.png"/>
+    <file role="doc" name="50.png"/>
+    <file role="doc" name="51.png"/>
+    <file role="doc" name="52.png"/>
+    <file role="doc" name="53.png"/>
+    <file role="doc" name="54.png"/>
+    <file role="doc" name="55.png"/>
+    <file role="doc" name="56.png"/>
+    <file role="doc" name="57.png"/>
+    <file role="doc" name="58.png"/>
+    <file role="doc" name="59.png"/>
+    <file role="doc" name="60.png"/>
+    <file role="doc" name="61.png"/>
+    <file role="doc" name="62.png"/>
+    <file role="doc" name="63.png"/>
+    <file role="doc" name="64.png"/>
+    <file role="doc" name="65.png"/>
+    <file role="doc" name="66.png"/>
+    <file role="doc" name="67.png"/>
+    <file role="doc" name="68.png"/>
+    <file role="doc" name="69.png"/>
+    <file role="doc" name="70.png"/>
+    <file role="doc" name="71.png"/>
+    <file role="doc" name="72.png"/>
+    <file role="doc" name="73.png"/>
+    <file role="doc" name="74.png"/>
+    <file role="doc" name="75.png"/>
+    <file role="doc" name="76.png"/>
+    <file role="doc" name="77.png"/>
+    <file role="doc" name="78.png"/>
+    <file role="doc" name="79.png"/>
+    <file role="doc" name="80.png"/>
+    <file role="doc" name="81.png"/>
+    <file role="doc" name="82.png"/>
+    <file role="doc" name="83.png"/>
+    <file role="doc" name="84.png"/>
+    <file role="doc" name="85.png"/>
+    <file role="doc" name="86.png"/>
+    <file role="doc" name="87.png"/>
+    <file role="doc" name="88.png"/>
+    <file role="doc" name="89.png"/>
+    <file role="doc" name="90.png"/>
+    <file role="doc" name="91.png"/>
+    <file role="doc" name="92.png"/>
+    <file role="doc" name="93.png"/>
+   </dir>
+   <dir name="examples/pathfinder">
+    <file role="doc" name="pathfinder.data"/>
+    <file role="doc" name="pathfinder_test.php"/>
+    <file role="doc" name="pathfinder_train.php"/>
    </dir>
    <dir name="phpc">
     <file role="src" name="phpc.h"/>
