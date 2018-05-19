@@ -1,4 +1,6 @@
-Generic
+# TODO list
+
+## Generic
 - reporting callback
   - provide train_data for train_on_file (currently always null)
   - there is a possible memory leak if the callback return allocated value (e.g. string)
@@ -16,9 +18,9 @@ Generic
   - check int intervals for fann_train_on_fail
 - compare PHP outputs with C outputs in all examples
 
-Functions - implementation
+## Functions - implementation
 - fann_print_connections - either rewrite or redirect output
 - fann_print_parameters - either rewrite or redirect output
 
-Functions - tests
+## Functions - tests
 - fann_init_weights - train_data test must be done first
