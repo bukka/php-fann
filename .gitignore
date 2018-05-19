@@ -15,6 +15,7 @@ config.log
 config.nice
 config.status
 configure
+configure.ac
 configure.in
 install-sh
 libtool
