@@ -60,6 +60,12 @@ make
 sudo make install
 ```
 
+If you are rebuilding the extension and see warning about Libtool version mismatch error, try to run `phpize --clean` or if it doesn't help, try
+```
+aclocal && libtoolize --force && autoreconf
+```
+and then run the compilation steps starting with `phpize` again.
+
 Finally you need to add
 ```
 extension=fann.so
