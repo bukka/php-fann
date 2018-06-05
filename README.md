@@ -55,6 +55,7 @@ Then go to the created source directory and compile the extension. You need to h
 ```
 cd php-fann
 phpize
+aclocal && libtoolize --force && autoreconf
 ./configure --with-fann
 make
 sudo make install
