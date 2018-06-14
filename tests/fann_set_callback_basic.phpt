@@ -10,6 +10,7 @@ function ann_callback( $ann, $train_data, $max_epochs, $epochs_between_reports, 
 	var_dump($epochs_between_reports);
 	var_dump($desired_error);
 	var_dump($epochs);
+	return true;
 }
 
 $num_input = 2;
