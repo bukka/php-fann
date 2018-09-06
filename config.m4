@@ -34,16 +34,16 @@ if test "$PHP_FANN" != "no"; then
 
   LIBNAME=fann
   LIBSYMBOL=fann_set_user_data
+  PHP_ADD_LIBRARY_WITH_PATH($LIBNAME, $FANN_DIR/$PHP_LIBDIR, FANN_SHARED_LIBADD)
+  PHP_ADD_LIBRARY(m)
 
   PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
   [
-    PHP_ADD_LIBRARY_WITH_PATH($LIBNAME, $FANN_DIR/$PHP_LIBDIR, FANN_SHARED_LIBADD)
-    AC_CHECK_LIB($LIBNAME,[fann_copy],[ AC_DEFINE(HAVE_FANN_2_2,1,[Fann library version 2.2]) ],[],[-lm])
+    AC_CHECK_LIB($LIBNAME,[fann_copy],[ AC_DEFINE(HAVE_FANN_2_2,1,[Fann library version 2.2]) ],[],[])
     AC_DEFINE(HAVE_FANN,1,[Fann library found])
   ],[
     AC_MSG_ERROR([wrong libfann version (you need at least version 2.1) or lib not found])
   ],[
-    -L$FANN_DIR/$PHP_LIBDIR -lm
   ])
 
   PHP_SUBST(FANN_SHARED_LIBADD)
