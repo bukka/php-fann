@@ -3,7 +3,7 @@
 // Useful for splitting your training data into training and testing groups
 
 // Load Data
-$data_file = fann_read_train_from_file(dirname(__FILE__) . "/MyTrainingData.data");
+$data_file = "MyTrainingData.data";
 $train_data = fann_read_train_from_file(dirname(__FILE__) . DIRECTORY_SEPARATOR . $data_file);
 
 // Calculate how many examples are in the first group
