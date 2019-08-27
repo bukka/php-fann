@@ -88,7 +88,11 @@ The Simple example trains a single neural network to perform the XOR operation.
 
 [simple_train.php](examples/logic_gates/simple_train.php)
 
+[simple_train_epoch.php](examples/logic_gates/simple_train_epoch.php)
+
 [simple_test.php](examples/logic_gates/simple_test.php)
+
+[simple_merge.php](examples/logic_gates/simple_test.php) 
 
 
 ###### All
