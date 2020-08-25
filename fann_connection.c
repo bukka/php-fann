@@ -108,13 +108,16 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_INFO(arginfo_fannconnection_set_weight, 0)
 	ZEND_ARG_INFO(0, weight)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_fannconnection_void, 0)
+ZEND_END_ARG_INFO()
 /* }}} */
 
 static zend_function_entry fannconnection_funcs[] = {
 	PHP_ME(FANNConnection,  __construct,      arginfo_fannconnection___construct,  ZEND_ACC_CTOR | ZEND_ACC_PUBLIC)
-	PHP_ME(FANNConnection,  getFromNeuron,    NULL,                                ZEND_ACC_PUBLIC)
-	PHP_ME(FANNConnection,  getToNeuron,      NULL,                                ZEND_ACC_PUBLIC)
-	PHP_ME(FANNConnection,  getWeight,        NULL,                                ZEND_ACC_PUBLIC)
+	PHP_ME(FANNConnection,  getFromNeuron,    arginfo_fannconnection_void,         ZEND_ACC_PUBLIC)
+	PHP_ME(FANNConnection,  getToNeuron,      arginfo_fannconnection_void,         ZEND_ACC_PUBLIC)
+	PHP_ME(FANNConnection,  getWeight,        arginfo_fannconnection_void,         ZEND_ACC_PUBLIC)
 	PHP_ME(FANNConnection,  setWeight,        arginfo_fannconnection_set_weight,   ZEND_ACC_PUBLIC)
 	PHPC_FE_END
 };

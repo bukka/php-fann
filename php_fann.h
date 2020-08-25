@@ -232,7 +232,7 @@ PHP_FANN_API extern zend_class_entry *php_fann_FANNConnection_class;
 /* macros for dealing with FANNConnection properties */
 #define PHP_FANN_CONN_PROP_NAME(__name)  __name, sizeof(__name)-1
 #define PHP_FANN_CONN_PROP_UPDATE(__type, __obj, __name, __value)		\
-	zend_update_property_##__type(php_fann_FANNConnection_class, (__obj), \
+	zend_update_property_##__type(php_fann_FANNConnection_class, PHPC_OBJ_FOR_PROP(__obj), \
 								  PHP_FANN_CONN_PROP_NAME(__name), (__value) TSRMLS_CC)
 #define PHP_FANN_CONN_PROP_DECLARE(__type, __name)					\
 	zend_declare_property_##__type(php_fann_FANNConnection_class, PHP_FANN_CONN_PROP_NAME(__name), \

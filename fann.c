@@ -1445,9 +1445,7 @@ static int php_fann_callback(struct fann *ann, struct fann_train_data *train,
 
 	/* set fci */
 	PHPC_FCALL_RETVAL(fci, retval);
-	fci.params = PHPC_FCALL_PARAMS_NAME(callback);
-	fci.param_count = 6;
-	fci.no_separation = 0;
+	PHPC_FCALL_FCI_INIT(fci, callback, 6, 0);
 
 	if (zend_call_function(&fci, &fci_cache TSRMLS_CC) != SUCCESS ||  PHPC_VAL_ISUNDEF(retval)) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "An error occurred while invoking the user callback");
@@ -2173,8 +2171,7 @@ PHP_FUNCTION(fann_create_train_from_callback)
 	/* set fci */
 	PHPC_FCALL_RETVAL(fci, retval);
 	fci.params = PHPC_FCALL_PARAMS_NAME(callback);
-	fci.param_count = 3;
-	fci.no_separation = 0;
+	PHPC_FCALL_FCI_INIT(fci, callback, 3, 0);
 
 	/* call callback for each data */
 	for (i = 0; i < num_data; i++) {
