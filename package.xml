@@ -16,25 +16,26 @@
   <email>bukka@php.net</email>
   <active>yes</active>
  </lead>
- <date>2016-06-26</date>
+ <date>2021-03-14</date>
  <version>
-  <release>1.1.1</release>
-  <api>1.1.1</api>
+  <release>1.2.0RC1</release>
+  <api>1.2.0RC1</api>
  </version>
  <stability>
-  <release>stable</release>
-  <api>stable</api>
+  <release>beta</release>
+  <api>beta</api>
  </stability>
  <license uri="http://www.php.net/license">PHP 3.01</license>
  <notes><![CDATA[
- * Fixed segfault after calling fann_destroy
+ * Added support for PHP 8
+ * Added logic gates, OCR and pathfinder examples
  ]]></notes>
  <contents>
   <dir name="/">
    <file role="doc" name="CREDITS"/>
    <file role="doc" name="LICENSE"/>
    <file role="doc" name="README.md"/>
-   <file role="doc" name="TODO.txt"/>
+   <file role="doc" name="TODO.md"/>
    <file role="src" name="config.m4" />
    <file role="src" name="config.w32" />
    <file role="src" name="php_fann.h"/>
@@ -46,12 +47,19 @@
     <file role="doc" name="nor.data"/>
     <file role="doc" name="not.data"/>
     <file role="doc" name="or.data"/>
+    <file role="doc" name="simple_merge.php"/>
     <file role="doc" name="simple_test.php"/>
     <file role="doc" name="simple_train.php"/>
+    <file role="doc" name="simple_train_epoch.php"/>
     <file role="doc" name="test_all.php"/>
     <file role="doc" name="train_all.php"/>
     <file role="doc" name="xnor.data"/>
+    <file role="doc" name="xor_part_1.data"/>
+    <file role="doc" name="xor_part_2.data"/>
     <file role="doc" name="xor.data"/>
+   </dir>
+   <dir name="examples">
+    <file role="doc" name="SplitTrainingData.php"/>
    </dir>
    <dir name="examples/ocr">
     <file role="doc" name="ocr.data"/>
@@ -161,6 +169,7 @@
    </dir>
    <dir name="phpc">
     <file role="src" name="phpc.h"/>
+    <file role="doc" name="README.md"/>
    </dir>
    <dir name="tests">
     <file role="test" name="001.phpt"/>
@@ -322,6 +331,21 @@
  <providesextension>fann</providesextension>
  <extsrcrelease/>
  <changelog>
+  <release>
+   <date>2016-06-26</date>
+   <version>
+	<release>1.1.1</release>
+	<api>1.1.1</api>
+   </version>
+   <stability>
+	<release>stable</release>
+	<api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP 3.01</license>
+   <notes><![CDATA[
+   * Fixed segfault after calling fann_destroy
+   ]]></notes>
+  </release>
   <release>
    <date>2016-03-30</date>
    <version>
