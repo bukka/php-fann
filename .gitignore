@@ -1,6 +1,7 @@
 .libs/
 .svnignore
 .deps
+*.dep
 *.lo
 *.la
 Makefile*
