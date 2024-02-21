@@ -16,18 +16,18 @@
   <email>bukka@php.net</email>
   <active>yes</active>
  </lead>
- <date>2022-01-02</date>
+ <date>2024-02-21</date>
  <version>
-  <release>1.2.0RC2</release>
-  <api>1.2.0RC2</api>
+  <release>1.2.0</release>
+  <api>1.2.0</api>
  </version>
  <stability>
-  <release>beta</release>
-  <api>beta</api>
+  <release>stable</release>
+  <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license">PHP 3.01</license>
  <notes><![CDATA[
- * Added support for PHP 8.1
+ * Tested support of PHP 8.2 and PHP 8.3
  ]]></notes>
  <contents>
   <dir name="/">
@@ -320,7 +320,7 @@
  <dependencies>
   <required>
    <php>
-    <min>5.2.0</min>
+    <min>5.3.0</min>
    </php>
    <pearinstaller>
     <min>1.4.0a1</min>
@@ -330,6 +330,21 @@
  <providesextension>fann</providesextension>
  <extsrcrelease/>
  <changelog>
+  <release>
+   <date>2022-01-02</date>
+   <version>
+	<release>1.2.0RC2</release>
+	<api>1.2.0RC2</api>
+   </version>
+   <stability>
+	<release>beta</release>
+	<api>beta</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP 3.01</license>
+   <notes><![CDATA[
+   * Added support for PHP 8.1
+   ]]></notes>
+  </release>
   <release>
    <date>2021-03-14</date>
    <version>
